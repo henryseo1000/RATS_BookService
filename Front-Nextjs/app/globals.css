@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 24, 45, 82;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-rgb))
+    )
+    rgb(var(--background-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.menuItem-focus {
+  color: yellow;
+}
+
+.triangle-1{
+  border-left: 0px solid transparent;
+  border-right: 96rem solid transparent; 
+  border-bottom: 32rem solid #25467F;
+  box-shadow: inset 5px 5px 10px 5px rgb(77,71,71);
+}
+
+.triangle-2{
+  border-left: 0px solid transparent;
+  border-right: 320px solid transparent; 
+  border-bottom: 0px solid white;
+}
