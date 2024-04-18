@@ -1,4 +1,4 @@
-// File: /Users/seohojun/Desktop/Project/BookService/Front-Nextjs/app/layout.js
+// File: /Users/seohojun/Desktop/Project/RATS_BookService/Front-Nextjs/app/layout.js
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

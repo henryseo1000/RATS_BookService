@@ -3,7 +3,7 @@ import Image from "next/image";
 import SigninButton from "../../_components/SigninButton";
 import { Button } from "@chakra-ui/react";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Login() {
   const [isSignin, setSignin] = useState(false);
@@ -43,22 +43,22 @@ export default function Login() {
               NEXT
               <ArrowForwardIcon className="ml-1"/>
             </Button>
+            <SigninButton name="SIGN IN" onClick={() => setSignin(!isSignin)}/>
             </>
           )}
           
           {isSignin && (<>
-          <Button className="h-10 w-1/4 border-double border-4 rounded-3xl font-bold">
-              NEXT
+          <Button className="h-10 w-full border-2 rounded-3xl font-bold">
+              LOGIN
               <ArrowForwardIcon className="ml-1"/>
             </Button>
+            <SigninButton name="SIGN OUT" onClick={() => setSignin(!isSignin)}/>
             </>
           )
           }
           </div>
         </div>
       </div>
-      
-      <SigninButton/>
     </div>
   );
 }
