@@ -30,19 +30,15 @@ body {
   }
 }
 
-.menuItem-focus {
-  color: yellow;
-}
-
 .triangle-1{
   border-left: 0px solid transparent;
-  border-right: 96rem solid transparent; 
-  border-bottom: 32rem solid #25467F;
-  box-shadow: inset 5px 5px 10px 5px rgb(77,71,71);
+  border-right: 20rem solid transparent; 
+  border-bottom: 7rem solid #25467F;
+  box-shadow: inset 10px 10px 10px 10px rgb(77,71,71);
 }
 
 .triangle-2{
-  border-left: 0px solid transparent;
-  border-right: 320px solid transparent; 
-  border-bottom: 0px solid white;
+  border-left: 0rem solid transparent;
+  border-right: 20rem solid transparent; 
+  border-bottom: 10rem solid skyblue;
 }

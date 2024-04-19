@@ -1,7 +1,7 @@
 import { Toaster } from "sonner";
-import Navbar from "./(main)/_components/Navbar"
 import { Roboto } from "next/font/google";
 import "./globals.css"
+import { ChakraBaseProvider, ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 const inter = Roboto({ subsets: ["latin"],
 weight: ["300"]
@@ -27,15 +27,27 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
+  const config = {
+    initialColorMode: 'dark',
+    useSystemColorMode: true,
+  }
+  
+  const theme = extendTheme({ config })
+
   return (
     <html lang="en">
       <head>
         <title>Mr.Story</title>
       </head>
+      
       <body className={inter.className}>
+        <ChakraBaseProvider theme={config}>
           <Toaster position="bottom-center"/>
           {children}
-        </body>
+        </ChakraBaseProvider>
+      </body>
+      
     </html>
   );
 }

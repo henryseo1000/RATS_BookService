@@ -567,20 +567,26 @@ video {
 .fixed {
   position: fixed;
 }
+.absolute {
+  position: absolute;
+}
 .bottom-0 {
   bottom: 0px;
 }
-.bottom-7 {
-  bottom: 1.75rem;
+.bottom-5 {
+  bottom: 1.25rem;
 }
 .left-0 {
   left: 0px;
 }
-.left-9 {
-  left: 2.25rem;
+.left-7 {
+  left: 1.75rem;
 }
 .top-0 {
   top: 0px;
+}
+.z-10 {
+  z-index: 10;
 }
 .z-50 {
   z-index: 50;
@@ -597,14 +603,14 @@ video {
 .mt-10 {
   margin-top: 2.5rem;
 }
-.mt-16 {
-  margin-top: 4rem;
-}
 .mt-3 {
   margin-top: 0.75rem;
 }
 .mt-5 {
   margin-top: 1.25rem;
+}
+.mt-7 {
+  margin-top: 1.75rem;
 }
 .flex {
   display: flex;
@@ -627,8 +633,8 @@ video {
 .w-1\/4 {
   width: 25%;
 }
-.w-96 {
-  width: 24rem;
+.w-48 {
+  width: 12rem;
 }
 .w-full {
   width: 100%;
@@ -658,14 +664,15 @@ video {
 .border-4 {
   border-width: 4px;
 }
-.border-2 {
-  border-width: 2px;
-}
 .border-b {
   border-bottom-width: 1px;
 }
 .border-double {
   border-style: double;
+}
+.bg-\[\#182D52\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 45 82 / var(--tw-bg-opacity));
 }
 .p-2 {
   padding: 0.5rem;
@@ -697,6 +704,12 @@ video {
   --tw-text-opacity: 1;
   color: rgb(24 45 82 / var(--tw-text-opacity));
 }
+.underline {
+  text-decoration-line: underline;
+}
+.underline-offset-2 {
+  text-underline-offset: 2px;
+}
 .shadow-sm {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
@@ -725,21 +738,17 @@ body {
     rgb(var(--background-rgb));
 }
 
-.menuItem-focus {
-  color: yellow;
-}
-
 .triangle-1{
   border-left: 0px solid transparent;
-  border-right: 96rem solid transparent; 
-  border-bottom: 32rem solid #25467F;
-  box-shadow: inset 5px 5px 10px 5px rgb(77,71,71);
+  border-right: 20rem solid transparent; 
+  border-bottom: 7rem solid #25467F;
+  box-shadow: inset 10px 10px 10px 10px rgb(77,71,71);
 }
 
 .triangle-2{
-  border-left: 0px solid transparent;
-  border-right: 320px solid transparent; 
-  border-bottom: 0px solid white;
+  border-left: 0rem solid transparent;
+  border-right: 20rem solid transparent; 
+  border-bottom: 10rem solid skyblue;
 }
 
 .hover\:cursor-pointer:hover {
