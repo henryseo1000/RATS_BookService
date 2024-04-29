@@ -1,7 +1,8 @@
 import { Toaster } from "sonner";
 import { Roboto } from "next/font/google";
 import "./globals.css"
-import { ChakraBaseProvider, ChakraProvider, extendTheme } from "@chakra-ui/react";
+import Navbar from "./(main)/_components/Navbar";
+import ConvexClientProvider from "../components/ConvexClientProvider";
 
 const inter = Roboto({ subsets: ["latin"],
 weight: ["300"]
@@ -28,13 +29,6 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
 
-  const config = {
-    initialColorMode: 'dark',
-    useSystemColorMode: true,
-  }
-  
-  const theme = extendTheme({ config })
-
   return (
     <html lang="en">
       <head>
@@ -42,10 +36,11 @@ export default function RootLayout({ children }) {
       </head>
       
       <body className={inter.className}>
-        <ChakraBaseProvider theme={config}>
-          <Toaster position="bottom-center"/>
-          {children}
-        </ChakraBaseProvider>
+          <ConvexClientProvider>
+            <Navbar/>
+            <Toaster position="bottom-center"/>
+            {children}
+          </ConvexClientProvider>
       </body>
       
     </html>
