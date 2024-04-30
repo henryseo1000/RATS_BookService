@@ -4,9 +4,10 @@ import SigninButton from "../../_components/SigninButton";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { Checkbox } from "@chakra-ui/react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function SignUp() {
-  const [isSignin, setSignin] = useState(false);
+  const { loginWithRedirect } = useAuth0();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -24,7 +25,7 @@ export default function SignUp() {
         <div className="mt-7 text-[#ffffff]">
           <h1 className="text-left text-6xl font-semibold">Hi, There!</h1>
           <h3 className="mt-3 text-md">
-            Welcome to RATS Community. 
+            Welcome to RATS Community.
             <br/>
             This is where future technology starts.
           </h3>
@@ -41,12 +42,12 @@ export default function SignUp() {
           </div>
           
           <div className="flex flex-row mt-10 justify-between text-[#ffffff]">
-            <button className="h-10 w-1/4 border-double border-4 rounded-3xl font-bold text-[#ffffff]">
+            <button id="prev" className="h-10 w-1/4 border-double border-4 rounded-3xl font-bold hover:-translate-y-2 transition">
               <ArrowBackIcon className="mr-1"/>
               PREV
             </button>
 
-            <button className="h-10 w-1/4 border-double border-4 rounded-3xl font-bold">
+            <button id="next" className="h-10 w-1/4 border-double border-4 rounded-3xl font-bold hover:-translate-y-2 transition">
               NEXT
               <ArrowForwardIcon className="ml-1"/>
             </button>
@@ -54,7 +55,7 @@ export default function SignUp() {
         </div>
       </div>
       
-      <SigninButton name="SIGN IN" onClick={() => setSignin(!isSignin)}/>
+      <SigninButton name="OR SIGN IN" onClick={loginWithRedirect}/>
     </div>
   );
 }
