@@ -3,8 +3,9 @@ import { ReactNode } from "react";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithAuth0 } from "convex/react-auth0";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL);
 
 export default function ConvexClientProvider({
   children,
@@ -13,14 +14,14 @@ export default function ConvexClientProvider({
 }) {
   return (
     <Auth0Provider
-      domain="dev-0gtwzsux0to2yy8t.us.auth0.com"
+      domain="https://dev-0gtwzsux0to2yy8t.us.auth0.com"
       clientId="fVgo8ETCPFeAqlObPieTaS3VnNYpe9gF"
       authorizationParams={{
-        redirect_uri: 'http://localhost:3000'
+        redirect_uri: "http://localhost:3000"
       }}
-      useRefreshTokens={false}
+      useRefreshTokens={true}
       cacheLocation="localstorage"
-      >
+    >
       <ConvexProviderWithAuth0 client={convex}>
         {children}
       </ConvexProviderWithAuth0>

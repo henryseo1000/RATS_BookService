@@ -2,7 +2,7 @@
 import useScrollTop from "../../../hooks/use-scroll-top";
 import { useState } from "react";
 import Logo from "./Logo.jsx";
-import { useConvexAuth } from "convex/react";
+import { cn } from "../../../hooks/utils";
 import { ArrowForwardIcon, SpinnerIcon } from "@chakra-ui/icons";
 import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
@@ -11,10 +11,11 @@ export default function Navbar() {
     const MenuList = [{Items: "Barcode"}, {Items: "Search"}, {Items: "Settings"}];
     const [focusedItem, setFocusedItem] = useState(null);
     const scrolled = useScrollTop();
-    const { isLoading, isAuthenticated } = useConvexAuth();
- 
+    const { isLoading, isAuthenticated } = useAuth0();
+
     return (
-        <div className="z-50 bg-background dark:bg-[#182D52] fixed top-0 flex items-center w-full p-2 hover:shadow-md justify-between">
+        <div className={cn("z-50 bg-background dark:bg-[#182D52] fixed top-0 flex items-center w-full p-2 hover:shadow-md justify-between", 
+            scrolled && "border-indigo-900 shadow-sm border-b")}>
             <Logo/>
             <div className="flex flex-row mr-2">
                 {!isAuthenticated && !isLoading && (
@@ -30,6 +31,12 @@ export default function Navbar() {
                     <div className="items-center flex flex-row">
                         <SpinnerIcon className="animate-spin mr-2"/>
                         <p>Loading...</p>
+                    </div> 
+                )}
+
+                {isAuthenticated && (
+                    <div className="items-center flex flex-row">
+                        <img src={user.picture} alt={user.name} />
                     </div> 
                 )}
             </div>

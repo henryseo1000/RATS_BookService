@@ -32,7 +32,7 @@ body {
 
 .triangle-1{
   border-left: 0px solid transparent;
-  border-right: 20rem solid transparent; 
+  border-right: 20rem solid transparent;
   border-bottom: 7rem solid #25467F;
   box-shadow: inset 10px 10px 10px 10px rgb(77,71,71);
 }

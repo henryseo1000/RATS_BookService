@@ -5,10 +5,16 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { Checkbox } from "@chakra-ui/react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { redirect } from "next/dist/server/api-utils";
 
 export default function SignUp() {
   const { loginWithRedirect } = useAuth0();
   const [showPassword, setShowPassword] = useState(false);
+  const { isAuthenticated } = useAuth0();
+
+  if (isAuthenticated){
+    return redirect('/')
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#182D52]">
