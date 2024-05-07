@@ -7,10 +7,7 @@ export default function Home() {
     (
       async () => {
           const LocomotiveScroll = (await import('locomotive-scroll')).default
-          const locomotiveScroll = new LocomotiveScroll({
-            el: document.querySelector('[data-scroll-container]'),
-            smooth: true
-          });
+          const locomotiveScroll = new LocomotiveScroll();
       }
     )()
   }, [])
