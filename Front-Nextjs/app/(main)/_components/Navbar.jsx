@@ -14,8 +14,8 @@ export default function Navbar() {
     const { isLoading, isAuthenticated } = useAuth0();
 
     return (
-        <div className={cn("z-50 bg-background dark:bg-[#182D52] fixed top-0 flex items-center w-full p-2 hover:shadow-md justify-between", 
-            scrolled && "border-indigo-900 shadow-sm border-b")}>
+        <div className={cn("z-50 bg-gradient-to-b from-[#182D52] to-transparent fixed top-0 flex items-center w-full p-2 hover:shadow-md justify-between", 
+            scrolled && "shadow-sm")}>
             <Logo/>
             <div className="flex flex-row mr-2">
                 {!isAuthenticated && !isLoading && (

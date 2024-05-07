@@ -7,16 +7,19 @@ export default function Home() {
     (
       async () => {
           const LocomotiveScroll = (await import('locomotive-scroll')).default
-          const locomotiveScroll = new LocomotiveScroll();
+          const locomotiveScroll = new LocomotiveScroll({
+            el: document.querySelector('[data-scroll-container]'),
+            smooth: true
+          });
       }
     )()
   }, [])
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col bg-black' data-scroll-container>
       <Intro/>
-      <div className='bg-orange-500 h-screen w-full'></div>
-      <div className='bg-orange-500 h-screen w-full'></div>
+      <div className='bg-black h-screen w-full'></div>
+      <div className='bg-black h-screen w-full'></div>
     </div>
   );
 }

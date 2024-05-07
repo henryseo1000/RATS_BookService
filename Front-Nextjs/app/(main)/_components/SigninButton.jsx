@@ -19,7 +19,6 @@ export default function SigninButton({name, onClick}) {
         </div>
         <div className="absolute left-0 bottom-0">
           <div className="triangle-1">
-          
           </div>
         </div>
     </div>
