@@ -33,6 +33,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <title>Mr.Story</title>
+        <meta name='theme-color' content='#25467F' />
+        <link rel='manifest' href='/manifest.json' />
       </head>
       
       <body className={inter.className}>
