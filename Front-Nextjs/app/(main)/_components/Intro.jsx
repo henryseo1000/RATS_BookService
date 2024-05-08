@@ -30,17 +30,17 @@ export default function Intro(){
   return(
     <div ref={homeHeader} className="relative flex w-full h-screen justify-center" data-scroll-container>
       <div ref={background} className="flex h-screen w-full absolute brightness-50 object-cover">
-        <Image src="/images/library.jpg" fill={true} priority={true}/>
+        <Image src="/images/library.jpg" draggable={false} fill={true} priority={true}/>
       </div>
       <div className="items-center justify-center text-center flex flex-col w-full h-full">
         <div data-scroll data-scroll-speed="-5" className="left-1/4 top-12 flex w-72 h-96 absolute brightness-75">
-          <Image src="/images/ganzi.jpeg" fill={true} priority={true}/>
+          <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
         </div>
         <div data-scroll data-scroll-speed="2" className="bottom-24 flex w-72 h-96 absolute brightness-75">
-          <Image src="/images/ganzi.jpeg" fill={true} priority={true}/>
+          <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
         </div>
         <div ref={introImage} data-scroll data-scroll-speed="-5" className="right-1/4 top-12 flex w-72 h-96 absolute brightness-75">
-          <Image src="/images/ganzi.jpeg" fill={true} priority={true}/>
+          <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
         </div>
         <div data-scroll data-scroll-speed="0.3" className='z-10'>
           <h1 className="text-7xl font-bold">Hello! Welcome to RATS Community.</h1>
