@@ -5,7 +5,7 @@ import { ConvexProviderWithAuth0 } from "convex/react-auth0";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL);
+const convex = new ConvexReactClient("https://ardent-retriever-925.convex.cloud");
 
 export default function ConvexClientProvider({
   children,

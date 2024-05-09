@@ -6,11 +6,12 @@ import { useState } from "react";
 import { Checkbox } from "@chakra-ui/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { redirect } from "next/dist/server/api-utils";
+import { useConvexAuth } from "convex/react";
 
 export default function SignUp() {
   const { loginWithRedirect } = useAuth0();
   const [showPassword, setShowPassword] = useState(false);
-  const { isAuthenticated } = useAuth0();
+  const { isLoading, isAuthenticated } = useConvexAuth();
 
   if (isAuthenticated){
     return redirect('/')
@@ -19,7 +20,6 @@ export default function SignUp() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#182D52]">
       <div className="flex flex-col z-99 h-2/3 w-1/4 rounded-3xl">
-        <a href="https://join.mju-rats.com/">
           <Image
                 src="/icons/RATS_dark.svg"
                 width="130"
@@ -27,7 +27,6 @@ export default function SignUp() {
                 className="light:hidden"
                 draggable={false}
           />
-        </a>
         <div className="mt-7 text-[#ffffff]">
           <h1 className="text-left text-6xl font-semibold">Hi, There!</h1>
           <h3 className="mt-3 text-md">

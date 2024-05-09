@@ -4,14 +4,16 @@ import { useState } from "react";
 import Logo from "./Logo.jsx";
 import { cn } from "../../../hooks/utils";
 import { ArrowForwardIcon, SpinnerIcon } from "@chakra-ui/icons";
-import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
+import { useConvexAuth } from "convex/react";
+import { useAuth0 } from "@auth0/auth0-react";
+import Image from "next/image";
 
 export default function Navbar() {
     const MenuList = [{Items: "Barcode"}, {Items: "Search"}, {Items: "Settings"}];
     const [focusedItem, setFocusedItem] = useState(null);
     const scrolled = useScrollTop();
-    const { isLoading, isAuthenticated } = useAuth0();
+    const { isLoading, isAuthenticated, user } = useAuth0();
 
     return (
         <div className={cn("z-50 bg-gradient-to-b from-[#182D52] to-transparent fixed top-0 flex items-center w-full p-2 hover:shadow-md justify-between", 
@@ -34,9 +36,10 @@ export default function Navbar() {
                     </div> 
                 )}
 
-                {isAuthenticated && (
-                    <div className="items-center flex flex-row">
-                        <img src={user.picture} alt={user.name} />
+                {isAuthenticated && !isLoading && (
+                    <div className="flex flex-row items-center">
+                        <img draggable={false} className="flex flex-row rounded-xl w-10" src={user.picture} alt={user.name} />
+                        <p className="ml-2">Welcome Back, {user.name}!</p>
                     </div> 
                 )}
             </div>

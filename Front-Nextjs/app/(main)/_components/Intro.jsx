@@ -1,11 +1,13 @@
 "use client"
 import React, { useLayoutEffect, useRef } from 'react'
-import { ArrowForwardIcon } from "@chakra-ui/icons"
+import { ArrowForwardIcon, SpinnerIcon } from "@chakra-ui/icons"
 import Image from "next/image"
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Intro(){
+  const { isAuthenticated, isLoading } = useAuth0();
   const background = useRef(null);
   const introImage = useRef(null);
   const homeHeader = useRef(null);
@@ -24,7 +26,7 @@ export default function Intro(){
 
     timeline
         .from(background.current, {clipPath: `inset(0%)`})
-        .to(background.current, {clipPath: `inset(10%)`})
+        .to(background.current, {clipPath: `inset(20%)`})
   }, [])
 
   return(
@@ -45,9 +47,22 @@ export default function Intro(){
         <div data-scroll data-scroll-speed="0.3" className='z-10'>
           <h1 className="text-7xl font-bold">Hello! Welcome to RATS Community.</h1>
           <h2>If you want to know more about us, click button below!</h2>
-          <button className="border rounded-md p-2 mt-10 hover:scale-110 duration-300">
-            Check Out For More <ArrowForwardIcon/>
-          </button>
+          { !isAuthenticated && !isLoading && (
+              <a href='https://join.mju-rats.com/'>
+              <button className="border rounded-md p-2 mt-10 hover:scale-110 duration-300">
+                  Check Out For More <ArrowForwardIcon/>
+              </button>
+            </a>
+            )
+          }
+          { isLoading && (
+            <div className='flex flex-row items-center justify-center mt-10'>
+              <SpinnerIcon className="animate-spin mr-2"/>
+              <p>Loading...</p>
+            </div>
+            )
+          }
+          
         </div>
       </div>
     </div>

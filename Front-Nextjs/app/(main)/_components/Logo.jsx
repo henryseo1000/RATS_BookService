@@ -20,7 +20,7 @@ export default function Logo() {
                 draggable={false}
             />
             <p className="font-extrabold text-xl">
-                <a href="./">MR.STORY</a>
+                <a href="./">MR.STORY</a> 
             </p>
         </div>
     )
