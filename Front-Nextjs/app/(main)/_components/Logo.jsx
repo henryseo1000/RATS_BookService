@@ -2,7 +2,8 @@ import Image from "next/image"
 
 export default function Logo() {
     return (
-        <div className="md:flex items-center gap-x-3 flex flex-row p-2">
+        <div>
+            <a href="./" className="flex flex-row md:flex items-center gap-x-3 p-2 select-none">
             <Image
                 src="/icons/mr_story_logo.svg"
                 width="40"
@@ -20,8 +21,9 @@ export default function Logo() {
                 draggable={false}
             />
             <p className="font-extrabold text-xl">
-                <a href="./">MR.STORY</a> 
+                MR.STORY
             </p>
+            </a> 
         </div>
     )
 }
