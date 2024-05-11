@@ -58,12 +58,7 @@ export default function Navbar() {
                         />
                     </div> 
                 )}
-
-                {isOpen && (
-                    <div className="transition-transform duration-700">
-                        <Menu/>
-                    </div>
-                )}
+                <Menu show={isOpen}/>
             </div>
         </div>
     )
