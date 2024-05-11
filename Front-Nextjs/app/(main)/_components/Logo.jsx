@@ -3,7 +3,7 @@ import Image from "next/image"
 export default function Logo() {
     return (
         <div>
-            <a href="./" className="flex flex-row md:flex items-center gap-x-3 p-2 select-none">
+            <a href="/" className="flex flex-row md:flex items-center gap-x-3 p-2 select-none">
             <Image
                 src="/icons/mr_story_logo.svg"
                 width="40"

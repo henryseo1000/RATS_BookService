@@ -5,7 +5,7 @@ import Navbar from "./(main)/_components/Navbar";
 import ConvexClientProvider from "../components/ConvexClientProvider";
 
 const inter = Roboto({ subsets: ["latin"],
-weight: ["300"]
+  weight: ["300"]
 });
 
 export const metadata = {

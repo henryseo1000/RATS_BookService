@@ -30,23 +30,24 @@ export default function Intro(){
   }, [])
 
   return(
-    <div ref={homeHeader} className="relative flex w-full h-screen justify-center" data-scroll-container>
-      <div ref={background} className="flex h-screen w-full absolute brightness-50 object-cover">
-        <Image src="/images/library.jpg" draggable={false} fill={true} priority={true}/>
+    <div ref={homeHeader} className="relative flex w-full h-screen justify-center">
+      <div ref={background} className="flex h-screen w-full absolute brightness-50">
+        <Image className="object-cover" src="/images/library.jpg" draggable={false} fill={true} priority={true}/>
       </div>
-      <div className="items-center justify-center text-center flex flex-col w-full h-full">
+      <div ref={introImage} className="relative items-center justify-center text-center flex w-full h-full">
         <div data-scroll data-scroll-speed="-5" className="left-1/4 top-12 flex w-60 h-80 absolute brightness-75">
           <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
         </div>
         <div data-scroll data-scroll-speed="2" className="bottom-24 flex w-60 h-80 absolute brightness-75">
           <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
         </div>
-        <div ref={introImage} data-scroll data-scroll-speed="-5" className="right-1/4 top-12 flex w-60 h-80 absolute brightness-75">
+        <div data-scroll data-scroll-speed="-5" className="right-1/4 top-12 flex w-60 h-80 absolute brightness-75">
           <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
         </div>
         <div data-scroll data-scroll-speed="0.3" className='z-10'>
           <h1 className="text-7xl font-bold">Hello! Welcome to RATS Community.</h1>
           <h2>If you want to know more about us, click button below!</h2>
+
           { !isAuthenticated && !isLoading && (
               <a href='https://join.mju-rats.com/'>
               <button className="border rounded-md p-2 mt-10 hover:scale-110 duration-300">
@@ -55,6 +56,7 @@ export default function Intro(){
             </a>
             )
           }
+
           { isLoading && (
             <div className='flex flex-row items-center justify-center mt-10'>
               <SpinnerIcon className="animate-spin mr-2"/>

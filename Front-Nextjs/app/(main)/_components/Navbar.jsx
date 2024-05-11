@@ -1,22 +1,27 @@
 "use client"
 import useScrollTop from "../../../hooks/use-scroll-top";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logo from "./Logo.jsx";
 import { cn } from "../../../hooks/utils";
 import { ArrowForwardIcon, ChevronLeftIcon, SpinnerIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useAuth0 } from "@auth0/auth0-react";
 import { IconButton } from "@chakra-ui/react";
+import Menu from "../_components/Menu"
 
 export default function Navbar() {
     const MenuList = [{Items: "Barcode"}, {Items: "Search"}, {Items: "Settings"}];
     const [focusedItem, setFocusedItem] = useState(null);
     const [isOpen, setMenu] = useState(false);
     const scrolled = useScrollTop();
-    const { isLoading, isAuthenticated, user, logout } = useAuth0();
+    const { isLoading, isAuthenticated, user} = useAuth0();
+
+    useEffect(() => {
+
+    },[isOpen])
 
     return (
-        <div className={cn("z-50 select-none bg-gradient-to-b from-[#182D52] to-transparent fixed top-0 flex items-center w-full p-2 hover:shadow-md justify-between", 
+        <div className={cn("z-50 select-none bg-gradient-to-b from-[#182D52] to-transparent fixed top-0 flex items-center w-full h-[60px] p-2 hover:shadow-md justify-between", 
             scrolled && "shadow-sm")}>
             <Logo/>
             <div className="flex flex-row mr-2">
@@ -41,7 +46,6 @@ export default function Navbar() {
                         className="flex flex-row items-center hover:cursor-pointer hover:bg-gray-600 duration-300 p-2 rounded-md"
                         onClick={() => {
                             setMenu(!isOpen)
-                            logout({logoutParams: { returnTo: "http://localhost:3000" }})
                         }}
                     >
                         <img draggable={false} className="flex flex-row rounded-2xl w-7" src={user.picture} alt={user.name} />
@@ -53,6 +57,12 @@ export default function Navbar() {
                             icon={<ChevronLeftIcon />}
                         />
                     </div> 
+                )}
+
+                {isOpen && (
+                    <div className="transition-transform duration-700">
+                        <Menu/>
+                    </div>
                 )}
             </div>
         </div>
