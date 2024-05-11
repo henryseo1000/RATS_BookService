@@ -5,18 +5,18 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { Checkbox } from "@chakra-ui/react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { redirect } from "next/dist/server/api-utils";
+import { redirect } from "next/navigation";
 import { useConvexAuth } from "convex/react";
 
 export default function SignUp() {
   const { loginWithRedirect } = useAuth0();
   const [showPassword, setShowPassword] = useState(false);
-  const { isLoading, isAuthenticated } = useConvexAuth();
+  const { isAuthenticated } = useConvexAuth();
 
   if (isAuthenticated){
-    return redirect('/')
+    redirect("/")
   }
-
+  
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#182D52]">
       <div className="flex flex-col z-99 h-2/3 w-1/4 rounded-3xl">

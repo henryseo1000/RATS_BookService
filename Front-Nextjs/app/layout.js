@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
       
       <body className={inter.className}>
           <ConvexClientProvider>
-            <Navbar/>
+            <Navbar showMenu={true}/>
             <Toaster position="bottom-center"/>
             {children}
           </ConvexClientProvider>

@@ -7,7 +7,7 @@ export default function Menu({show}){
   const { logout } = useAuth0();
 
   return(
-    <div className={cn("rounded-xl w-56 h-48 absolute bg-gradient-to-r from-[#6284F4]/80 to-[#413FBD]/80 right-4 top-[70px] flex flex-col transition-all ease-in-out duration-500", !show && " h-0")}>
+    <div className={cn("rounded-xl w-56 h-48 absolute bg-gradient-to-r from-[#182D52]/80 to-[#413FBD]/80 right-4 top-[70px] flex flex-col transition-all ease-in-out duration-500", !show && " h-0")}>
       <div className={cn("rounded-xl items-center flex h-12 justify-center m-1 hover:bg-[#6c78ae] hover:cursor-pointer transition-all ease-in-out duration-500", !show && " hidden h-0")}>
         <EditIcon/>
         <div className="ml-2">

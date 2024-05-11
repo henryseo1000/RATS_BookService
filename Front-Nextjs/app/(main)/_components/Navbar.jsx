@@ -1,29 +1,32 @@
 "use client"
 import useScrollTop from "../../../hooks/use-scroll-top";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Logo from "./Logo.jsx";
 import { cn } from "../../../hooks/utils";
 import { ArrowForwardIcon, ChevronLeftIcon, SpinnerIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useAuth0 } from "@auth0/auth0-react";
 import { IconButton } from "@chakra-ui/react";
-import Menu from "../_components/Menu"
+import Menu from "../_components/Menu";
+import NavMenu from "../_components/NavMenu";
 
-export default function Navbar() {
+export default function Navbar({showMenu, useGradiant}) {
     const MenuList = [{Items: "Barcode"}, {Items: "Search"}, {Items: "Settings"}];
     const [focusedItem, setFocusedItem] = useState(null);
     const [isOpen, setMenu] = useState(false);
     const scrolled = useScrollTop();
     const { isLoading, isAuthenticated, user} = useAuth0();
 
-    useEffect(() => {
-
-    },[isOpen])
-
     return (
         <div className={cn("z-50 select-none bg-gradient-to-b from-[#182D52] to-transparent fixed top-0 flex items-center w-full h-[60px] p-2 hover:shadow-md justify-between", 
             scrolled && "shadow-sm")}>
             <Logo/>
+            { showMenu && (
+                <div>
+                    <NavMenu/>
+                </div>
+            )
+            }
             <div className="flex flex-row mr-2">
                 {!isAuthenticated && !isLoading && (
                     <Link href="/signup">
