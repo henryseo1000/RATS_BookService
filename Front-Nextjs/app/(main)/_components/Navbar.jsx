@@ -6,9 +6,10 @@ import { cn } from "../../../hooks/utils";
 import { ArrowForwardIcon, ChevronLeftIcon, SpinnerIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useAuth0 } from "@auth0/auth0-react";
-import { IconButton } from "@chakra-ui/react";
+import { IconButton, useMediaQuery } from "@chakra-ui/react";
 import Menu from "../_components/Menu";
 import NavMenu from "../_components/NavMenu";
+import { toast } from "sonner";
 
 export default function Navbar({showMenu, useGradiant}) {
     const MenuList = [{Items: "Barcode"}, {Items: "Search"}, {Items: "Settings"}];
@@ -16,6 +17,7 @@ export default function Navbar({showMenu, useGradiant}) {
     const [isOpen, setMenu] = useState(false);
     const scrolled = useScrollTop();
     const { isLoading, isAuthenticated, user} = useAuth0();
+    const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (
         <div className={cn("z-50 select-none bg-gradient-to-b from-[#182D52] to-transparent fixed top-0 flex items-center w-full h-[60px] p-2 hover:shadow-md justify-between", 
@@ -52,13 +54,16 @@ export default function Navbar({showMenu, useGradiant}) {
                         }}
                     >
                         <img draggable={false} className="flex flex-row rounded-2xl w-7" src={user.picture} alt={user.name} />
-                        <p className="ml-3 font-bold select-none">Welcome Back, {user.name}!</p>
-                        <IconButton
-                            className={cn("ml-3 duration-300", isOpen && " -rotate-90")}
-                            colorScheme='blue'
-                            aria-label='Menu'
-                            icon={<ChevronLeftIcon />}
-                        />
+                        { isMobile && <>
+                            <p className="ml-3 font-bold select-none">Welcome Back, {user.name}!</p>
+                            <IconButton
+                                className={cn("ml-3 duration-300", isOpen && " -rotate-90")}
+                                colorScheme='blue'
+                                aria-label='Menu'
+                                icon={<ChevronLeftIcon />}
+                            />
+                        </>
+                        }
                     </div> 
                 )}
                 <Menu show={isOpen}/>

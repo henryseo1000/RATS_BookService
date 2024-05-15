@@ -6,11 +6,6 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(main)/(routes)/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(main)/(routes)/dashboard/page.js"
-    ],
     "/(main)/(routes)/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

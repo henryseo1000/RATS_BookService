@@ -3,15 +3,32 @@ import Image from "next/image";
 import SigninButton from "../../_components/SigninButton";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { Checkbox } from "@chakra-ui/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { redirect } from "next/navigation";
 import { useConvexAuth } from "convex/react";
+import bwipjs from 'bwip-js';
 
 export default function SignUp() {
   const { loginWithRedirect } = useAuth0();
   const [showPassword, setShowPassword] = useState(false);
   const { isAuthenticated } = useConvexAuth();
+
+  try {
+    // The return value is the canvas element
+    let canvas = bwipjs.toDataURL('mycanvas', {
+            bcid:        'code128',       // Barcode type
+            text:        '0123456789',    // Text to encode
+            scale:       3,               // 3x scaling factor
+            height:      10,              // Bar height, in millimeters
+            includetext: true,            // Show human-readable text
+            textxalign:  'center',        // Always good to set this
+        });
+    } catch (e) {
+      // `e` may be a string or Error object
+    }
+
 
   if (isAuthenticated){
     redirect("/")
