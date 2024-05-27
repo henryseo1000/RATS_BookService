@@ -9,11 +9,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { IconButton, useMediaQuery } from "@chakra-ui/react";
 import Menu from "../_components/Menu";
 import NavMenu from "../_components/NavMenu";
-import { toast } from "sonner";
 
 export default function Navbar({showMenu, useGradiant}) {
-    const MenuList = [{Items: "Barcode"}, {Items: "Search"}, {Items: "Settings"}];
-    const [focusedItem, setFocusedItem] = useState(null);
     const [isOpen, setMenu] = useState(false);
     const scrolled = useScrollTop();
     const { isLoading, isAuthenticated, user} = useAuth0();
@@ -55,7 +52,7 @@ export default function Navbar({showMenu, useGradiant}) {
                     >
                         <img draggable={false} className="flex flex-row rounded-2xl w-7" src={user.picture} alt={user.name} />
                         { isMobile && <>
-                            <p className="ml-3 font-bold select-none">Welcome Back, {user.name}!</p>
+                            <p className="ml-3 font-bold select-none">{user.name}</p>
                             <IconButton
                                 className={cn("ml-3 duration-300", isOpen && " -rotate-90")}
                                 colorScheme='blue'
