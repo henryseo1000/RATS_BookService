@@ -35,23 +35,13 @@ export default function Intro(){
         <Image className="object-cover" src="/images/library.jpg" draggable={false} fill={true} priority={true}/>
       </div>
       <div className="relative items-center justify-center text-center flex w-full h-full">
-        <div data-scroll data-scroll-speed="-5" className="left-1/4 top-12 flex w-60 h-80 absolute brightness-75">
-          <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
-        </div>
-        <div data-scroll data-scroll-speed="2" className="bottom-24 flex w-60 h-80 absolute brightness-75">
-          <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
-        </div>
-        <div  data-scroll data-scroll-speed="-5" className="right-1/4 top-12 flex w-60 h-80 absolute brightness-75">
-          <Image src="/images/ganzi.jpeg" draggable={false} fill={true} priority={true}/>
-        </div>
         <div data-scroll data-scroll-speed="0.3" className='z-10'>
-
           { !isAuthenticated && !isLoading && (
           <>
           <h1 className="text-7xl font-bold">Hello! Welcome to RATS Community.</h1>
             <h2>If you want to know more about us, click button below!</h2>
               <a href='https://join.mju-rats.com/'>
-              <button className="rounded-md p-2 mt-10 hover:scale-110 duration-300 bg-[#182D52]/80">
+              <button className="rounded-md p-2 mt-10 hover:scale-110 duration-300 bg-[#182D52]">
                   Check Out For More <ArrowForwardIcon/>
               </button>
             </a>
@@ -70,7 +60,7 @@ export default function Intro(){
           { isAuthenticated && (
             <>
               <h1 className="text-7xl font-bold">Hi, {user.name}! Welcome Back!</h1>
-              <button className="rounded-md p-2 mt-10 hover:scale-110 duration-300 bg-[#182D52]/80">
+              <button className="rounded-md p-2 mt-10 hover:scale-110 duration-300 bg-[#182D52]">
                   Go To Dashboard <ArrowForwardIcon/>
               </button>
             </>

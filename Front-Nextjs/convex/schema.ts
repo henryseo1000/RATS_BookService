@@ -38,5 +38,21 @@ export default defineSchema ({
 
   admin_account: defineTable({
     user_id: v.string()
+  }),
+
+  file_list: defineTable({
+    user_id: v.string(),
+    file_name: v.string(),
+    file_size: v.int64()
+  }),
+
+  reserved_list: defineTable({
+    user_id: v.string(),
+    isbn: v.string()
+  }),
+
+  borrowed_list: defineTable({
+    user_id: v.string(),
+    isbn: v.string()
   })
 });
