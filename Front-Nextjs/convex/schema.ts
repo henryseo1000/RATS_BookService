@@ -5,10 +5,12 @@ export default defineSchema ({
   book_info: defineTable({
     title: v.string(),
     author: v.string(),
-    isbn: v.string(),
-    book_num: v.int64()
+    isbn: v.string() || v.number(),
+    book_num: v.optional(v.int64()),
+    publish_year: v.string()
   })
-  .index("by_title", ["title"]),
+  .index("by_title", ["title"])
+  .index("by_isbn_and_title", ["title", "isbn"]),
 
   user_info: defineTable({
     name: v.string(),

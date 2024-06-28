@@ -22,6 +22,6 @@ export const returnedhistory = query(async (ctx) => {
 })
 
 export const booklist = query(async (ctx) => {
-  console.log("give me data of admin_account");
-  return await ctx.db.query("book_info").take(10);
+  console.log("List of book datas");
+  return await ctx.db.query("book_info").collect();
 })
