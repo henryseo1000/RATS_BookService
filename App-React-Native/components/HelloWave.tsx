@@ -9,8 +9,22 @@ import Animated, {
 
 import { ThemedText } from '@/components/ThemedText';
 
-export function HelloWave() {
+interface props {
+  size?: number,
+  lineHeight? : number,
+  marginTop? : number
+}
+
+export function HelloWave({size = 20, lineHeight = 32, marginTop = -6} : props) {
   const rotationAnimation = useSharedValue(0);
+
+  const styles = StyleSheet.create({
+    text: {
+      fontSize: size,
+      lineHeight: lineHeight,
+      marginTop: marginTop,
+    },
+  });
 
   rotationAnimation.value = withRepeat(
     withSequence(withTiming(25, { duration: 150 }), withTiming(0, { duration: 150 })),
@@ -27,11 +41,3 @@ export function HelloWave() {
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 28,
-    lineHeight: 32,
-    marginTop: -6,
-  },
-});

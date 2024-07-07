@@ -1,31 +1,33 @@
-import { View, StyleSheet, Text } from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
-import Entypo from '@expo/vector-icons/Entypo';
+import Header from '@/components/navigation/Header';
+import { HelloWave } from '@/components/HelloWave';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function HomeScreen() {
 
   return (
-    <View
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>SplashScreen Demo! 👋</Text>
-      <Entypo name="rocket" size={30} />
+    <View>
+      <Header/>
+      <ScrollView style={styles.container}>
+        <Text style={styles.text}>
+          SplashScreen Demo!
+          <HelloWave size={20} lineHeight={0} marginTop={0}/>
+        </Text>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container : {
-      flex: 1, 
-      width: "100%", 
-      height: "100%", 
-      justifyContent: "center", 
-      alignItems: "center"
+    padding: 20
   },
   text : {
-      
+      fontSize: 20,
+      flex: 1,
+      justifyContent: "center",
+      alignContent: "center"
   }
 });

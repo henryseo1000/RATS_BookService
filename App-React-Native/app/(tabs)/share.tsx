@@ -2,8 +2,8 @@ import { StyleSheet, View, Text } from "react-native";
 
 export default function SharePage() {
     return (
-        <View>
-            <Text>This is Share Page!</Text>
+        <View style={styles.container}>
+            <Text>This is Share Page.</Text>
         </View>
     )
 }
