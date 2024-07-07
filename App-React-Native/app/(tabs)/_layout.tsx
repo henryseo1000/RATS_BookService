@@ -24,11 +24,29 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="star"
         options={{
-          title: 'Explore',
+          title: 'Star',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'star' : 'star-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="share"
+        options={{
+          title: 'Share',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'share' : 'share-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="book"
+        options={{
+          title: 'My Book',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
           ),
         }}
       />
