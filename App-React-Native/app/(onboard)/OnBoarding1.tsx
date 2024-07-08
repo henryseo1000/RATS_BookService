@@ -11,7 +11,7 @@ export default function Onboarding1 () {
       <Text style={styles.title}>Hello!</Text>
       <Text style={styles.phrase}>Welcome To Mr.Story!</Text>
       <View style={styles.button}>
-        <Button title="Next" onPress={() => {navigation.navigate("OnBoardingScreen2")}} color={"white"}/>
+        <Button title="Next" onPress={() => {navigation.navigate("OnBoardingScreen2" as never)}} color={"white"}/>
         <Ionicons name="arrow-forward" color={"white"} size={30}/>
       </View>
     </SafeAreaView>

@@ -22,10 +22,11 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container : {
-    padding: 20
+    padding: 30
   },
   text : {
       fontSize: 20,
+      fontFamily: "Ubuntu",
       flex: 1,
       justifyContent: "center",
       alignContent: "center"

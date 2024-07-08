@@ -30,7 +30,7 @@ export default function OnBoarding2() {
           <Button title='Get Started' 
             color={"white"}
             onPress={() => {
-            navigation.navigate("Login")
+            navigation.navigate("Login" as never)
             }}/>
             <Ionicons name="arrow-forward" color={"white"} size={30}/>
         </View>

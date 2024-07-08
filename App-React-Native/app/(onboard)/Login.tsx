@@ -26,7 +26,7 @@ export default function Login(){
             </TouchableOpacity>
 
             <Text style={{color: "white", marginTop: 10, fontSize: 15, textDecorationLine: "underline"}}
-                onPress={() => {}}
+                onPress={() => {navigation.navigate("(tabs)" as never)}}
                 >
                 Forgot your password?
             </Text>
