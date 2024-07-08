@@ -8,9 +8,9 @@ export default function Header() {
                 style={styles.image}
             />
             <View style={styles.icons}>
-                <Ionicons name="barcode" size={20} style={styles.icon}/>
-                <Ionicons name="search" size={20} style={styles.icon}/>
-                <Ionicons name="settings" size={20} style={styles.icon}/>
+                <Ionicons name="barcode" size={20} color={"#"} style={styles.icon} onPress={() => {}}/>
+                <Ionicons name="search" size={20} style={styles.icon} onPress={() => {}}/>
+                <Ionicons name="settings" size={20} style={styles.icon} onPress={() => {}}/>
             </View>
         </View>
     )
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         },
         justifyContent: "space-between",
         alignContent: "center",
-        paddingHorizontal: 20
+        paddingHorizontal: 30
     },
     icons : {
         display: "flex",
