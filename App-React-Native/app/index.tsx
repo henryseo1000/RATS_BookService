@@ -23,7 +23,6 @@ export default function Main(){
       }, []);
 
     return(
-          
         hasOnboarded && (
           <Stack.Navigator>
             <Stack.Screen options={{headerShown: false}} name="OnBoardingScreen1" component={OnBoarding1} />
