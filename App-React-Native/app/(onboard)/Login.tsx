@@ -100,13 +100,13 @@ export default function Login(){
 
             <View style={styles.sns}>
                 <TouchableOpacity>
-                    <AntDesign name="google" size={40} color={"#f1f1f1"}/>
+                    <AntDesign name="google" size={30} color={"#f1f1f1"}/>
                 </TouchableOpacity>
                 <TouchableOpacity> 
-                    <AntDesign name="apple1" size={40} color={"#f1f1f1"}/>
+                    <AntDesign name="apple1" size={30} color={"#f1f1f1"}/>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <AntDesign name="facebook-square" size={40} color={"#f1f1f1"}/>
+                    <AntDesign name="facebook-square" size={30} color={"#f1f1f1"}/>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -194,6 +194,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: '80%',
-        gap: 70
+        gap: 70,
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)'
     },
   })
