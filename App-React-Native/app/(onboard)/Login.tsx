@@ -18,17 +18,15 @@ export default function Login(){
   const onSignInPress = useCallback(async () => {
 
     try {
-      const signInAttempt = await signIn.create({
+      const signInAttempt = await signIn?.create({
         identifier: username,
         password,
       });
 
-      if (signInAttempt.status === 'complete') {
+      if (signInAttempt?.status === 'complete' && setActive) {
         await setActive({ session: signInAttempt.createdSessionId }).then(() => navigation.navigate("(tabs)" as never));
         return;
       } else {
-        // See https://clerk.com/docs/custom-flows/error-handling
-        // for more info on error handling
         setError(true);
         return;
       }
@@ -65,7 +63,7 @@ export default function Login(){
                     value={username} 
                     style={styles.input}
                     onChangeText={(username) => setUsername(username)}
-                    />
+                />
 
                 <TextInput 
                     placeholder="PASSWORD" 
@@ -78,7 +76,7 @@ export default function Login(){
 
                 <TouchableOpacity style={styles.button} onPress={onSignInPress}>
                     <Ionicons name="lock-open" size={20} color={"white"}/>
-                    <Text style={styles.label}>LOGIN</Text>
+                    <Text style={styles.login_text}>LOGIN</Text>
                 </TouchableOpacity>
             </View>
 
@@ -89,25 +87,25 @@ export default function Login(){
                     Forgot your password?
                 </Text>
                 { isError && (
-                    <Text style={styles.error}>
+                    <View style={styles.error}>
                         <AntDesign name="exclamationcircle" size={0} color="red" />
-                        Error in your input. Please check your ID and password.
-                    </Text>
+                        <Text>Error in your input. Please check your ID and password.</Text>
+                    </View>
                 )}
             </View>
 
             <View style={{width: "80%",flexDirection: 'row', alignItems: 'center'}}>
-                <View style={{flex: 1, height: 1, backgroundColor: 'white', marginVertical: 30}} />
+                <View style={{flex: 1, height: 1, backgroundColor: 'white'}} />
             </View>
 
             <View style={styles.sns}>
-                <TouchableOpacity style={styles.sns_button}>
+                <TouchableOpacity>
                     <AntDesign name="google" size={40} color={"#f1f1f1"}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.sns_button}> 
+                <TouchableOpacity> 
                     <AntDesign name="apple1" size={40} color={"#f1f1f1"}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.sns_button}>
+                <TouchableOpacity>
                     <AntDesign name="facebook-square" size={40} color={"#f1f1f1"}/>
                 </TouchableOpacity>
             </View>
@@ -117,91 +115,85 @@ export default function Login(){
 }
 
 const styles = StyleSheet.create({
-    container:{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      height: "100%",
-      backgroundColor: "#182D52",
-      justifyContent: "center",
-      alignItems: "center"
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        gap: 30,
+        backgroundColor: '#182D52'
     },
     title_area: {
-        width: "100%",
-        height: "20%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    logo:{
-        width: 100,
-        height: 100
+    logo: {
+        width: 150,
+        height : 150
     },
     title: {
-      fontFamily: "Ubuntu",
-      fontWeight: "bold",
-      color: "white",
-      fontSize: 60,
-    },
-    button: {
-      display: "flex",
-      flexDirection: "row",
-      width: "40%",
-      height: "25%",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#4787F5",
-      borderRadius: 25
-    },
-    label: {
-        fontFamily: "Ubuntu",
-        fontWeight: "bold",
-        color: "white",
-        fontSize: 25,
-        margin: 10
+        color: '#ffffff',
+        fontFamily: 'Ubuntu',
+        fontSize: 50,
     },
     input_area: {
-        display: "flex",
-        width: "100%",
-        height: "20%",
-        justifyContent: "center",
-        alignItems: "center"
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '75%',
+        gap: 30
     },
     input: {
-        width: "80%",
-        height: "25%",
-        backgroundColor: "#f1f1f1",
-        borderRadius: 25,
-        paddingLeft: 30,
-        fontFamily: "Ubuntu",
+        width: '100%',
+        height: 40,
+        paddingLeft: 20,
+        borderRadius: 20,
+        backgroundColor: '#ffffff',
+        fontFamily: 'Ubuntu',
+        fontSize: 20
+    },
+    button: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '50%',
+        height: 40,
+        gap: 10,
+        borderRadius: 20,
+        backgroundColor: '#4787F5'
+    },
+    login_text: {
+        fontFamily: 'Ubuntu',
         fontSize: 20,
-        marginBottom: 25,
-        color: "#182D52"
-    },
-    sns: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center"
-    },
-    sns_button: {
-        marginHorizontal: 20
-    },
-    error : {
-        color: "red",
-        fontSize: 20,
-        fontFamily: "ubuntu",
-        textAlign: "center",
-        marginTop: 10,
-        backgroundColor: "#DB8570",
-        justifyContent : "center",
-        alignItems: "center",
-        padding: 5,
+        color: "#ffffff"
     },
     inform: {
-        display: "flex",
-        width: "60%",
-        justifyContent : "center",
-        alignItems: "center"
-    }
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        gap: 15
+    },
+    error: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        maxWidth: '60%',
+        gap: 10,
+        padding: 10,
+        borderRadius: 5,
+        backgroundColor: '#DC7D75'
+    },
+    sns: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '80%',
+        gap: 70
+    },
   })
