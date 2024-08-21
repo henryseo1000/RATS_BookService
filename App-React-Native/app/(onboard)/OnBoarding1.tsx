@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { SignedIn } from "@clerk/clerk-expo";
 import { useConvexAuth } from "convex/react";
+import Swiper from 'react-native-swiper'
 
 export default function Onboarding1 () {
   const navigation = useNavigation();
@@ -16,12 +17,23 @@ export default function Onboarding1 () {
     
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Hello!</Text>
-      <Text style={styles.phrase}>Welcome To Mr.Story!</Text>
-      <View style={styles.button}>
-        <Button title="Next" onPress={() => {navigation.navigate("OnBoardingScreen2" as never)}} color={"white"}/>
-        <Ionicons name="arrow-forward" color={"white"} size={30}/>
-      </View>
+      
+      <Swiper style={styles.swiper}>
+        <View style={styles.slide}>
+          <View style={styles.inform_area}>
+
+            <Text style={styles.title}>Hello!</Text>
+            <Text style={styles.phrase}>Welcome To Mr.Story!</Text>
+
+            <View style={styles.button} onTouchEnd={() => {navigation.navigate("OnBoardingScreen2" as never)}}>
+              <Text style={styles.button_text}>Next</Text>
+              <Ionicons name="arrow-forward" color={"white"} size={30}/>
+            </View>
+
+          </View>
+        </View>
+      </Swiper>
+      
     </SafeAreaView>
   );
 };
@@ -30,12 +42,17 @@ const styles = StyleSheet.create({
   container:{
     display: "flex",
     flexDirection: "column",
+    justifyContent: "center",
     width: "100%",
     height: "100%",
+    gap: 20,
     backgroundColor: "#182D52",
-    justifyContent: "center",
-    // alignItems: "center",
-    paddingHorizontal: 30
+  },
+  inform_area: {
+    width: "100%",
+    height: "100%",
+    gap: 10,
+    backgroundColor: "white"
   },
   title: {
     fontFamily: "Ubuntu",
@@ -46,12 +63,32 @@ const styles = StyleSheet.create({
   phrase: {
     fontFamily: "Ubuntu",
     color: "white",
-    fontSize: 30
+    fontSize: 25
+  },
+  swiper: {
+    height: "30%",
+    backgroundColor: "red"
+  },
+  slide: {
+    width: "100%",
+    height: "30%",
+    paddingHorizontal: 40
   },
   button: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    borderColor: "white"
+    width: 170,
+    height: 50,
+    paddingHorizontal: 30,
+    borderColor: "white",
+    borderWidth: 1,
+    borderRadius: 30,
+  },
+  button_text: {
+    fontFamily: "Ubuntu",
+    color: "white",
+    fontSize: 20
   }
 })
