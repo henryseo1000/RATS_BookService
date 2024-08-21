@@ -1,1 +1,0 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/seohojun/Desktop/Project/RATS_BookService/Front-Nextjs/app/layout\":[\"static/media/7d8c9b0ca4a64a5a-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

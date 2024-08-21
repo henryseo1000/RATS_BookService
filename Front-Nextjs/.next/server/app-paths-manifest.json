@@ -1,7 +1,0 @@
-{
-  "/(main)/(routes)/profile/page": "app/(main)/(routes)/profile/page.js",
-  "/(main)/(routes)/page": "app/(main)/(routes)/page.js",
-  "/(main)/(routes)/barcode/page": "app/(main)/(routes)/barcode/page.js",
-  "/(main)/(routes)/buymecoffee/page": "app/(main)/(routes)/buymecoffee/page.js",
-  "/(main)/(routes)/dashboard/page": "app/(main)/(routes)/dashboard/page.js"
-}
