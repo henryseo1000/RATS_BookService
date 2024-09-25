@@ -2,7 +2,7 @@ import { View, Text,StyleSheet } from "react-native";
 
 export default function MyBookPage() {
     return (
-        <View style = {styles.container}>
+        <View style={styles.container}>
             <Text style = {styles.text}>This is Book Page.</Text>
         </View>
     )

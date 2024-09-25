@@ -1,12 +1,16 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import IMP from 'iamport-react-native';
 
 export default function SharePage() {
+    
     return (
         <View style={styles.container}>
-            <Text>This is Share Page.</Text>
+            <TouchableOpacity>
+                <Text></Text>
+            </TouchableOpacity>
         </View>
     )
-}
+};
 
 const styles = StyleSheet.create({
     container : {

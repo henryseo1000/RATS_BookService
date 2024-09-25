@@ -1,7 +1,7 @@
-import {useAuth, useSignIn } from "@clerk/clerk-expo";
+import { useSignIn } from "@clerk/clerk-expo";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useConvexAuth } from "convex/react";
-import { Redirect, useNavigation, useRouter } from "expo-router";
+import { useNavigation } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 
@@ -15,25 +15,24 @@ export default function Login(){
     const [password, setPassword] = useState("");
     const [isError, setError] = useState(false);
 
-  const onSignInPress = useCallback(async () => {
+    const onSignInPress = useCallback(async () => {
+        try {
+            const signInAttempt = await signIn?.create({
+                identifier: username,
+                password,
+            });
 
-    try {
-      const signInAttempt = await signIn?.create({
-        identifier: username,
-        password,
-      });
-
-      if (signInAttempt?.status === 'complete' && setActive) {
-        await setActive({ session: signInAttempt.createdSessionId }).then(() => navigation.navigate("(tabs)" as never));
-        return;
-      } else {
-        setError(true);
-        return;
-      }
-    } catch (err: any) {
-      setError(true);
-    }
-  }, [isLoading, username, password]);
+            if (signInAttempt?.status === 'complete' && setActive) {
+                await setActive({ session: signInAttempt.createdSessionId }).then(() => navigation.navigate("(tabs)" as never));
+                return;
+            } else {
+                setError(true);
+                return;
+            }
+        } catch (err: any) {
+            setError(true);
+        }
+    }, [isLoading, username, password]);
 
     if (isLoading) {
         return (
@@ -74,7 +73,7 @@ export default function Login(){
                     onChangeText={(password) => setPassword(password)}
                     />
 
-                <TouchableOpacity style={styles.button} onPress={onSignInPress}>
+                <TouchableOpacity style={styles.button} onPress={() => onSignInPress()}>
                     <Ionicons name="lock-open" size={20} color={"white"}/>
                     <Text style={styles.login_text}>LOGIN</Text>
                 </TouchableOpacity>

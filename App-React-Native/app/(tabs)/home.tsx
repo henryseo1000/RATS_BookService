@@ -10,7 +10,6 @@ export default function HomeScreen() {
 
   return (
     <View>
-      <Header/>
       <ScrollView style={styles.container}>
         <Text style={styles.text}>
           SplashScreen Demo!
