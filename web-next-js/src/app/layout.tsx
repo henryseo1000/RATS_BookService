@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Nanum_Gothic } from "next/font/google";
+import { Toaster, toast } from 'sonner'
+
 import "./globals.css";
+import { ConvexProvider } from "@/components/providers/ConvexProvider";
 
 const nanumGothic = Nanum_Gothic({
   style: "normal",
@@ -20,7 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={nanumGothic.className}>{children}</body>
+      <body className={nanumGothic.className}>
+        <ConvexProvider>
+          <Toaster position="bottom-right"/>
+          { children }
+        </ConvexProvider>
+      </body>
     </html>
   );
 }

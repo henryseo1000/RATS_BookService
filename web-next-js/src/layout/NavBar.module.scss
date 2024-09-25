@@ -1,0 +1,17 @@
+.nav_container {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    width: 300px;
+    height: 100%;
+    padding: 50px 30px;
+    background-color: #2A283F;
+
+    .profile_section {
+        display: flex;
+    }
+
+    .login_button {
+        background-color: black;
+    }
+}
