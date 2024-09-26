@@ -5,10 +5,9 @@ import { redirect } from "next/navigation";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
-  const { user } = useUser();
 
   if ( isSignedIn ) {
-    return redirect('/dashboard')
+    return redirect('/dashboard');
   }
   
   return (

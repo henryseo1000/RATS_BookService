@@ -4,15 +4,15 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
+  --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: 24, 45, 82;
+    --background-end-rgb: 24, 45, 82;
   }
 }
 
@@ -26,8 +26,15 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-main {
-  margin-left: 300px;
+.main_maximized {
+  margin-left: 340px;
+  padding-top: 20px;
+}
+
+.main_minimized {
+  margin-left: 140px;
+  padding-top: 20px;
+  transition-duration: 0.5s;
 }
 
 @layer utilities {
