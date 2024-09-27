@@ -78,6 +78,8 @@ function NavBar({
                     </SignOutButton>
                 </div>
 
+                <div className={st.divider}/>
+
                 <div className={st.link_section}>
                     {
                         pathList.map((item, index) => {
@@ -101,10 +103,7 @@ function NavBar({
                 </div>
 
                 <div className={st.additional_section}>
-                    {/* <div>
-                        <span>Check Out Events <br/> For September!</span>
-                        <ChevronsRight className={st.arrow_icon}/>
-                    </div> */}
+                    <span></span>
                 </div>
             </div>
 

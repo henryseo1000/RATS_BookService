@@ -1,14 +1,10 @@
 "use client";
 
-import { SignInButton, useAuth, useUser } from "@clerk/clerk-react";
-import { redirect } from "next/navigation";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
+import st from "./Home.module.scss";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
-
-  if ( isSignedIn ) {
-    return redirect('/dashboard');
-  }
   
   return (
     <div>

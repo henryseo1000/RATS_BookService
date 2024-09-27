@@ -8,14 +8,14 @@ interface LogoProps {
     useClick? : boolean
 }
 
-function Logo({ mode = 'light', useClick } : LogoProps) {
+function Logo({ mode = 'light', useClick = true } : LogoProps) {
   const router = useRouter();
 
   return (
     <div 
       className={st.logo_container}
       onClick={ useClick ? () => {
-        // router?.push({'/dashboard'});
+        router?.push('/');
       } :
       () => {}
     }

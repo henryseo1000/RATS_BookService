@@ -1,19 +1,5 @@
 @import "/src/styles/mixins.scss";
 
-@keyframes moveInCircle {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    50% {
-        transform: rotate(100deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
 @keyframes shiver {
     0% {
         transform: translateX(0px);
@@ -61,8 +47,7 @@
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 
     .nav_main {
-        display: flex;
-        flex-direction: column;
+        @include flex-column;
         width: 100%;
         height: 100%;
         gap: 20px;
@@ -90,17 +75,20 @@
                 font-size: 13px;
             }
         }
+
+        .divider {
+            display: none;
+        }
     
         .link_section {
-            display: flex;
-            flex-direction: column;
+            @include flex-column;
     
             .menu_list {
                 @include align-center;
                 position: relative;
                 width: 100%;
                 gap: 20px;
-                padding: 20px 50px;
+                padding: 10px 50px;
                 box-sizing: border-box;
                 cursor: pointer;
                 transition-duration: 0.5s;
@@ -121,6 +109,21 @@
                 &:hover > .bar {
                     width: 10px;
                 }
+
+                .menu_icon {
+                    @include justi-align-center;
+                    padding: 10px;
+                    box-sizing: border-box;
+                    border-radius: 10px;
+                    transition-duration: 0.2s;
+                }
+        
+                &:hover > .menu_icon {
+                    border-radius: 20px;
+                    background-color: #4787F5;
+                    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+                    scale: 1.1;
+                }
             }
         }
     
@@ -129,7 +132,8 @@
             padding: 7px 20px;
             border-radius: 4px;
             background-color: #fff;
-            color : #2A283F;
+            color : #182D52;
+            font-weight: 700;
             cursor: pointer;
             transition-duration: 0.5s;
 
@@ -219,6 +223,12 @@
         }
     }
 
+    .divider {
+        width: 100%;
+        height: 0.5px;
+        background-color: #fff;
+    }
+
     .link_section {
         @include flex-column-center;
         gap: 30px;
@@ -232,17 +242,17 @@
 
             .menu_icon {
                 @include justi-align-center;
-                padding: 14px;
+                padding: 10px;
                 box-sizing: border-box;
                 border-radius: 10px;
                 transition-duration: 0.2s;
-            
-                &:hover {
-                    border-radius: 20px;
-                    background-color: #4787F5;
-                    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-                    scale: 1.3;
-                }
+            }
+    
+            &:hover > .menu_icon {
+                border-radius: 20px;
+                background-color: #4787F5;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+                scale: 1.3;
             }
         }
     }
