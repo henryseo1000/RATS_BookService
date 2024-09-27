@@ -4,3 +4,5 @@ const navState = atom<boolean>({
     key : 'navState',
     default: false
 }); 
+
+export { navState };

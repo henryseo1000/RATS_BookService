@@ -7,7 +7,9 @@ import { redirect } from 'next/navigation';
 import { useAuth } from '@clerk/clerk-react';
 
 import "./globals.css";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { navState } from '@/state/NavState';
 
 export default function RouteLayout({
   children
@@ -16,6 +18,10 @@ export default function RouteLayout({
 }) {
   const [minimize, setMinimize] = useState<boolean>(false);
   const { isSignedIn } = useAuth();
+
+  useEffect(() => {
+
+  }, [])
 
   if ( !isSignedIn ) {
     return redirect('/');  

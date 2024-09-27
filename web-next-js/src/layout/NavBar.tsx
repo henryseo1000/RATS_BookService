@@ -6,6 +6,7 @@ import Logo from '@/components/main/Logo';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChartArea, Clock, User, Settings2, PartyPopper, ChevronsRight } from 'lucide-react';
+import { SetterOrUpdater } from 'recoil';
 
 export interface PathProps {
     path: string,
@@ -15,7 +16,7 @@ export interface PathProps {
 
 interface Props {
     isMinimized : boolean,
-    setMinimize : Dispatch<SetStateAction<boolean>>;
+    setMinimize : SetterOrUpdater<boolean>;
 }
 
 function NavBar({
@@ -23,7 +24,6 @@ function NavBar({
     setMinimize
 } 
     : Props) {
-    
     const router = useRouter();
     const location = usePathname();
     const { user } = useUser();
@@ -87,7 +87,7 @@ function NavBar({
 
                             return (
                                 <div 
-                                    className={isActive ? st.menu_list : st.menu_list} 
+                                    className={isActive ? st.menu_list_active : st.menu_list} 
                                     key={index}
                                     onClick={() => {
                                         router.push(item.path);
