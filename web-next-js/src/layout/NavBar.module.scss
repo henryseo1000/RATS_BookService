@@ -42,7 +42,7 @@
     border-radius: 25px;
     background: linear-gradient(45deg, #182D52, #112c5b, #1952b5, #23447d , #204079);
     background-size: 200% 200%;
-    animation: gradientMove 12s ease-in-out infinite;
+    animation: gradientMove 10s ease-in-out infinite;
     overflow-y: scroll;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 
@@ -56,7 +56,7 @@
         .profile_section {
             @include flex-column-center;
             width: 100%;
-            gap: 10px;
+            gap: 5px;
             margin: 25px 0px;
     
             img {
@@ -67,6 +67,12 @@
             span:nth-child(2) {
                 font-size: 18px;
                 font-weight: 700;
+                text-align: center;
+            }
+
+            span:nth-child(3) {
+                color: rgb(202, 201, 201);
+                font-size: 14px;
                 text-align: center;
             }
     
@@ -88,7 +94,7 @@
                 position: relative;
                 width: 100%;
                 gap: 20px;
-                padding: 10px 50px;
+                padding: 10px 35px;
                 box-sizing: border-box;
                 cursor: pointer;
                 transition-duration: 0.5s;
@@ -129,7 +135,7 @@
     
         .sign_out {
             @include justi-align-center;
-            padding: 7px 20px;
+            padding: 5px 20px;
             border-radius: 4px;
             background-color: #fff;
             color : #182D52;
@@ -194,7 +200,7 @@
         position: relative;
         width: 100%;
         gap: 20px;
-        padding: 10px 50px;
+        padding: 10px 35px;
         box-sizing: border-box;
         background-color: #1f50a4;
         cursor: pointer;
@@ -232,7 +238,7 @@
     border-radius: 25px;
     background: linear-gradient(45deg, #182D52, #112c5b, #1952b5, #23447d , #204079);
     background-size: 200% 200%;
-    animation: gradientMove 12s ease-in-out infinite;
+    animation: gradientMove 10s ease-in-out infinite;
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 

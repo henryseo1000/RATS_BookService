@@ -1,15 +1,14 @@
 "use client";
 
-import { Toaster } from 'sonner'
-
-import NavBar from "@/layout/NavBar";
+import { useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 import { useAuth } from '@clerk/clerk-react';
+import { Toaster } from 'sonner';
+
+import NavBar from "@/layout/NavBar";
 
 import "./globals.css";
-import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { navState } from '@/state/NavState';
+import SearchBar from '@/components/common/SearchBar';
 
 export default function RouteLayout({
   children
@@ -31,6 +30,7 @@ export default function RouteLayout({
     <div>
       <NavBar isMinimized={minimize} setMinimize={setMinimize}/>
       <main className={minimize ? "main_minimized" : "main_maximized"}>
+        <SearchBar/>
         <Toaster position="bottom-right"/>
         {children}
       </main>

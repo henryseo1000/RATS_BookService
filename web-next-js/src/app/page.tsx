@@ -1,9 +1,9 @@
 "use client";
 
 import { SignInButton, useAuth } from "@clerk/clerk-react";
-import st from "./Home.module.scss";
-import { useEffect } from "react";
 import { redirect } from "next/navigation";
+
+import st from "./Home.module.scss";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
@@ -14,11 +14,15 @@ export default function Home() {
 
   return (
     <div>
+      <div>
+        
+      </div>
 
-        <SignInButton>
-          <span>Log In</span>
-        </SignInButton>
-
+      <SignInButton>
+        <span>
+          Log In
+        </span>
+      </SignInButton>
     </div>
   );
 }

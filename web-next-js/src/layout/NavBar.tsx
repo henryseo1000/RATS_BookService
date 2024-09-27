@@ -3,7 +3,7 @@
 import React, { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react';
 import st from "./NavBar.module.scss";
 import Logo from '@/components/main/Logo';
-import { SignOutButton, useUser } from '@clerk/clerk-react';
+import { SignOutButton, UserButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChartArea, Clock, User, Settings2, PartyPopper, ChevronsRight } from 'lucide-react';
 import { SetterOrUpdater } from 'recoil';
