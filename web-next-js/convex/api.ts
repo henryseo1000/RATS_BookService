@@ -10,3 +10,9 @@ export const post_admin_account = query(async (ctx) => {
   console.log("give me data of admin_account");
   return await ctx.db.query("admin_account").take(10);
 })
+
+export const getBooks = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("book_info").collect();
+  }
+})

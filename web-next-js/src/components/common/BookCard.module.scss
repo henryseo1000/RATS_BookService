@@ -1,0 +1,15 @@
+.card_container {
+    display: flex;
+    width: 100%;
+    background-color: #d3d3d3;
+    overflow: hidden;
+
+    img {
+        width: 160px;
+    }
+
+    div {
+        display: flex;
+        width: 100%;
+    }
+}

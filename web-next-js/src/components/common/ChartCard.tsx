@@ -21,6 +21,8 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Table, TableCell, TableHeader, TableRow } from "../ui/table";
 
+import st from "./ChartCard.module.scss";
+
 interface ChartProps {
   title? : string | ReactElement,
   description? : string,
@@ -28,7 +30,8 @@ interface ChartProps {
   countVal? : number,
   fillColor? : string,
   chartInsideText? : string,
-  useTable? : boolean
+  useTable? : boolean,
+  footerText? : string
 }
 
 export function ChartCard( {
@@ -38,15 +41,16 @@ export function ChartCard( {
   countVal,
   fillColor,
   chartInsideText,
-  useTable
+  useTable,
+  footerText
 } : ChartProps ) {
   const chartData = [
-    { browser: "chrome", visitors: 200, fill: "var(--color-chrome)" },
+    { browser: "chrome", books: 200, fill: "var(--color-chrome)" },
   ];
 
   const chartConfig = {
-    visitors: {
-      label: "Visitors",
+    books: {
+      label: "Book Status",
     },
     chrome: {
       label: "Chrome",
@@ -55,18 +59,18 @@ export function ChartCard( {
   } satisfies ChartConfig;
 
   return (
-    <Card className="flex flex-col w-full min-w-[300px]">
-      <CardHeader className="pb-5">
+    <Card className={st.card_container}>
+      <CardHeader className={st.card_header}>
         <CardTitle>{title ? title : ""}</CardTitle>
         {
           description &&
           <CardDescription>{ description }</CardDescription>
         }
       </CardHeader>
-      <CardContent className="flex pb-0">
+      <CardContent className={st.card_content}>
         {
           useTable &&
-          <Table className="w-full">
+          <Table className={st.table_container}>
             <TableHeader>
               <TableRow>
                 <TableCell>책 이름</TableCell>
@@ -80,7 +84,7 @@ export function ChartCard( {
 
         <ChartContainer
           config={chartConfig}
-          className="min-w-[200px] mx-auto aspect-square max-h-[250px]"
+          className={st.chart_container}
         >
           <RadialBarChart
             data={chartData}
@@ -93,10 +97,10 @@ export function ChartCard( {
               gridType="circle"
               radialLines={false}
               stroke="none"
-              className="first:fill-muted last:fill-background"
+              className={st.polar_grid}
               polarRadius={[86, 74]}
             />
-            <RadialBar dataKey="visitors" background cornerRadius={10} />
+            <RadialBar dataKey="books" background cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
@@ -111,7 +115,7 @@ export function ChartCard( {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
+                          className={st.tspan}
                         >
                           {countVal && maxVal ? `${countVal} / ${maxVal}` : ""}
                           {countVal && !maxVal ? countVal : ""}
@@ -119,7 +123,7 @@ export function ChartCard( {
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
+                          className={st.tspan_2}
                         >
                           {chartInsideText ? chartInsideText : ""}
                         </tspan>
@@ -132,8 +136,8 @@ export function ChartCard( {
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <span></span>
+      <CardFooter className={st.card_footer}>
+        {footerText && <span>{footerText}</span>}
       </CardFooter>
     </Card>
   )

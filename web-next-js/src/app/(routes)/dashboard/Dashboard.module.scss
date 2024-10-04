@@ -8,4 +8,49 @@
         display: flex;
         gap: 20px;
     }
+
+    .calendar {
+        @include flex-column;
+        width: 100%;
+        overflow: hidden;
+
+        .calendar_header {
+            width: 100%;
+            padding-bottom: 20px;
+        }
+
+        .calendar_content {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            padding-bottom: 0px;
+
+            .calendar_main {
+                padding: 0px;
+                color: #182D52;
+                background-color: #fff;
+            }
+
+            .no_results {
+                @include flex-column-center;
+                width: 100%;
+                color: #d3d3d3;
+                user-select: none;
+            }
+        }
+    }
+
+    .recommand {
+        width: 100%;
+        max-width: 50%;
+
+        .recommand_header {
+            padding-bottom: 20px;
+        }
+
+        .recommand_content {
+            @include justi-align-center;
+            padding-bottom: 0px;
+        }
+    }
 }

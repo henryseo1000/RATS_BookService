@@ -1,14 +1,48 @@
-"use client"
+"use client";
 
-import ChartCard from "@/components/common/ChartCard";
-
-import st from './Dashboard.module.scss';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser } from '@clerk/clerk-react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import { Calendar } from "@/components/ui/calendar";
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+import ChartCard from "@/components/common/ChartCard";
+import { BookData } from '@/types/common/BookData';
+import BookCard from '@/components/common/BookCard';
+
+import st from './Dashboard.module.scss';
+import 'swiper/css';
 
 function Dashboard() {
   const { user } = useUser();
+
+  const bookData : BookData[] = [
+    {
+      title: "책 이름1",
+      description: "lorem ipsum",
+      imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
+    },
+    {
+      title: "책 이름2",
+      description: "lorem ipsum",
+      imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
+    },
+    {
+      title: "책 이름3",
+      description: "lorem ipsum",
+      imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
+    },
+    {
+      title: "책 이름4",
+      description: "lorem ipsum",
+      imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
+    },
+    {
+      title: "책 이름5",
+      description: "lorem ipsum",
+      imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
+    }
+  ]
 
   return (
     <div className={st.page_container}>
@@ -31,9 +65,9 @@ function Dashboard() {
         />
         <ChartCard 
           title={"대출된 책 권수"}
-          description={`${user?.username}님이 1개월동안 반납한 책 현황입니다`}
+          description={`${user?.username}님이 1개월동안 대출한 책 현황입니다`}
           countVal={30}
-          chartInsideText="1개월 동안 반납한 권수"
+          chartInsideText="1개월 동안 대출 권수"
         />
       </div>
 
@@ -70,6 +104,50 @@ function Dashboard() {
 
           <CardFooter>
             <span></span>
+          </CardFooter>
+        </Card>
+      </div>
+
+      <div className={st.status}>
+        <Card className={st.calendar}>
+          <CardHeader className={st.calendar_header}>
+            <CardTitle>오늘의 일정은?</CardTitle>
+            <CardDescription>책 반납 예정일, 이벤트 날짜 등을 알려드려요!</CardDescription>
+          </CardHeader>
+          <CardContent className={st.calendar_content}>
+              <Calendar className={st.calendar_main}/>
+              <div className={st.no_results}>
+                조회된 일정 없음
+              </div>
+          </CardContent>
+          <CardFooter>
+
+          </CardFooter>
+        </Card>
+
+        <Card className={st.recommand}>
+          <CardHeader className={st.recommand_header}>
+            <CardTitle>이 달의 추천도서</CardTitle>
+            <CardDescription>크롤링을 통한 추천 도서</CardDescription>
+          </CardHeader>
+          <CardContent className={st.recommand_content}>
+            <Swiper
+              spaceBetween={30}
+              slidesPerView={1}
+            >
+              {
+                bookData.map((item, index) => {
+                  return (
+                      <SwiperSlide key={index}>
+                        <BookCard data={item}/>
+                      </SwiperSlide>
+                  )
+                })
+              }
+            </Swiper>
+          </CardContent>
+          <CardFooter>
+            
           </CardFooter>
         </Card>
       </div>

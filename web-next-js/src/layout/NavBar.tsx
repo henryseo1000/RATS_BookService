@@ -1,11 +1,11 @@
 "use client";
 
-import React, { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import st from "./NavBar.module.scss";
 import Logo from '@/components/main/Logo';
-import { SignOutButton, UserButton, useUser } from '@clerk/clerk-react';
+import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChartArea, Clock, User, Settings2, PartyPopper, ChevronsRight } from 'lucide-react';
+import { ChartArea, Clock, User, Settings2, PartyPopper } from 'lucide-react';
 import { SetterOrUpdater } from 'recoil';
 
 export interface PathProps {
@@ -22,8 +22,7 @@ interface Props {
 function NavBar({
     isMinimized,
     setMinimize
-} 
-    : Props) {
+} : Props) {
     const router = useRouter();
     const location = usePathname();
     const { user } = useUser();
@@ -103,7 +102,7 @@ function NavBar({
                 </div>
 
                 <div className={st.additional_section}>
-                    <span></span>
+                    <span>Buy Me Coffee</span>
                 </div>
             </div>
 

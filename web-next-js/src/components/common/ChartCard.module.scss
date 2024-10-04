@@ -1,0 +1,57 @@
+@import "/src/styles/mixins.scss";
+
+.card_container {
+    @include flex-column;
+    width: 100%;
+
+    .card_header {
+        padding-bottom: 5px;
+    }
+
+    .card_content {
+        display: flex;
+        padding-bottom: 0px;
+
+        .table_container {
+            width: 100%;
+        }
+    }
+
+    .chart_container {
+        min-width: 200px;
+        max-height: 250px;
+        margin-left: auto;
+        margin-right: auto;
+        aspect-ratio: 1 / 1;
+
+        .polar_grid {
+            
+            &:first-child {
+                fill: hsl(var(--muted));
+            }
+
+            &:last-child {
+                fill: hsl(var(--background));
+            }
+        }
+
+        .tspan {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            fill: hsl(var(--foreground));
+            font-weight: 700;
+        }
+
+        .tspan_2 {
+            fill: hsl(var(--muted-foreground));
+        }
+    }
+
+    .card_footer {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+}

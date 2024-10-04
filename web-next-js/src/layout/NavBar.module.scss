@@ -39,11 +39,11 @@
     height: calc(100% - 40px);
     margin: 20px;
     border: 0.5px solid #23447d;
-    border-radius: 25px;
+    border-radius: 15px;
     background: linear-gradient(45deg, #182D52, #112c5b, #1952b5, #23447d , #204079);
     background-size: 200% 200%;
     animation: gradientMove 10s ease-in-out infinite;
-    overflow-y: scroll;
+    overflow: hidden;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 
     .nav_main {
@@ -151,6 +151,12 @@
         .additional_section {
             @include flex-column-center;
             gap: 20px;
+            padding: 15px;
+            margin: 30px 20px;
+            border-radius: 15px;
+            background-color: #fff;
+            color: #182D52;
+            cursor: pointer;
             
             div:nth-child(1) {
                 @include justi-align-center;
@@ -235,7 +241,7 @@
     padding: 30px;
     margin: 20px;
     border: 0.5px solid #23447d;
-    border-radius: 25px;
+    border-radius: 15px;
     background: linear-gradient(45deg, #182D52, #112c5b, #1952b5, #23447d , #204079);
     background-size: 200% 200%;
     animation: gradientMove 10s ease-in-out infinite;
