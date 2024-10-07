@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import pathToTitle from '@/utils/pathToTitle';
-import { Search } from 'lucide-react';
+import { Search, BookOpenText } from 'lucide-react';
 import { Button } from '../ui/button';
 
 import st from './SearchBar.module.scss';
@@ -16,7 +16,7 @@ function SearchBar() {
 
     return (
         <div className={st.search_container}>
-            <span>{pathToTitle(pathname)}</span>
+            <span>{pathToTitle(pathname.split('/')[1])}</span>
 
             { !pathname.includes('/booklist') && 
             <div className={st.bar_menu}>
@@ -27,6 +27,7 @@ function SearchBar() {
                     }}
                 >
                     See Book List
+                    <BookOpenText size={15}/>
                 </Button>
 
                 <div className={st.input_area}>

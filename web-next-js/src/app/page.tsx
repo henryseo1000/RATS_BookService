@@ -1,15 +1,15 @@
 "use client";
 
 import { SignInButton, useAuth } from "@clerk/clerk-react";
-import { redirect } from "next/navigation";
-
-import st from "./Home.module.scss";
+import { useConvexAuth } from "convex/react";
+import { redirect, usePathname, useRouter } from "next/navigation";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useConvexAuth();
 
-  if ( isSignedIn ) {
-    redirect('/dashboard')
+  if ( isAuthenticated && isSignedIn ) {
+    return redirect('/dashboard');
   }
 
   return (

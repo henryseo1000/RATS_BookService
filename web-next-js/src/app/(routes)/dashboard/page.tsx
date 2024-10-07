@@ -1,20 +1,27 @@
 "use client";
 
+import { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import SwiperCore from 'swiper';
+import { Autoplay, Pagination } from "swiper/modules";
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser } from '@clerk/clerk-react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
-import { Swiper, SwiperSlide } from 'swiper/react';
-
 import ChartCard from "@/components/common/ChartCard";
 import { BookData } from '@/types/common/BookData';
 import BookCard from '@/components/common/BookCard';
 
 import st from './Dashboard.module.scss';
 import 'swiper/css';
+import "swiper/css/pagination";
+import "swiper/css/autoplay";
+import { Button } from 'react-day-picker';
 
 function Dashboard() {
   const { user } = useUser();
+  const [ swiper, setSwiper ] = useState<SwiperCore>();
 
   const bookData : BookData[] = [
     {
@@ -39,7 +46,7 @@ function Dashboard() {
     },
     {
       title: "책 이름5",
-      description: "lorem ipsum",
+      description: "lorem ipsumdffsdfsdfsadfdfdsdfsdfadfasdfdsfsdfsdfsdfsdfsdfsdfsdfsdfasdfasdfasdfsdfsdfsdfdfsdfsdfdfsdf",
       imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
     }
   ]
@@ -92,18 +99,18 @@ function Dashboard() {
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell>Test1</TableCell>
-                  <TableCell>Test1</TableCell>
-                  <TableCell>Test1</TableCell>
-                  <TableCell>Test1</TableCell>
-                  <TableCell>Test1</TableCell>
+                  <TableCell>대출</TableCell>
+                  <TableCell>2024.10.01</TableCell>
+                  <TableCell>16:55</TableCell>
+                  <TableCell>총, 균, 쇠</TableCell>
+                  <TableCell>1234567890</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </CardContent>
 
           <CardFooter>
-            <span></span>
+            <span>더보기</span>
           </CardFooter>
         </Card>
       </div>
@@ -120,9 +127,7 @@ function Dashboard() {
                 조회된 일정 없음
               </div>
           </CardContent>
-          <CardFooter>
-
-          </CardFooter>
+          <CardFooter/>
         </Card>
 
         <Card className={st.recommand}>
@@ -132,11 +137,14 @@ function Dashboard() {
           </CardHeader>
           <CardContent className={st.recommand_content}>
             <Swiper
+              modules={[Autoplay, Pagination]}
               spaceBetween={30}
               slidesPerView={1}
+              autoplay={true}
+              onSwiper={setSwiper}
+              pagination={true}
             >
-              {
-                bookData.map((item, index) => {
+              { bookData.map((item, index) => {
                   return (
                       <SwiperSlide key={index}>
                         <BookCard data={item}/>
@@ -146,9 +154,6 @@ function Dashboard() {
               }
             </Swiper>
           </CardContent>
-          <CardFooter>
-            
-          </CardFooter>
         </Card>
       </div>
     </div>

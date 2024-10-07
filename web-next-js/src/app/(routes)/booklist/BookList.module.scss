@@ -11,8 +11,13 @@
 
     .table_container {
         padding: 20px;
+
         .table_header {
             background: #000;
+        }
+
+        .table_row {
+            cursor: pointer;
         }
     }
 
@@ -24,6 +29,10 @@
         .button {
             display: flex;
             gap: 5px;
+        }
+
+        .input {
+            max-width: 300px;
         }
     }
 

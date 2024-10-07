@@ -18,8 +18,10 @@
         gap: 20px;
 
         .button {
-            color: #182D52;
-            background-color: #fff;
+            @include justi-align-center;
+            gap: 10px;
+            color: #fff;
+            background-color: #307cff;
         }
 
         .input_area {

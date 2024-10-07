@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { Card } from '@/components/ui/card';
-
-import st from './BookList.module.scss';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { toast } from 'sonner';
 import { Search, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import {
     Pagination,
@@ -30,13 +31,18 @@ import {
   } from "@/components/ui/select"
 
   import { ChartCard } from "@/components/common/ChartCard";
+
+  import st from './BookList.module.scss';
   
 
 function BookList() {
     const getBooks = useMutation(api.api.getBooks);
     const [bookCount, setBookCount] = useState<number>(0);
     const [reservedCount, setReservedCount] = useState<number>(1);
+    const [input, setInput] = useState<string>("");
     const [list, setList] = useState<any[]>([]);
+
+    const router = useRouter();
 
     const handleBooks = () => {
         const bookPromise = getBooks().then(data => {
@@ -104,6 +110,15 @@ function BookList() {
                     </SelectContent>
                 </Select>
 
+                <Input 
+                    className={st.input}
+                    type="text"
+                    placeholder='Type ISBN or Book Title...'
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                    }}
+                />
+
                 <Button
                     onClick={() => {}}
                     className={st.button}
@@ -131,11 +146,17 @@ function BookList() {
                                 <TableCell>예약자</TableCell>
                             </TableRow>
                         </TableHeader>
-                        {list.length >= 1 ? 
+                        {list.length >= 1 &&
                             <TableBody>
                             {list.map((item, index) => {
                                 return (
-                                    <TableRow>
+                                    <TableRow
+                                        className={st.table_row}
+                                        key={index}
+                                        onClick={() => {
+                                            router.push(`/booklist/${item?._id}`);
+                                        }}
+                                    >
                                         <TableCell width={16.3}>{item?.status ? item?.status : "비치중"}</TableCell>
                                         <TableCell width={16.3}>{new Date(item?._creationTime).toLocaleDateString()}</TableCell>
                                         <TableCell width={16.3}>{item?.title}</TableCell>
@@ -146,11 +167,7 @@ function BookList() {
                             }) 
                             }
                             </TableBody>
-                            :
-                            <div className={st.no_data}>
-                                No Data Found
-                            </div>
-                      }
+                        }
                     </Table>
 
                 <Pagination>

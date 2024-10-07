@@ -1,15 +1,46 @@
+@import "/src/styles/mixins.scss";
+
 .card_container {
-    display: flex;
+    @include justi-align-center;
     width: 100%;
-    background-color: #d3d3d3;
+    background-color: #f4f4f4;
     overflow: hidden;
 
     img {
         width: 160px;
     }
 
-    div {
-        display: flex;
+    .content {
+        @include justi-align-center;
         width: 100%;
+        max-width: calc(100% - 160px);
+        padding: 0px 30px;
+        box-sizing: border-box;
+
+        div {
+            @include flex-column;
+            width: 100%;
+            max-width: calc(100% - 60px);
+
+            span {
+                color: #182D52;
+                font-size: 25px;
+                font-weight: 700;
+            }
+    
+            p {
+                -webkit-line-clamp: 3;
+                width: calc(100% - 160px);
+                color: #b0b0b0;
+                font-size: 15px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+        }
+
+        .arrow {
+            cursor: pointer;
+        }
     }
 }

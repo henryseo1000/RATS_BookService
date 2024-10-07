@@ -1,12 +1,14 @@
 "use client";
 
 import React, { ReactElement, useEffect } from 'react';
-import st from "./NavBar.module.scss";
-import Logo from '@/components/main/Logo';
+import { SetterOrUpdater } from 'recoil';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChartArea, Clock, User, Bookmark, PartyPopper, ScanBarcode } from 'lucide-react';
-import { SetterOrUpdater } from 'recoil';
+
+import Logo from '@/components/main/Logo';
+
+import st from "./NavBar.module.scss";
 
 export interface PathProps {
     path: string,
@@ -101,7 +103,12 @@ function NavBar({
                     }
                 </div>
 
-                <div className={st.additional_section}>
+                <div 
+                    className={st.additional_section}
+                    onClick={() => {
+                        router.push('/barcode')
+                    }}
+                >
                     <ScanBarcode/>
                     <span>Your Barcode</span>
                 </div>
