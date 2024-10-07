@@ -1,0 +1,24 @@
+@import "/src/styles/mixins.scss";
+
+.page_container {
+    @include flex-column;
+    gap: 20px;
+
+    .table_container {
+        padding: 20px;
+        .table_header {
+            background: #000;
+        }
+    }
+
+    .status {
+        @include justi-align-center;
+        max-width: 200px;
+        gap: 20px;
+        padding: 20px 30px;
+    }
+
+    .no_data {
+        min-height: 600px;
+    }
+}

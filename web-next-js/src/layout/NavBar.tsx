@@ -5,7 +5,7 @@ import st from "./NavBar.module.scss";
 import Logo from '@/components/main/Logo';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChartArea, Clock, User, Settings2, PartyPopper } from 'lucide-react';
+import { ChartArea, Clock, User, Bookmark, PartyPopper, ScanBarcode } from 'lucide-react';
 import { SetterOrUpdater } from 'recoil';
 
 export interface PathProps {
@@ -44,9 +44,9 @@ function NavBar({
             icon: <User />
         },
         {
-            path: '/settings',
-            menu: 'Settings',
-            icon: <Settings2 />
+            path: '/bookmark',
+            menu: 'Bookmark',
+            icon: <Bookmark />
         },
         {
             path: '/eventresults',
@@ -102,7 +102,8 @@ function NavBar({
                 </div>
 
                 <div className={st.additional_section}>
-                    <span>Buy Me Coffee</span>
+                    <ScanBarcode/>
+                    <span>Your Barcode</span>
                 </div>
             </div>
 

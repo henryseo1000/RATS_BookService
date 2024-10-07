@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import pathToTitle from '@/utils/pathToTitle';
 import { Search } from 'lucide-react';
@@ -10,6 +10,7 @@ import { Button } from '../ui/button';
 import st from './SearchBar.module.scss';
 
 function SearchBar() {
+    const router = useRouter();
     const [input, setInput] = useState<string>('');
     const pathname = usePathname();
 
@@ -18,8 +19,13 @@ function SearchBar() {
             <span>{pathToTitle(pathname)}</span>
 
             <div className={st.bar_menu}>
-                <Button>
-                    
+                <Button 
+                    className={st.button}
+                    onClick={() => {
+                        router.push('/booklist');
+                    }}
+                >
+                    See Book List
                 </Button>
 
                 <div className={st.input_area}>

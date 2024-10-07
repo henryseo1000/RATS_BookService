@@ -149,31 +149,14 @@
         }
 
         .additional_section {
-            @include flex-column-center;
-            gap: 20px;
+            @include justi-align-center;
+            gap: 5px;
             padding: 15px;
             margin: 30px 20px;
             border-radius: 15px;
             background-color: #fff;
             color: #182D52;
             cursor: pointer;
-            
-            div:nth-child(1) {
-                @include justi-align-center;
-                width: 250px;
-                height: 100px;
-                gap: 30px;
-                border-radius: 20px;
-                background: linear-gradient(#725AE0, #422da4);
-                font-size: 20px;
-                font-weight: 700;
-                cursor: pointer;
-                user-select: none;
-
-                &:hover > .arrow_icon {
-                    animation: shiver 0.5s infinite;
-                }
-            }
         }
     }
 
