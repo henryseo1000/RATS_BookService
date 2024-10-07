@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { Table, TableCell, TableHeader, TableRow } from "../ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table";
 
 import st from "./ChartCard.module.scss";
 
@@ -32,6 +32,7 @@ interface ChartProps {
   chartInsideText? : string,
   useTable? : boolean,
   footerText? : string
+  tableData? : any[]
 }
 
 export function ChartCard( {
@@ -42,7 +43,8 @@ export function ChartCard( {
   fillColor,
   chartInsideText,
   useTable,
-  footerText
+  footerText,
+  tableData = []
 } : ChartProps ) {
   const chartData = [
     { browser: "chrome", books: 200, fill: "var(--color-chrome)" },
@@ -75,10 +77,22 @@ export function ChartCard( {
               <TableRow>
                 <TableCell>책 이름</TableCell>
                 <TableCell>대출일</TableCell>
-                <TableCell>반납일</TableCell>
+                <TableCell>반납예정일</TableCell>
                 <TableCell>연장 횟수</TableCell>
               </TableRow>
             </TableHeader>
+            <TableBody>
+              {tableData.map((item, index) => {
+                return (
+                  <TableRow key={index}>
+                    <TableCell>책 이름</TableCell>
+                    <TableCell>대출일</TableCell>
+                    <TableCell>반납예정일</TableCell>
+                    <TableCell>연장 횟수</TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
           </Table>
         }
 

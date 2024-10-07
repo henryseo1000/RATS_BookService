@@ -36,7 +36,7 @@ import {
   
 
 function BookList() {
-    const getBooks = useMutation(api.api.getBooks);
+    const getBooks = useMutation(api.books.getBooks);
     const [bookCount, setBookCount] = useState<number>(0);
     const [reservedCount, setReservedCount] = useState<number>(1);
     const [input, setInput] = useState<string>("");
