@@ -18,6 +18,7 @@ function SearchBar() {
         <div className={st.search_container}>
             <span>{pathToTitle(pathname)}</span>
 
+            { !pathname.includes('/booklist') && 
             <div className={st.bar_menu}>
                 <Button 
                     className={st.button}
@@ -47,6 +48,7 @@ function SearchBar() {
                     />
                 </div>
             </div>
+        }
         </div>
     )
 }

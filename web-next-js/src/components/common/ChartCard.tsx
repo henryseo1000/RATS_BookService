@@ -89,7 +89,7 @@ export function ChartCard( {
           <RadialBarChart
             data={chartData}
             startAngle={0}
-            endAngle={(maxVal && countVal && maxVal !== 0) ? 360 * countVal / maxVal : 250}
+            endAngle={(maxVal && maxVal !== 0) ? 360 * countVal / maxVal : 250}
             innerRadius={80}
             outerRadius={110}
           >

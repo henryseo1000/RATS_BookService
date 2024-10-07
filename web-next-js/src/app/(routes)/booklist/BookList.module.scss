@@ -4,6 +4,11 @@
     @include flex-column;
     gap: 20px;
 
+    .status {
+        display: flex;
+        gap: 20px;
+    }
+
     .table_container {
         padding: 20px;
         .table_header {
@@ -11,11 +16,15 @@
         }
     }
 
-    .status {
+    .filter {
         @include justi-align-center;
-        max-width: 200px;
         gap: 20px;
         padding: 20px 30px;
+
+        .button {
+            display: flex;
+            gap: 5px;
+        }
     }
 
     .no_data {
