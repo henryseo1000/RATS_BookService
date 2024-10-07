@@ -1,0 +1,12 @@
+@import "/src/styles/mixins.scss";
+
+.logo_container {
+    @include justi-align-center;
+    width: 100%;
+    user-select: none;
+    cursor: pointer;
+
+    img {
+        width: 100px;
+    }
+}
