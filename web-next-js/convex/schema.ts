@@ -8,6 +8,7 @@ export default defineSchema({
     isbn: v.string(),
     publish_year: v.string(),
     reservation: v.optional(v.string()),
+    borrowed: v.optional(v.string()),
     title: v.string(),
     status: v.optional(v.string()),
     type: v.optional(v.string())
@@ -26,12 +27,12 @@ export default defineSchema({
   }),
   book_history: defineTable({
     student_id: v.string(),
-    isbn: v.string(),
-    type: v.string()
+    type: v.string(),
+    book_id: v.id("book_info")
   }),
   borrowed_list: defineTable({
     student_id: v.string(),
-    isbn: v.string()
+    book_id: v.id("book_info")
   }),
   reserved_list: defineTable({
     student_id: v.string(),

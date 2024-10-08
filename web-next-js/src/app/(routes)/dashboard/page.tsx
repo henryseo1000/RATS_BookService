@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Autoplay, Pagination } from "swiper/modules";
@@ -17,9 +17,13 @@ import st from './Dashboard.module.scss';
 import 'swiper/css';
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
-import { Button } from 'react-day-picker';
+import { useMutation } from 'convex/react';
+import { api } from '../../../../convex/_generated/api';
 
 function Dashboard() {
+  const getUserBorrowed = useMutation(api.books.getUserBorrowed);
+  const [borrowedData, setBorrowedData] = useState<any>({});
+
   const { user } = useUser();
   const [ swiper, setSwiper ] = useState<SwiperCore>();
 
@@ -49,7 +53,19 @@ function Dashboard() {
       description: "lorem ipsumdffsdfsdfsadfdfdsdfsdfadfasdfdsfsdfsdfsdfsdfsdfsdfsdfsdfasdfasdfasdfsdfsdfsdfdfsdfsdfdfsdf",
       imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
     }
-  ]
+  ];
+
+  const handleBorrowedData = () => {
+    
+  }
+
+  useEffect(() => {
+    getUserBorrowed({
+      student_id:"60211579"
+    }).then((data) => 
+      setBorrowedData(data)
+    );
+  }, []);
 
   return (
     <div className={st.page_container}>
@@ -58,9 +74,10 @@ function Dashboard() {
           title={"대출된 책 권수"} 
           description={`${user?.username}님의 대출 현황입니다`}
           maxVal={5}
-          countVal={2}
+          countVal={borrowedData.totalBorrowed}
           chartInsideText="대출됨"
           useTable
+          tableData={ borrowedData.borrowedList ? borrowedData.borrowedList : []}
         />
         <ChartCard 
           title={"예약된 책 권수"}
@@ -69,6 +86,7 @@ function Dashboard() {
           countVal={3}
           chartInsideText="예약됨"
           useTable
+          tableData={[]}
         />
         <ChartCard 
           title={"대출된 책 권수"}

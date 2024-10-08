@@ -4,7 +4,7 @@ import React, { ReactElement, useEffect } from 'react';
 import { SetterOrUpdater } from 'recoil';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChartArea, Clock, User, Bookmark, PartyPopper, ScanBarcode } from 'lucide-react';
+import { ChartArea, User, Paperclip, Bookmark, PartyPopper, ScanBarcode } from 'lucide-react';
 
 import Logo from '@/components/main/Logo';
 
@@ -36,9 +36,9 @@ function NavBar({
             icon: <ChartArea />
         },
         {
-            path: '/history',
-            menu: 'History',
-            icon: <Clock />
+            path: '/files',
+            menu: 'Files',
+            icon: <Paperclip />
         },
         {
             path: '/profile',

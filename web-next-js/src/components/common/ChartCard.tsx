@@ -22,6 +22,7 @@ import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table";
 
 import st from "./ChartCard.module.scss";
+import { Button } from "../ui/button";
 
 interface ChartProps {
   title? : string | ReactElement,
@@ -44,7 +45,7 @@ export function ChartCard( {
   chartInsideText,
   useTable,
   footerText,
-  tableData = []
+  tableData
 } : ChartProps ) {
   const chartData = [
     { browser: "chrome", books: 200, fill: "var(--color-chrome)" },
@@ -70,33 +71,7 @@ export function ChartCard( {
         }
       </CardHeader>
       <CardContent className={st.card_content}>
-        {
-          useTable &&
-          <Table className={st.table_container}>
-            <TableHeader>
-              <TableRow>
-                <TableCell>책 이름</TableCell>
-                <TableCell>대출일</TableCell>
-                <TableCell>반납예정일</TableCell>
-                <TableCell>연장 횟수</TableCell>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tableData.map((item, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell>책 이름</TableCell>
-                    <TableCell>대출일</TableCell>
-                    <TableCell>반납예정일</TableCell>
-                    <TableCell>연장 횟수</TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        }
-
-        <ChartContainer
+      <ChartContainer
           config={chartConfig}
           className={st.chart_container}
         >
@@ -132,6 +107,7 @@ export function ChartCard( {
                           className={st.tspan}
                         >
                           {countVal && maxVal ? `${countVal} / ${maxVal}` : ""}
+                          {!countVal && maxVal ? `0 / ${maxVal}` : ""}
                           {countVal && !maxVal ? countVal : ""}
                         </tspan>
                         <tspan
@@ -149,6 +125,42 @@ export function ChartCard( {
             </PolarRadiusAxis>
           </RadialBarChart>
         </ChartContainer>
+
+        {
+          useTable &&
+          <Table className={st.table_container}>
+            <TableHeader>
+              <TableRow>
+                <TableCell>책 이름</TableCell>
+                <TableCell>저자</TableCell>
+                <TableCell>반납예정일</TableCell>
+                <TableCell>연장</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              { tableData?.length >= 1 ?
+                tableData.map((item, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>{item?.title}</TableCell>
+                      <TableCell>{item?.author}</TableCell>
+                      <TableCell>{item?.book_id}</TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => {}}
+                        >
+                          연장
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              :
+                <span>No Data Found</span>
+            }
+            </TableBody>
+          </Table>
+        }
       </CardContent>
       <CardFooter className={st.card_footer}>
         {footerText && <span>{footerText}</span>}

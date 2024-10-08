@@ -17,7 +17,14 @@
         }
 
         .table_row {
-            cursor: pointer;
+
+            .book_title {
+                cursor: pointer;
+                
+                &:hover{
+                    font-weight: 700;
+                }
+            }
         }
     }
 
