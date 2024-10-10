@@ -22,12 +22,18 @@ import { api } from '../../../../convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { ColProps } from '@/types/common/colProps';
 import { useRouter } from 'next/navigation';
+import { getBookInfo } from '../../../../convex/books';
+import { Id } from '../../../../convex/_generated/dataModel';
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
   const getUserReserved = useMutation(api.books.getUserReserved);
+  const getUserHistory = useMutation(api.books.getUserHistory);
+  const getBookInfo = useMutation(api.books.getBookInfo);
+
   const [borrowedData, setBorrowedData] = useState<any>({});
   const [reservedData, setReservedData] = useState<any>({});
+  const [historyData, setHistoryData] = useState<any>({});
 
   const { user } = useUser();
   const router = useRouter();
@@ -94,6 +100,19 @@ function Dashboard() {
     },
   ]
 
+  const handleBookInfo = (bookId : string) => {
+    let buf : any;
+
+    getBookInfo({
+      book_id : bookId as Id<"book_info">
+    })
+    .then((data) => {
+      buf = data;
+    });
+
+    return buf;
+  }
+
   useEffect(() => {
     getUserBorrowed({
       student_id:"60211579"
@@ -106,6 +125,10 @@ function Dashboard() {
     }).then((data) => 
       setReservedData(data)
     );
+
+    getUserHistory().then((data) => {
+      setHistoryData(data)
+    });
   }, []);
 
   return (
@@ -159,13 +182,18 @@ function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell>대출</TableCell>
-                  <TableCell>2024.10.01</TableCell>
-                  <TableCell>16:55</TableCell>
-                  <TableCell>총, 균, 쇠</TableCell>
-                  <TableCell>1234567890</TableCell>
-                </TableRow>
+                {historyData?.historyList?.map((item, index) => {
+
+                  return (
+                  <TableRow key={index}>
+                    <TableCell>{item?.type}</TableCell>
+                    <TableCell>{new Date(item?._creationTime).toUTCString()}</TableCell>
+                    <TableCell>16:55</TableCell>
+                    <TableCell>{item?.book_id}</TableCell>
+                    <TableCell>1234567890</TableCell>
+                  </TableRow>
+                )
+                })}
               </TableBody>
             </Table>
           </CardContent>

@@ -26,12 +26,7 @@ export const getBookInfo = mutation({
     book_id : v.id("book_info")
   },
   handler: async (ctx, args) => {
-    const bookInfo = await ctx.db.query("book_info")
-    .filter((q) => 
-      q.eq(q.field("_id"), args.book_id)
-    )
-    .order("desc")
-    .collect()[0]!;
+    const bookInfo = await ctx.db.get(args.book_id)
 
     return bookInfo;
   }
@@ -39,7 +34,13 @@ export const getBookInfo = mutation({
 
 export const getUserHistory = mutation({
   handler: async (ctx) => {
+    const totalData = await ctx.db.query("book_history").order("desc").take(10);
+    const totalLength = await totalData.length;
 
+    return {
+      totalCount : totalLength,
+      historyList : totalData
+    }
   }
 })
 
@@ -54,17 +55,7 @@ export const getUserBorrowed = mutation({
       q.eq(q.field("student_id"), args.student_id)
     )
     .order("desc")
-    .collect()
-
-    await userBorrowed.map(async (item) => {
-      const book = await ctx.db.query("book_info")
-        .filter((q) => 
-          q.eq(q.field("_id"), item?.book_id)
-        )
-        .collect();
-        
-        booklist.push(await book[0]);
-    })
+    .collect();
 
     const totalBorrowed = await userBorrowed.length;
 
