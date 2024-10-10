@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useAuth } from '@clerk/clerk-react';
 import { Toaster } from 'sonner';
 
@@ -23,7 +23,7 @@ export default function RouteLayout({
   }, [])
 
   if ( !isSignedIn ) {
-    return redirect('/');  
+    return redirect('/');
   }
 
   return (

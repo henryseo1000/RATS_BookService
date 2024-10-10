@@ -166,7 +166,7 @@ function Dashboard() {
         <Card className={st.history}>
           <CardHeader>
             <CardTitle>
-              {user?.username}'s History
+              {user?.username}님의 히스토리입니다.
             </CardTitle>
           </CardHeader>
 
