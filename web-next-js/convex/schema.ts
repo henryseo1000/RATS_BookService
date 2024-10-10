@@ -11,7 +11,8 @@ export default defineSchema({
     borrowed: v.optional(v.string()),
     title: v.string(),
     status: v.optional(v.string()),
-    type: v.optional(v.string())
+    type: v.optional(v.string()),
+    bookmark_count: v.optional(v.number())
   }),
   file_list: defineTable({
     author: v.string(),
@@ -36,7 +37,7 @@ export default defineSchema({
   }),
   reserved_list: defineTable({
     student_id: v.string(),
-    isbn: v.string()
+    book_id: v.id("book_info")
   }),
   event_list: defineTable({
     title: v.string(),
@@ -53,5 +54,9 @@ export default defineSchema({
     title: v.string(),
     descrption: v.string(),
     imageUrl: v.string()
+  }),
+  bookmark_list: defineTable({
+    student_id: v.string(),
+    book_id: v.id("book_info")
   }),
 });

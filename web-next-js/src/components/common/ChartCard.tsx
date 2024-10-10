@@ -23,6 +23,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table"
 
 import st from "./ChartCard.module.scss";
 import { Button } from "../ui/button";
+import { ColProps } from "@/types/common/colProps";
 
 interface ChartProps {
   title? : string | ReactElement,
@@ -33,7 +34,8 @@ interface ChartProps {
   chartInsideText? : string,
   useTable? : boolean,
   footerText? : string
-  tableData? : any[]
+  tableData? : any[],
+  columnData? : ColProps[]
 }
 
 export function ChartCard( {
@@ -45,7 +47,8 @@ export function ChartCard( {
   chartInsideText,
   useTable,
   footerText,
-  tableData
+  tableData,
+  columnData
 } : ChartProps ) {
   const chartData = [
     { browser: "chrome", books: 200, fill: "var(--color-chrome)" },
@@ -131,10 +134,9 @@ export function ChartCard( {
           <Table className={st.table_container}>
             <TableHeader>
               <TableRow>
-                <TableCell>책 이름</TableCell>
-                <TableCell>저자</TableCell>
-                <TableCell>반납예정일</TableCell>
-                <TableCell>연장</TableCell>
+                { columnData?.map((item, index) => {
+                  return <TableCell key={index}>{item?.label}</TableCell>
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -19,51 +19,92 @@ import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
+import { Button } from '@/components/ui/button';
+import { ColProps } from '@/types/common/colProps';
+import { useRouter } from 'next/navigation';
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
+  const getUserReserved = useMutation(api.books.getUserReserved);
   const [borrowedData, setBorrowedData] = useState<any>({});
+  const [reservedData, setReservedData] = useState<any>({});
 
   const { user } = useUser();
+  const router = useRouter();
   const [ swiper, setSwiper ] = useState<SwiperCore>();
 
   const bookData : BookData[] = [
     {
-      title: "책 이름1",
-      description: "lorem ipsum",
+      title: "과학책 읽어주는 공대생",
+      description: "‘요즘 공대생’의 마음을 훔친 ‘과학 고전’ 18권을 소개하는 가이드북! 과학은 수식과 이론이 가득하고 첨단을 달리는 분야인데, 짧게는 수십 년, 길게는 수백 년 전에 쓰인 과학 고전들이 공대생의 마음을 사로잡은 이유는 무엇일까? 과학 고전 속엔 과학자들의 인간미 넘치는 이야기부터 지금의 이 세계를 만든 거대한 발견의 순간까지 지금껏 빛을 보지 못한 원석 같은 이야기들이 숨겨져 있다.과학 고전 읽기의 어려움을 잘 알고 있는 작가는 독자들이 자신과 같은 혼란을 겪지 않도록 18권의 과학책을 꼼꼼히 해설한다. 어렵게 느껴질 수 있는 과학 용어와 개념 설명은 물론, 소개하는 책의 작가와 시대적 배경에 대한 정보를 상세히 담았다. 공대생다운 발칙하고 신선한 발상들도 함께 느낄 수 있다. 이 책을 읽는 독자들은 친절한 공대생의 안내를 따라 지금의 세계를 만든 거대한 과학 지식들을 습득할 뿐만 아니라 매력적인 과학자의 세계를 들여다볼 수 있을 것이다.",
       imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
     },
     {
       title: "책 이름2",
-      description: "lorem ipsum",
+      description: "책에 대한 설명입니다. 참고해주세요.",
       imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
     },
     {
       title: "책 이름3",
-      description: "lorem ipsum",
+      description: "책에 대한 설명입니다. 참고해주세요.",
       imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
     },
     {
       title: "책 이름4",
-      description: "lorem ipsum",
+      description: "책에 대한 설명입니다. 참고해주세요.",
       imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
     },
     {
       title: "책 이름5",
-      description: "lorem ipsumdffsdfsdfsadfdfdsdfsdfadfasdfdsfsdfsdfsdfsdfsdfsdfsdfsdfasdfasdfasdfsdfsdfsdfdfsdfsdfdfsdf",
+      description: "책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.",
       imgPath: "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280"
     }
   ];
 
-  const handleBorrowedData = () => {
-    
-  }
+  const borrowCol : ColProps[] = [
+    {
+      label: "책 이름"
+    },
+    {
+      label: "날짜"
+    },
+    {
+      label: "저자"
+    },
+    {
+      label: "연장"
+    },
+    {
+      label: "반납"
+    }
+  ]
+
+  const reserveCol : ColProps[] = [
+    {
+      label: "책 이름"
+    },
+    {
+      label: "날짜"
+    },
+    {
+      label: "저자"
+    },
+    {
+      label: "취소"
+    },
+  ]
 
   useEffect(() => {
     getUserBorrowed({
       student_id:"60211579"
     }).then((data) => 
       setBorrowedData(data)
+    );
+
+    getUserReserved({
+      student_id:"60211579"
+    }).then((data) => 
+      setReservedData(data)
     );
   }, []);
 
@@ -78,15 +119,17 @@ function Dashboard() {
           chartInsideText="대출됨"
           useTable
           tableData={ borrowedData.borrowedList ? borrowedData.borrowedList : []}
+          columnData={borrowCol}
         />
         <ChartCard 
           title={"예약된 책 권수"}
           description={`${user?.username}님의 예약 현황입니다`}
           maxVal={5}
-          countVal={3}
+          countVal={reservedData.totalReserved}
           chartInsideText="예약됨"
           useTable
-          tableData={[]}
+          tableData={reservedData.reservedList ? reservedData.reservedList : []}
+          columnData={reserveCol}
         />
         <ChartCard 
           title={"대출된 책 권수"}
@@ -97,14 +140,14 @@ function Dashboard() {
       </div>
 
       <div>
-        <Card>
+        <Card className={st.history}>
           <CardHeader>
             <CardTitle>
               {user?.username}'s History
             </CardTitle>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className={st.history_content}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -128,7 +171,7 @@ function Dashboard() {
           </CardContent>
 
           <CardFooter>
-            <span>더보기</span>
+            <Button>더보기</Button>
           </CardFooter>
         </Card>
       </div>
@@ -164,9 +207,9 @@ function Dashboard() {
             >
               { bookData.map((item, index) => {
                   return (
-                      <SwiperSlide key={index}>
-                        <BookCard data={item}/>
-                      </SwiperSlide>
+                    <SwiperSlide key={index}>
+                      <BookCard data={item}/>
+                    </SwiperSlide>  
                   )
                 })
               }
@@ -174,8 +217,48 @@ function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className={st.files}>
+        <CardHeader className={st.file_header}>
+          <CardTitle>공유된 파일</CardTitle>
+          <CardDescription>구성원들이 공유한 파일들을 확인해보세요!</CardDescription>
+        </CardHeader>
+
+        <CardContent className={st.file_content}>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableCell>유형</TableCell>
+                  <TableCell>파일 크기</TableCell>
+                  <TableCell>날짜</TableCell>
+                  <TableCell>파일 이름</TableCell>
+                  <TableCell>파일 번호</TableCell>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell>이미지</TableCell>
+                  <TableCell>2.4MB</TableCell>
+                  <TableCell>2024.10.01</TableCell>
+                  <TableCell>동아리.pptx</TableCell>
+                  <TableCell>NO.13</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+
+          <CardFooter>
+            <Button
+              onClick={() => {
+                router.push('/files');
+              }}
+            >
+              더보기
+            </Button>
+          </CardFooter>
+      </Card>
     </div>
   )
 }
 
-export default Dashboard
+export default Dashboard;

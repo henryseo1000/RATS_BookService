@@ -46,4 +46,13 @@
     .no_data {
         min-height: 600px;
     }
+
+    .default_button {
+        min-width: 90px;
+    }
+
+    .activated_button {
+        min-width: 90px;
+        background-color: #ff4040;
+    }
 }
