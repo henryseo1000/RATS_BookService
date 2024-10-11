@@ -39,12 +39,16 @@ function BookList() {
     const getUserReserved = useMutation(api.books.getUserReserved);
     const returnBook = useMutation(api.books.returnBook);
     const cancelReservation = useMutation(api.books.cancelReservation);
+    const addBookmark = useMutation(api.books.addBookmark);
+    const cancelBookmark = useMutation(api.books.cancelBookmark);
+    const getUserBookmark = useMutation(api.books.getUserBookmark);
 
     const [bookCount, setBookCount] = useState<number>(0);
     const [reservedCount, setReservedCount] = useState<number>(0);
     const [borrowedCount, setBorrowedCount] = useState<number>(0);
     const [input, setInput] = useState<string>("");
-    const [list, setList] = useState<any[]>([]);
+    const [bookList, setBookList] = useState<any[]>([]);
+    const [bookmarkData, setBookmarkData] = useState<any[]>([]);
 
     const router = useRouter();
 
@@ -58,11 +62,20 @@ function BookList() {
                 return item.borrowed && item.borrowed !== "";
             }).length;
 
-            setList(data.bookList);
+            setBookList(data.bookList);
             setBookCount(data?.totalCount!);
             setReservedCount(reservedCount);
             setBorrowedCount(borrowedCount);
-        });
+        })
+        .then(() => {
+            getUserBookmark({
+                student_id: "60211579"
+            })
+            .then((data) => {
+                setBookmarkData(data.bookmarkList);
+            })
+        })
+
         toast.promise(bookPromise, {
             loading: "책 목록을 가져오는 중입니다...",
             success: "데이터베이스로부터 목록을 가져왔습니다!",
@@ -73,7 +86,8 @@ function BookList() {
     const handleBorrow = (bookId : string) => {
         getUserBorrowed({
             student_id : "60211579"
-        }).then((data) => {
+        })
+        .then((data) => {
             if (data.totalBorrowed >= 5) {
                 alert("대출 권수 초과입니다. 책 반납 후 다시 시도해주세요.");
             }
@@ -89,13 +103,15 @@ function BookList() {
                     error: "앗, 무언가 잘못된 것 같군요..."
                 })
             }
-        }).then(() =>  handleBooks())
+        })
+        .then(() =>  handleBooks())
     }
 
     const handleReserve = (bookId : string) => {
         getUserReserved({
             student_id : "60211579"
-        }).then((data) => {
+        })
+        .then((data) => {
             if (data.totalReserved >= 5) {
                 alert("예약 권수 초과입니다. 책 대출 또는 예약 취소 후 예약을 다시 시도해주세요.");
             }
@@ -111,14 +127,16 @@ function BookList() {
                     error: "앗, 무언가 잘못된 것 같군요..."
                 })
             }
-        }).then(() => handleBooks())
+        })
+        .then(() => handleBooks())
     }
 
     const handleReturn = (bookId : string) => {
         const returnPromise = returnBook({
             book_id : bookId as Id<"book_info">, 
             student_id: "60211579"
-        }).then(() => handleBooks())
+        })
+        .then(() => handleBooks())
 
         toast.promise(returnPromise, {
             loading: "반납 시도중...",
@@ -131,13 +149,45 @@ function BookList() {
         const cancelPromise = cancelReservation({
             book_id : bookId as Id<"book_info">,
             student_id: "60211579"
-        }).then(() => handleBooks())
+        })
+        .then(() => handleBooks())
 
         toast.promise(cancelPromise, {
             loading: "예약 취소 시도중...",
             success: "책을 예약 취소하였습니다",
             error: "앗, 무언가 잘못된 것 같군요..."
         })
+    }
+
+    const handleBookmark = (bookId : string) => {
+        getUserBookmark({
+            student_id: "60211579"
+        })
+        .then((data) => {
+            setBookmarkData(data.bookmarkList);
+        })
+        .then(() => {
+            if(bookmarkData.filter((item) => {
+                return item.book_id === bookId;
+            })?.length >= 1) {
+                cancelBookmark({
+                    book_id: bookId as Id<"book_info">,
+                    student_id: "60211579"
+                })
+            }
+            else {
+                const bookmarkPromise = addBookmark({
+                    book_id: bookId as Id<"book_info">,
+                    student_id: "60211579"
+                })
+        
+                toast.promise(bookmarkPromise, {
+                    loading: "북마크중...",
+                    success: "북마크하였습니다",
+                    error: "앗, 무언가 잘못된 것 같군요..."
+                })
+            }
+        }).then(() => handleBooks());
     }
 
     useEffect(() => {
@@ -239,9 +289,9 @@ function BookList() {
                                 <TableCell align='center'>북마크</TableCell>            
                             </TableRow>
                         </TableHeader>
-                        {list.length >= 1 ?
+                        {bookList.length >= 1 ?
                             <TableBody>
-                            { list.map((item) => {
+                            { bookList.map((item) => {
                                 return (
                                     <TableRow
                                         className={st.table_row}
@@ -296,7 +346,10 @@ function BookList() {
                                         </TableCell>
 
                                         <TableCell width={12.5} align='center'>
-                                            <Button className={st.default_button}>
+                                            <Button 
+                                                className={st.default_button}
+                                                onClick={() => handleBookmark(item?._id)}
+                                            >
                                                 <Bookmark size={20}/>
                                                 {item?.bookmark_count ? item?.bookmark_count : 0}
                                             </Button>

@@ -19,26 +19,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 
 import st from "./ChartCard.module.scss";
 import { Button } from "../ui/button";
-import { ColProps } from "@/types/common/colProps";
+import { ColProps } from "@/types/common/ColProps";
 
 interface ChartProps {
-  title? : string | ReactElement,
-  description? : string,
-  maxVal? : number,
-  countVal? : number,
-  fillColor? : string,
-  chartInsideText? : string,
-  useTable? : boolean,
-  footerText? : string
-  tableData? : any[],
-  columnData? : ColProps[]
+  title?: string | ReactElement;
+  description?: string;
+  maxVal?: number;
+  countVal?: number;
+  fillColor?: string;
+  chartInsideText?: string;
+  useTable?: boolean;
+  footerText?: string;
+  tableData?: any[];
+  columnData?: ColProps[];
 }
 
-export function ChartCard( {
+export function ChartCard({
   title,
   description,
   maxVal,
@@ -48,8 +54,8 @@ export function ChartCard( {
   useTable,
   footerText,
   tableData,
-  columnData
-} : ChartProps ) {
+  columnData,
+}: ChartProps) {
   const chartData = [
     { browser: "chrome", books: 200, fill: "var(--color-chrome)" },
   ];
@@ -60,7 +66,7 @@ export function ChartCard( {
     },
     chrome: {
       label: "Chrome",
-      color: fillColor ? fillColor : "hsl(var(--chart-2))"
+      color: fillColor ? fillColor : "hsl(var(--chart-2))",
     },
   } satisfies ChartConfig;
 
@@ -68,20 +74,14 @@ export function ChartCard( {
     <Card className={st.card_container}>
       <CardHeader className={st.card_header}>
         <CardTitle>{title ? title : ""}</CardTitle>
-        {
-          description &&
-          <CardDescription>{ description }</CardDescription>
-        }
+        {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className={st.card_content}>
-      <ChartContainer
-          config={chartConfig}
-          className={st.chart_container}
-        >
+        <ChartContainer config={chartConfig} className={st.chart_container}>
           <RadialBarChart
             data={chartData}
             startAngle={0}
-            endAngle={(maxVal && maxVal !== 0) ? 360 * countVal / maxVal : 250}
+            endAngle={maxVal && maxVal !== 0 ? (360 * countVal) / maxVal : 250}
             innerRadius={80}
             outerRadius={110}
           >
@@ -121,7 +121,7 @@ export function ChartCard( {
                           {chartInsideText ? chartInsideText : ""}
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -129,18 +129,17 @@ export function ChartCard( {
           </RadialBarChart>
         </ChartContainer>
 
-        {
-          useTable &&
+        {useTable && (
           <Table className={st.table_container}>
             <TableHeader>
               <TableRow>
-                { columnData?.map((item, index) => {
-                  return <TableCell key={index}>{item?.label}</TableCell>
+                {columnData?.map((item, index) => {
+                  return <TableCell key={index}>{item?.label}</TableCell>;
                 })}
               </TableRow>
             </TableHeader>
             <TableBody>
-              { tableData?.length >= 1 ?
+              {tableData?.length >= 1 ? (
                 tableData.map((item, index) => {
                   return (
                     <TableRow key={index}>
@@ -148,27 +147,23 @@ export function ChartCard( {
                       <TableCell>{item?.author}</TableCell>
                       <TableCell>{item?.book_id}</TableCell>
                       <TableCell>
-                        <Button
-                          onClick={() => {}}
-                        >
-                          연장
-                        </Button>
+                        <Button onClick={() => {}}>연장</Button>
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })
-              :
+              ) : (
                 <span>No Data Found</span>
-            }
+              )}
             </TableBody>
           </Table>
-        }
+        )}
       </CardContent>
       <CardFooter className={st.card_footer}>
         {footerText && <span>{footerText}</span>}
       </CardFooter>
     </Card>
-  )
+  );
 }
 
 export default ChartCard;

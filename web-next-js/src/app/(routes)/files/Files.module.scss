@@ -1,0 +1,46 @@
+@import "/src/styles/mixins.scss";
+
+.page_container {
+    @include flex-column;
+    gap: 20px;
+
+    .filter {
+        @include justi-align-center;
+        gap: 20px;
+        padding: 20px 30px;
+
+        .button {
+            display: flex;
+            gap: 5px;
+        }
+
+        .input {
+            max-width: 300px;
+        }
+    }
+
+    .files {
+
+        .file_content {
+
+            .table_header {
+                background-color: #ffffff;
+                font-weight: 700;
+            }
+
+            .file_name {
+                cursor: pointer;
+            }
+        }
+
+        .dialog_title {
+            display: flex;
+            padding-bottom: 20px;
+
+            span {
+                display: flex;
+                color: black !important;
+            }
+        }
+    }
+}

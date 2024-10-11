@@ -12,13 +12,15 @@ export default defineSchema({
     title: v.string(),
     status: v.optional(v.string()),
     type: v.optional(v.string()),
-    bookmark_count: v.optional(v.number())
+    bookmark_count: v.number()
   }),
   file_list: defineTable({
     author: v.string(),
     file_name: v.string(),
     file_size: v.number(),
-    description: v.string()
+    description: v.string(),
+    storageId: v.id("_storage"),
+    format: v.string()
   }),
   user_info: defineTable({
     name: v.string(),
@@ -56,7 +58,7 @@ export default defineSchema({
     imageUrl: v.string()
   }),
   bookmark_list: defineTable({
-    student_id: v.string(),
-    book_id: v.id("book_info")
+    book_id: v.id("book_info"),
+    student_id: v.string()
   }),
 });

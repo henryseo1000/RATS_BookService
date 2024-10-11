@@ -61,7 +61,7 @@ export const getUserBorrowed = mutation({
 
     return {
       totalBorrowed : totalBorrowed,
-      borrowedList : booklist
+      borrowedList : userBorrowed
     };
   }
 })
@@ -87,6 +87,27 @@ export const getUserReserved = mutation({
   }
 })
 
+export const getUserBookmark = mutation({
+  args: {
+    student_id: v.string()
+  },
+  handler: async (ctx, args) => {
+    const userBookmarks = await ctx.db.query("bookmark_list")
+    .filter((q) => 
+      q.eq(q.field("student_id"), args.student_id)
+    )
+    .order("desc")
+    .collect();
+
+    const totalBookmark = await userBookmarks.length;
+
+    return {
+      totalBookmark: totalBookmark,
+      bookmarkList : userBookmarks
+    };
+  }
+})
+
 export const borrowBook = mutation({
   args: {
     book_id: v.id("book_info"), 
@@ -96,10 +117,10 @@ export const borrowBook = mutation({
     const getBorrowedList = await ctx.db.insert("borrowed_list", {
       book_id: args.book_id,
       student_id: args.student_id
-    }).then((q) => 
+    }).then(() => 
       ctx.db.patch( args.book_id, { borrowed : args.student_id} )
     )
-    .then((q) => 
+    .then(() => 
       ctx.db.insert( "book_history", { 
         book_id : args.book_id,
         student_id : args.student_id,
@@ -120,9 +141,9 @@ export const reserveBook = mutation({
     const getReservedList = await ctx.db.insert("reserved_list", {
       book_id: args.book_id,
       student_id: args.student_id
-    }).then((q) => 
+    }).then(() => 
       ctx.db.patch(args.book_id, { reservation : args.student_id })
-    ).then((q) => 
+    ).then(() => 
       ctx.db.insert("book_history", { 
         book_id : args.book_id,
         student_id : args.student_id,
@@ -140,15 +161,15 @@ export const returnBook = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const returnReq = ctx.db.query("borrowed_list").filter((q) => {
+    const returnReq = await ctx.db.query("borrowed_list").filter((q) => {
       return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id)
     })
     .collect()
     .then((arr) => {
       const id = arr[0]._id
-      ctx.db.delete(id).then((q) => 
+      ctx.db.delete(id).then(() => 
         ctx.db.patch(args.book_id, { borrowed : "" })
-      ).then((q) => 
+      ).then(() => 
         ctx.db.insert("book_history", { 
           book_id : args.book_id,
           student_id : args.student_id,
@@ -167,15 +188,15 @@ export const cancelReservation = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const cancelReq = ctx.db.query("reserved_list").filter((q) => {
+    const cancelReq = await ctx.db.query("reserved_list").filter((q) => {
       return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id)
     })
     .collect()
     .then((arr) => {
       const id = arr[0]._id
-      ctx.db.delete(id).then((q) => 
+      ctx.db.delete(id).then(() => 
         ctx.db.patch(args.book_id, { reservation : "" })
-      ).then((q) => 
+      ).then(() => 
         ctx.db.insert("book_history", { 
           book_id : args.book_id,
           student_id : args.student_id,
@@ -185,5 +206,53 @@ export const cancelReservation = mutation({
     })
 
     return cancelReq;
+  }
+})
+
+export const addBookmark = mutation({
+  args: {
+    book_id: v.id("book_info"),
+    student_id: v.string()
+  },
+  handler: async (ctx, args) => {
+    const bookmarkReq = await ctx.db.insert("bookmark_list", {
+      book_id : args.book_id,
+      student_id : args.student_id
+    }).then(() => {
+      ctx.db.get(args.book_id).then((q) => {
+        ctx.db.patch(args.book_id, {
+          bookmark_count : q.bookmark_count + 1
+        })
+      })
+    })
+
+    return bookmarkReq;
+  }
+})
+
+export const cancelBookmark = mutation({
+  args: {
+    book_id: v.id("book_info"),
+    student_id: v.string()
+  },
+  handler: async (ctx, args) => {
+    const bookmarkReq = await ctx.db.query("bookmark_list")
+    .filter((q) => {
+      return q.eq(q.field("book_id"), args.book_id) && q.eq(q.field("student_id"), args.student_id)
+    })
+    .collect()
+    .then((q) => {
+      if (q.length > 0) {
+        ctx.db.delete(q[0]._id).then(() => {
+          ctx.db.get(args.book_id).then((q) => {
+            ctx.db.patch(args.book_id, {
+              bookmark_count : q.bookmark_count <= 0 ? 0 : q.bookmark_count - 1
+            })
+          })
+        })
+      }
+    })
+
+    return bookmarkReq;
   }
 })
