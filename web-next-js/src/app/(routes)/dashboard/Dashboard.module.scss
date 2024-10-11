@@ -4,6 +4,13 @@
     @include flex-column;
     gap: 20px;
 
+    .history {
+
+        .history_content {
+            min-height: 400px;
+        }
+    }
+
     .status {
         display: flex;
         gap: 20px;
@@ -51,6 +58,13 @@
         .recommand_content {
             @include justi-align-center;
             padding-bottom: 0px;
+        }
+    }
+
+    .files {
+
+        .file_header {
+            padding-bottom: 20px;
         }
     }
 }

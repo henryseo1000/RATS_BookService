@@ -6,7 +6,7 @@ function notFound() {
     <div className={st.page_container}>
       <img src="/image/404.png" alt="not-found-img" draggable={false}/>
       <span>OOPS!</span>
-      <span>We can't find a page you're looking for.</span>
+      <span>We can not find a page you are looking for.</span>
     </div>
   )
 }

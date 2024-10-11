@@ -10,7 +10,7 @@
     }
 
     .card_content {
-        display: flex;
+        @include flex-column;
         padding-bottom: 0px;
 
         .table_container {

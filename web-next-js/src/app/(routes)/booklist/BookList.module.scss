@@ -17,7 +17,14 @@
         }
 
         .table_row {
-            cursor: pointer;
+
+            .book_title {
+                cursor: pointer;
+                
+                &:hover{
+                    font-weight: 700;
+                }
+            }
         }
     }
 
@@ -38,5 +45,17 @@
 
     .no_data {
         min-height: 600px;
+    }
+
+    .default_button {
+        min-width: 90px;
+        gap: 10px;
+        background-color: #182D52;
+    }
+
+    .activated_button {
+        min-width: 90px;
+        gap: 10px;
+        background-color: #ff4040;
     }
 }

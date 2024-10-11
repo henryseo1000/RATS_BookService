@@ -2,27 +2,38 @@
 
 import { SignInButton, useAuth } from "@clerk/clerk-react";
 import { useConvexAuth } from "convex/react";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+
+import st from "./Home.module.scss";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
   const { isAuthenticated } = useConvexAuth();
+  const router = useRouter();
 
-  if ( isAuthenticated && isSignedIn ) {
+  if (isAuthenticated && isSignedIn) {
     return redirect('/dashboard');
   }
 
   return (
-    <div>
-      <div>
-        
-      </div>
+    <div className={st.page_container}>
+      {(isAuthenticated && isSignedIn) ?
+        <div
+          onClick={() => {
+            router.push("/dashboard")
+          }}
+        >
+          Go To DashBoard
+        </div>
 
-      <SignInButton>
-        <span>
-          Log In
-        </span>
-      </SignInButton>
+        :
+
+        <SignInButton>
+          <span>
+            Log In
+          </span>
+        </SignInButton>
+      }
     </div>
   );
 }

@@ -26,7 +26,7 @@ function SearchBar() {
                         router.push('/booklist');
                     }}
                 >
-                    See Book List
+                    도서 목록 조회하기
                     <BookOpenText size={15}/>
                 </Button>
 

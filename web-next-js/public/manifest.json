@@ -1,0 +1,27 @@
+{
+    "theme_color":"#25467f",
+    "background_color":"#25467f",
+    "icons":[
+        {
+            "purpose":"maskable",
+            "sizes":"512x512",
+            "src":"/icon512_maskable.png",
+            "type":"image/png"
+        },
+        {
+            "purpose":"any",
+            "sizes":"512x512",
+            "src":"/icon512_rounded.png",
+            "type":"image/png"
+        }
+    ],
+    "orientation":"any",
+    "display":"standalone",
+    "dir":"auto",
+    "lang":"ko",
+    "name":"Mr.Story",
+    "short_name":"Mr.Story",
+    "start_url":"/",
+    "scope":"/",
+    "description":"Mr.Story에 오신 것을 환영합니다."
+}

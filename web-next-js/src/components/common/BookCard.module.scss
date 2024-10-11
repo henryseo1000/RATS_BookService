@@ -20,20 +20,20 @@
         div {
             @include flex-column;
             width: 100%;
-            max-width: calc(100% - 60px);
 
             span {
-                color: #182D52;
-                font-size: 25px;
+                padding-bottom: 10px;
+                font-size: 23px;
                 font-weight: 700;
             }
     
             p {
                 -webkit-line-clamp: 3;
-                width: calc(100% - 160px);
+                -webkit-box-orient: vertical;
+                display: -webkit-box;
+                width: calc(100% - 60px);
                 color: #b0b0b0;
                 font-size: 15px;
-                white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
             }
