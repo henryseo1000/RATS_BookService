@@ -29,7 +29,7 @@ import {
 
 import st from "./ChartCard.module.scss";
 import { Button } from "../ui/button";
-import { ColProps } from "@/types/common/ColProps";
+import { ColProps } from "@/types/common/\bColProps";
 
 interface ChartProps {
   title?: string | ReactElement;

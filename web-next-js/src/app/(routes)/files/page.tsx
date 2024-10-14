@@ -23,7 +23,7 @@ import {
 
 
 import st from "./Files.module.scss";
-import { RotateCcw, Search } from 'lucide-react';
+import { RotateCcw, Search, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
@@ -182,6 +182,7 @@ function Files() {
                       }}
                     >
                       {item?.file_name}
+                      <Download className={st.icon} />
                     </TableCell>
                     <TableCell>NO.13</TableCell>
                   </TableRow>

@@ -33,10 +33,13 @@ import "swiper/css/autoplay";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
-import { ColProps } from "@/types/common/ColProps";
+
 import { useRouter } from "next/navigation";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { handleDownload } from "@/utils/handleDownload";
+import { Download } from "lucide-react";
+import { ColProps } from "@/types/common/\bColProps";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
@@ -44,6 +47,7 @@ function Dashboard() {
   const getUserHistory = useMutation(api.books.getUserHistory);
   const getBookInfo = useMutation(api.books.getBookInfo);
   const getFileList = useMutation(api.files.getFileList);
+  const generateDownloadURL = useMutation(api.files.generateDownloadURL);
 
   const [borrowedData, setBorrowedData] = useState<any>({});
   const [reservedData, setReservedData] = useState<any>({});
@@ -119,18 +123,6 @@ function Dashboard() {
       label: "취소",
     },
   ];
-
-  const handleBookInfo = (bookId: string) => {
-    let buf: any;
-
-    getBookInfo({
-      book_id: bookId as Id<"book_info">,
-    }).then((data) => {
-      buf = data;
-    });
-
-    return buf;
-  };
 
   useEffect(() => {
     const totalPromise = getUserBorrowed({
@@ -304,7 +296,7 @@ function Dashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {fileList.map((item, index) => {
+              {fileList.splice(0, 10).map((item, index) => {
                   return (
                   <TableRow key={index}>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
@@ -312,8 +304,15 @@ function Dashboard() {
                     <TableCell>{new Date(item?._creationTime)?.toDateString()}</TableCell>
                     <TableCell
                       className={st.file_name}
+                      onClick={async () => {
+                        await generateDownloadURL({ key: item?.storageId })
+                        .then((url) => {
+                          handleDownload(url, item?.file_name);
+                        })
+                      }}
                     >
                       {item?.file_name}
+                      <Download className={st.icon}/>
                     </TableCell>
                     <TableCell>NO.13</TableCell>
                   </TableRow>
