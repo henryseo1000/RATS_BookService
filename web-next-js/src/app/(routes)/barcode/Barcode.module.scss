@@ -1,0 +1,32 @@
+@import "/src/styles/mixins.scss";
+
+.page_container {
+    @include justi-align-center;
+    width: 100%;
+    min-height: 650px;
+    gap: 20px;
+    flex-direction: column;
+
+    .input_area {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 500px;
+        gap: 10px;
+
+        .slider {
+            width: 100%;
+        }
+    }
+
+    .button {
+        width: 100%;
+        max-width: 500px;
+        gap: 5px;
+        background-color: #307cff;
+
+        .icon {
+            width: 20px;
+        }
+    }
+}

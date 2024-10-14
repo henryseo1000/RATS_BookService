@@ -15,6 +15,13 @@
 
         .table_container {
             width: 100%;
+            border-radius: 5px;
+            overflow: hidden;
+
+            .table_header {
+                background-color: #f7f7f7;
+                font-weight: 700;
+            }
         }
     }
 

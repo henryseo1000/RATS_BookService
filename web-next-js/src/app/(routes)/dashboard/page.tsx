@@ -35,7 +35,6 @@ import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { ColProps } from "@/types/common/ColProps";
 import { useRouter } from "next/navigation";
-import { getBookInfo } from "../../../../convex/books";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 
@@ -50,6 +49,7 @@ function Dashboard() {
   const [reservedData, setReservedData] = useState<any>({});
   const [historyData, setHistoryData] = useState<any>({});
   const [fileList, setFileList] = useState<any[]>([]);
+  const [date, setDate] = useState<Date>(new Date());
 
   const { user } = useUser();
   const router = useRouter();
@@ -229,7 +229,11 @@ function Dashboard() {
           </CardContent>
 
           <CardFooter>
-            <Button>더보기</Button>
+            <Button
+              className={st.button}
+            >
+              더보기
+            </Button>
           </CardFooter>
         </Card>
       </div>
@@ -243,7 +247,12 @@ function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className={st.calendar_content}>
-            <Calendar className={st.calendar_main} />
+            <Calendar 
+              className={st.calendar_main} 
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+            />
             <div className={st.no_results}>조회된 일정 없음</div>
           </CardContent>
           <CardFooter />
@@ -298,9 +307,9 @@ function Dashboard() {
               {fileList.map((item, index) => {
                   return (
                   <TableRow key={index}>
-                    <TableCell>{item?.format}</TableCell>
+                    <TableCell>{item?.format?.split("/")[0]}</TableCell>
                     <TableCell>{item?.file_size}MB</TableCell>
-                    <TableCell>{item._creationTime}</TableCell>
+                    <TableCell>{new Date(item?._creationTime)?.toDateString()}</TableCell>
                     <TableCell
                       className={st.file_name}
                     >
@@ -315,6 +324,7 @@ function Dashboard() {
 
         <CardFooter>
           <Button
+            className={st.button}
             onClick={() => {
               router.push("/files");
             }}

@@ -66,5 +66,20 @@
         .file_header {
             padding-bottom: 20px;
         }
+
+        .file_content {
+
+            .file_name {
+                cursor: pointer;
+
+                &:hover {
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+
+    .button {
+        background-color: #307cff;
     }
 }

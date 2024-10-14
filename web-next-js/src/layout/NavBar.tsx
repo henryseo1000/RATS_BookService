@@ -69,7 +69,13 @@ function NavBar({
                 }
 
                 <div className={st.profile_section}>
-                    <img src={user?.imageUrl ? user.imageUrl : "/public/image/user.png"} alt="profile_image" />
+                    <img 
+                        src={user?.imageUrl ? user.imageUrl : "/public/image/user.png"} 
+                        alt="profile_image" 
+                        onClick={() => {
+                            router.push('/profile');
+                        }}
+                    />
                     <span>안녕하세요, {user?.username}님!</span>
                     <span>컴퓨터공학과 1학년</span>
                     <SignOutButton>

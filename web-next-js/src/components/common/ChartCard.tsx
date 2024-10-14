@@ -131,7 +131,7 @@ export function ChartCard({
 
         {useTable && (
           <Table className={st.table_container}>
-            <TableHeader>
+            <TableHeader className={st.table_header}>
               <TableRow>
                 {columnData?.map((item, index) => {
                   return <TableCell key={index}>{item?.label}</TableCell>;

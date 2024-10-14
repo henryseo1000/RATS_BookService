@@ -289,7 +289,7 @@ function BookList() {
                                 <TableCell align='center'>북마크</TableCell>            
                             </TableRow>
                         </TableHeader>
-                        {bookList.length >= 1 ?
+                        { bookList.length >= 1 ?
                             <TableBody>
                             { bookList.map((item) => {
                                 return (
@@ -333,6 +333,8 @@ function BookList() {
                                             item.reservation === "60211579" ? <Button className={st.activated_button} onClick={() => handleCancelRes(item?._id)}>예약 취소</Button> : `예약중 : ${item.reservation}` 
 
                                             : 
+                                            
+                                            item.borrowed !== "" && item.borrowed &&
 
                                             <Button
                                                 className={st.default_button}
@@ -356,8 +358,7 @@ function BookList() {
                                         </TableCell>
                                     </TableRow>
                                 )
-                            }) 
-                            }
+                            })}
                             </TableBody>
 
                             :
