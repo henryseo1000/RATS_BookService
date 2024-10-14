@@ -1,4 +1,6 @@
-import { mutation } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
+import { action, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const generateUploadUrl = mutation(async (ctx) => {
@@ -33,5 +35,14 @@ export const getFileList = mutation({
         const fileList = await ctx.db.query("file_list").collect();
 
         return fileList;
+    }
+})
+
+export const generateDownloadURL = mutation({
+    args: {
+        key: v.id("_storage")
+    },
+    handler: async (ctx, args) => {
+        return await ctx.storage.getUrl(args.key)
     }
 })

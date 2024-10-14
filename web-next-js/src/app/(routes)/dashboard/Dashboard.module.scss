@@ -66,5 +66,27 @@
         .file_header {
             padding-bottom: 20px;
         }
+
+        .file_content {
+
+            .file_name {
+                @include align-center;
+                gap: 5px;
+                text-decoration: underline;
+                cursor: pointer;
+
+                .icon {
+                    width: 15px;
+                }
+
+                &:hover {
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+
+    .button {
+        background-color: #307cff;
     }
 }

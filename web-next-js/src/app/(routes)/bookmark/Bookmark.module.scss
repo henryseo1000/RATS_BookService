@@ -24,25 +24,13 @@
         .file_content {
 
             .file_name {
-                @include align-center;
-                gap: 5px;
-                text-decoration: underline;
                 cursor: pointer;
-
-                .icon {
-                    width: 15px;
-                }
-
-                &:hover {
-                    font-weight: 700;
-                }
             }
         }
 
         .dialog_title {
             display: flex;
             padding-bottom: 20px;
-            color: black;
 
             span {
                 display: flex;

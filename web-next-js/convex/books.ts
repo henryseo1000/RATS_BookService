@@ -15,7 +15,14 @@ export const getBooks = mutation({
 
 export const getBookHistory = mutation({
   handler: async (ctx) => {
-    const totalData = await ctx.db.query("book_history").order("desc").collect()
+    const totalData = await ctx.db.query("book_history")
+    .order("desc")
+    .collect()
+    .then((datas) => {
+      const historyList = datas.map(() => {
+        return {}
+      })
+    })
 
     return totalData;
   }

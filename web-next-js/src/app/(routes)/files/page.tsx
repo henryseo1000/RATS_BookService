@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react'
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
@@ -23,21 +23,24 @@ import {
 
 
 import st from "./Files.module.scss";
-import { RotateCcw, Search, X } from 'lucide-react';
+import { RotateCcw, Search, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { toast } from 'sonner';
-import { generateUploadUrl } from '../../../../convex/files';
+import { handleDownload } from '@/utils/handleDownload';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const uploadFile = useMutation(api.files.uploadFile);
   const getFileList = useMutation(api.files.getFileList);
+  const generateDownloadURL = useMutation(api.files.generateDownloadURL);
 
   const [file, setFile] = useState<File>();
   const [input, setInput] = useState<string>("");
   const [fileList, setFileList] = useState<any[]>([]);
+
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const handleFileList = () => {
     const listPromise = getFileList().then((data) => {
@@ -59,7 +62,8 @@ function Files() {
       body: file
     })
 
-    const json = result.json().then((data) => {
+    const json = result.json()
+    .then((data) => {
       const { storageId } = data;
       uploadFile({
         author: "60211579",
@@ -70,8 +74,8 @@ function Files() {
         format: file.type
       })
     }).then(() => {
-      setFile(undefined);
       handleFileList();
+      setFile(undefined);
     })
 
     toast.promise(json, {
@@ -88,61 +92,61 @@ function Files() {
   return (
     <div className={st.page_container}>
       <Card className={st.filter}>
-                <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="유형" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="notBorrowed">이미지</SelectItem>
-                        <SelectItem value="borrowed">문서</SelectItem>
-                    </SelectContent>
-                </Select>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="유형" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="notBorrowed">이미지</SelectItem>
+            <SelectItem value="borrowed">문서</SelectItem>
+          </SelectContent>
+        </Select>
 
-                <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="분류" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="light">임베디드</SelectItem>
-                        <SelectItem value="dark">교양</SelectItem>
-                        <SelectItem value="system">물리</SelectItem>
-                    </SelectContent>
-                </Select>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="분류" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="light">임베디드</SelectItem>
+            <SelectItem value="dark">교양</SelectItem>
+            <SelectItem value="system">물리</SelectItem>
+          </SelectContent>
+        </Select>       
 
-                <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="예약 여부" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="reserved">예약자 있음</SelectItem>
-                        <SelectItem value="notReserved">예약자 없음</SelectItem>
-                    </SelectContent>
-                </Select>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="예약 여부" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="reserved">예약자 있음</SelectItem>
+            <SelectItem value="notReserved">예약자 없음</SelectItem>
+          </SelectContent>
+        </Select>
 
-                <Input
-                    className={st.input}
-                    type="text"
-                    placeholder='파일 이름으로 검색'
-                    onChange={(e) => {
-                        setInput(e.target.value);
-                    }}
-                />
+        <Input
+          className={st.input}
+          type="text"
+          placeholder='파일 이름으로 검색'
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
+        />
 
-                <Button
-                    className={st.button}
-                >
-                    검색
-                    <Search size={15}/>
-                </Button>
+        <Button
+          className={st.button}
+        >
+          검색
+          <Search size={15}/>
+        </Button>
 
-                <Button
-                    onClick={handleFileList}
-                    className={st.button}
-                >
-                    새로고침
-                    <RotateCcw size={15}/>
-                </Button>
-            </Card>
+        <Button
+          onClick={handleFileList}
+          className={st.button}
+        >
+          새로고침
+          <RotateCcw size={15}/>
+        </Button>
+      </Card>
 
       <Card className={st.files}>
         <CardHeader>
@@ -165,13 +169,20 @@ function Files() {
                 {fileList.map((item, index) => {
                   return (
                   <TableRow key={index}>
-                    <TableCell>{item?.format}</TableCell>
-                    <TableCell>{item?.file_size}MB</TableCell>
-                    <TableCell>{item._creationTime}</TableCell>
+                    <TableCell>{item?.format?.split("/")[0]}</TableCell>
+                    <TableCell>{item?.file_size}KB</TableCell>
+                    <TableCell>{new Date(item?._creationTime).toDateString()}</TableCell>
                     <TableCell
                       className={st.file_name}
+                      onClick={async () => {
+                        await generateDownloadURL({ key: item?.storageId })
+                        .then((url) => {
+                          handleDownload(url, item?.file_name);
+                        })
+                      }}
                     >
                       {item?.file_name}
+                      <Download className={st.icon} />
                     </TableCell>
                     <TableCell>NO.13</TableCell>
                   </TableRow>
@@ -185,16 +196,10 @@ function Files() {
               <DialogTrigger>
                 <Button>파일 등록</Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent ref={dialogRef}>
                 <DialogHeader>
                   <DialogTitle className={st.dialog_title}>
-                    <span>업로드할 파일을 선택해주세요.</span>
-                    <X 
-                      color='black'
-                      onClick={() => {
-
-                      }}
-                    />
+                    <span>업로드할 파일을 선택해주세요</span>
                   </DialogTitle>
                   
                   <DialogDescription>
