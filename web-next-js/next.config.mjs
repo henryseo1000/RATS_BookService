@@ -10,7 +10,7 @@ const nextConfig = withPWA({
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,
-  },
+  }
 });
 
 export default nextConfig;

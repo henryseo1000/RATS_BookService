@@ -49,11 +49,48 @@ function BookList() {
     const [input, setInput] = useState<string>("");
     const [bookList, setBookList] = useState<any[]>([]);
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
+    const [borrowedFilter, setBorrowedFilter] = useState<string>("total");
 
     const router = useRouter();
 
+    const handleSearch = async () => {
+        const searchPromise = getBooks()
+        .then((data) => {
+            const reservedCount = data.bookList.filter((item) => {
+                return item.reservation && item.reservation !== "";
+            }).length;
+    
+            const borrowedCount = data.bookList.filter((item) => {
+                return item.borrowed && item.borrowed !== "";
+            }).length;
+
+            setBookCount(data?.totalCount!);
+            setReservedCount(reservedCount);
+            setBorrowedCount(borrowedCount);
+
+            return data.bookList;
+        })
+        .then((booklist) => {
+            const titleSearch = booklist.filter((item) => {
+                return item?.title?.replace(" ", "").toLowerCase().includes(input);
+            })
+
+            return titleSearch;
+        }).then((data) => setBookList(data))
+
+        toast.promise(searchPromise, {
+            loading: "검색 중입니다...",
+            success: "검색 목록을 가져왔습니다!",
+            error: "앗, 무언가 잘못된 것 같군요..."
+        })
+    }
+
+    const handleFilter = () => {
+
+    }
+
     const handleBooks = () => {
-        const bookPromise = getBooks().then(data => {
+        const bookPromise = getBooks().then((data) => {
             const reservedCount = data.bookList.filter((item) => {
                 return item.reservation && item.reservation !== "";
             }).length;
@@ -219,11 +256,14 @@ function BookList() {
                 />
             </div>
             <Card className={st.filter}>
-                <Select>
+                <Select
+                    onValueChange={(value) => setBorrowedFilter(value)}
+                >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="상태" />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="total">전체</SelectItem>
                         <SelectItem value="notBorrowed">비치중</SelectItem>
                         <SelectItem value="borrowed">대출중</SelectItem>
                     </SelectContent>
@@ -261,6 +301,7 @@ function BookList() {
 
                 <Button
                     className={st.button}
+                    onClick={() => handleSearch()}
                 >
                     검색
                     <Search size={15}/>
@@ -313,7 +354,7 @@ function BookList() {
                                         <TableCell width={12.5} align='center'>
                                             { item?.borrowed ? 
 
-                                            item.borrowed === "60211579" ? <Button className={st.activated_button} onClick={() => handleReturn(item?._id)}>반납</Button> : `대출중 : ${item.reservation}` 
+                                            item.borrowed === "60211579" ? <Button className={st.activated_button} onClick={() => handleReturn(item?._id)}>반납</Button> : `대출중 : ${item.borrowed}` 
 
                                             : 
 
@@ -334,7 +375,7 @@ function BookList() {
 
                                             : 
                                             
-                                            item.borrowed !== "" && item.borrowed &&
+                                            (item.borrowed !== "" && item.borrowed && item.borrowed !== "60211579")  &&
 
                                             <Button
                                                 className={st.default_button}
@@ -372,7 +413,8 @@ function BookList() {
                         <PaginationItem>
                             <PaginationPrevious href="#" />
                         </PaginationItem>
-                        {   <PaginationItem>
+                        {   
+                        <PaginationItem>
                             <PaginationLink href="#">1</PaginationLink>
                         </PaginationItem>
                         }

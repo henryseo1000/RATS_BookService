@@ -1,0 +1,10 @@
+@import "/src/styles/mixins.scss";
+
+.page_container {
+    @include flex-column;
+
+    .header {
+        display: flex;
+        
+    }
+}

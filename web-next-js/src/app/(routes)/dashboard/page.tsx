@@ -151,7 +151,7 @@ function Dashboard() {
     toast.promise(totalPromise, {
       loading: "로딩중...",
       success: "데이터를 가져왔습니다.",
-      error: "서버에서 에러가 발생했습니다.",
+      error: "서버에서 에러가 발생했습니다."
     });
   }, []);
 
@@ -316,7 +316,7 @@ function Dashboard() {
                       {item?.file_name}
                       <Download className={st.icon} />
                     </TableCell>
-                    <TableCell>NO.13</TableCell>
+                    <TableCell>NO.{index + 1}</TableCell>
                   </TableRow>
                 );
               })}
