@@ -23,7 +23,7 @@ function Barcode() {
   }
 
   useEffect(() => {
-
+    
   }, [size]);
 
   return (

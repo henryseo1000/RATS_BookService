@@ -5,6 +5,7 @@ import { useConvexAuth } from "convex/react";
 import { redirect, useRouter } from "next/navigation";
 
 import st from "./Home.module.scss";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
@@ -29,9 +30,9 @@ export default function Home() {
         :
 
         <SignInButton>
-          <span>
+          <Button className={st.login_button}>
             Log In
-          </span>
+          </Button>
         </SignInButton>
       }
     </div>

@@ -120,7 +120,7 @@ function Dashboard() {
       label: "저자",
     },
     {
-      label: "취소",
+      label: "예약 취소",
     },
   ];
 
@@ -128,25 +128,27 @@ function Dashboard() {
     const totalPromise = getUserBorrowed({
       student_id: "60211579",
     })
-      .then((data) => setBorrowedData(data))
+    .then((data) => setBorrowedData(data))
 
-      .then(() =>
-        getUserReserved({
-          student_id: "60211579",
-        }).then((data) => setReservedData(data))
-      )
+    .then(() =>
+      getUserReserved({
+        student_id: "60211579",
+      }).then((data) => {
+        setReservedData(data)
+      })
+    )
 
-      .then(() =>
-        getUserHistory().then((data) => {
-          setHistoryData(data);
-        })
-      )
+    .then(() =>
+      getUserHistory().then((data) => {
+        setHistoryData(data);
+      })
+    )
 
-      .then(() =>
-        getFileList().then((data) => {
-          setFileList(data);
-        })
-      );
+    .then(() =>
+      getFileList().then((data) => {
+        setFileList(data);
+      })
+    );
 
     toast.promise(totalPromise, {
       loading: "로딩중...",

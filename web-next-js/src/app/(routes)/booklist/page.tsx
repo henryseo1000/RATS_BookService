@@ -54,8 +54,7 @@ function BookList() {
     const router = useRouter();
 
     const handleSearch = async () => {
-        const searchPromise = getBooks()
-        .then((data) => {
+        const searchPromise = getBooks().then((data) => {
             const reservedCount = data.bookList.filter((item) => {
                 return item.reservation && item.reservation !== "";
             }).length;
@@ -71,11 +70,13 @@ function BookList() {
             return data.bookList;
         })
         .then((booklist) => {
-            const titleSearch = booklist.filter((item) => {
-                return item?.title?.replace(" ", "").toLowerCase().includes(input);
+            const searchResult = booklist.filter((item) => {
+                return item?.title?.replace(" ", "").toLowerCase().includes(input)
+                    || item?.isbn?.replace(" ", "").toLowerCase().includes(input)
+                ;
             })
 
-            return titleSearch;
+            return searchResult;
         }).then((data) => setBookList(data))
 
         toast.promise(searchPromise, {
@@ -83,10 +84,6 @@ function BookList() {
             success: "검색 목록을 가져왔습니다!",
             error: "앗, 무언가 잘못된 것 같군요..."
         })
-    }
-
-    const handleFilter = () => {
-
     }
 
     const handleBooks = () => {
@@ -409,8 +406,12 @@ function BookList() {
                     </Table>
 
                 <Pagination>
-                    <PaginationContent onChange={(e) => {e.currentTarget.ariaValueText}}>
-                        <PaginationItem>
+                    <PaginationContent 
+                        onChange={(e) => {e.currentTarget.ariaValueText}}
+                    >
+                        <PaginationItem
+
+                        >
                             <PaginationPrevious href="#" />
                         </PaginationItem>
                         {   
