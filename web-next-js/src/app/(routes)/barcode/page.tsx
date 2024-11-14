@@ -15,16 +15,16 @@ function Barcode() {
 
   const getBarcode = () => {
     if (!url){
-      setUrl("http://bwipjs-api.metafloor.com/?bcid=code128&text=AB1234567890&scale=3&includetext&backgroundcolor=ffffff&padding=10");
+      setUrl("http://bwipjs-api.metafloor.com/?bcid=code128&text=MU60211579&scale=3&includetext&backgroundcolor=ffffff&padding=10");
     }
     else {
-      setUrl(undefined)
+      setUrl(undefined);
     }
   }
 
   useEffect(() => {
-    console.log(Number(size));
-  }, [size])
+    
+  }, [size]);
 
   return (
     <div className={st.page_container}>
@@ -52,7 +52,7 @@ function Barcode() {
           getBarcode();
         }}
       >
-        Generate URL
+        {url ? "Regenerate URL" : "Generate URL"}
         <Link className={st.icon}/>
       </Button>
 
@@ -60,7 +60,7 @@ function Barcode() {
           <Button
           className={st.button}
           onClick={() => {
-            handleDownload(url)
+            handleDownload(url);
           }}
         >
           Download Image
@@ -68,7 +68,7 @@ function Barcode() {
         </Button>
       }
     </div>
-  )
+  );
 }
 
-export default Barcode
+export default Barcode;

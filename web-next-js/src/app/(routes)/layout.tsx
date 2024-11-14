@@ -18,10 +18,6 @@ export default function RouteLayout({
   const [minimize, setMinimize] = useState<boolean>(false);
   const { isSignedIn } = useAuth();
 
-  useEffect(() => {
-
-  }, [])
-
   if ( !isSignedIn ) {
     return redirect('/');
   }

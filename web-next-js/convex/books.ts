@@ -1,4 +1,5 @@
-import { mutation } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { action, internalAction, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getBooks = mutation({
@@ -9,6 +10,18 @@ export const getBooks = mutation({
     return {
       totalCount : totalLength,
       bookList : totalData
+    }
+  }
+})
+
+export const recommandList = mutation({
+  handler: async (ctx) => {
+    const totalData = await ctx.db.query("recommand_books").order("desc").collect();
+    const totalLength = totalData.length;
+
+    return {
+      totalCount: totalLength,
+      bookList: totalData
     }
   }
 })
@@ -42,7 +55,7 @@ export const getBookInfo = mutation({
 export const getUserHistory = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_history").order("desc").take(10);
-    const totalLength = await totalData.length;
+    const totalLength = totalData.length;
 
     return {
       totalCount : totalLength,
@@ -56,7 +69,6 @@ export const getUserBorrowed = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    let booklist = [];
     const userBorrowed = await ctx.db.query("borrowed_list")
     .filter((q) => 
       q.eq(q.field("student_id"), args.student_id)
@@ -64,7 +76,7 @@ export const getUserBorrowed = mutation({
     .order("desc")
     .collect();
 
-    const totalBorrowed = await userBorrowed.length;
+    const totalBorrowed = userBorrowed.length;
 
     return {
       totalBorrowed : totalBorrowed,
@@ -124,9 +136,19 @@ export const borrowBook = mutation({
     const getBorrowedList = await ctx.db.insert("borrowed_list", {
       book_id: args.book_id,
       student_id: args.student_id
-    }).then(() => 
-      ctx.db.patch( args.book_id, { borrowed : args.student_id} )
-    )
+    }).then(() => {
+      ctx.db.get( args.book_id ).then((item) => {
+        if (item.reservation === args.student_id) {
+          ctx.db.patch( args.book_id, { 
+            borrowed : args.student_id,
+            reservation : ""
+          })
+        }
+        else {
+          ctx.db.patch( args.book_id, { borrowed : args.student_id } )
+        }
+      })
+    })
     .then(() => 
       ctx.db.insert( "book_history", { 
         book_id : args.book_id,
@@ -145,18 +167,27 @@ export const reserveBook = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const getReservedList = await ctx.db.insert("reserved_list", {
-      book_id: args.book_id,
-      student_id: args.student_id
-    }).then(() => 
-      ctx.db.patch(args.book_id, { reservation : args.student_id })
-    ).then(() => 
-      ctx.db.insert("book_history", { 
-        book_id : args.book_id,
-        student_id : args.student_id,
-        type: "예약"
-      })
-    )
+    const getReservedList = await ctx.db.get(args.book_id).then((data) => {
+      if(data.borrowed !== args.student_id) {
+        ctx.db.patch(args.book_id, { reservation : args.student_id } )
+        .then(() =>
+          ctx.db.insert("book_history", { 
+            book_id : args.book_id,
+            student_id : args.student_id,
+            type: "예약"
+          })
+        )
+        .then(() => {
+          ctx.db.insert("reserved_list", {
+            book_id: args.book_id,
+            student_id: args.student_id
+          })
+        })
+      }
+      else {
+        alert("본인이 대출한 책은 예약할 수 없습니다.");
+      }
+    })
 
     return getReservedList;
   }
@@ -261,5 +292,43 @@ export const cancelBookmark = mutation({
     })
 
     return bookmarkReq;
+  }
+})
+
+export const callApi = internalAction({
+  args: {
+    title: v.string(),
+    isbn: v.string()
+  },
+  handler: async (_, args) => {
+    const data = await fetch(`https://openapi.naver.com/v1/search/book_adv.json?${args.title ? `d_titl=${args.title}` : ""}${args.isbn ? `&d_isbn=${args.isbn}` : ""}`, {
+      method: "GET",
+      headers: {
+        "Accept": "*/*",
+        "X-Naver-Client-Id": process.env.NAVER_CLIENT_ID,
+        "X-Naver-Client-Secret": process.env.NAVER_CLIENT_SECRET
+      }
+    })
+
+    return data;
+  }
+})
+
+export const getApiCall = mutation({
+  args: {
+    key: v.id("book_info")
+  },
+  handler: async (ctx, args) => {
+    const bookData = await ctx.db.get(args.key);
+    const finalData = await ctx.scheduler.runAfter(0, internal.books.callApi, 
+      {
+        title: bookData.title, 
+        isbn: bookData.isbn ? bookData.isbn : ""
+      }
+    )
+
+    console.log(finalData);
+
+    return finalData;
   }
 })

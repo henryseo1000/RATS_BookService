@@ -23,10 +23,13 @@ export default defineSchema({
     format: v.string()
   }),
   user_info: defineTable({
-    name: v.string(),
+    user_id: v.string(),
+    user_name: v.string(),
+    real_name: v.string(),
     student_id: v.string(),
-    email: v.string(),
-    user_id: v.string()
+    major: v.string(),
+    grade: v.string(),
+    email: v.string()
   }),
   book_history: defineTable({
     student_id: v.string(),
@@ -55,7 +58,9 @@ export default defineSchema({
   recommand_books: defineTable({
     title: v.string(),
     descrption: v.string(),
-    imageUrl: v.string()
+    imageUrl: v.string(),
+    webUrl: v.optional(v.string()),
+    isbn: v.string()
   }),
   bookmark_list: defineTable({
     book_id: v.id("book_info"),

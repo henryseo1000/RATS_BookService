@@ -39,7 +39,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { handleDownload } from "@/utils/handleDownload";
 import { Download } from "lucide-react";
-import { ColProps } from "@/types/common/\bColProps";
+import { ColProps } from "@/types/common/ColProps";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
@@ -106,7 +106,7 @@ function Dashboard() {
     },
     {
       label: "연장",
-    }
+    },
   ];
 
   const reserveCol: ColProps[] = [
@@ -120,7 +120,7 @@ function Dashboard() {
       label: "저자",
     },
     {
-      label: "취소",
+      label: "예약 취소",
     },
   ];
 
@@ -130,26 +130,31 @@ function Dashboard() {
     })
     .then((data) => setBorrowedData(data))
 
-    .then(() => getUserReserved({
-      student_id: "60211579",
-    })
-    .then((data) => setReservedData(data)))
+    .then(() =>
+      getUserReserved({
+        student_id: "60211579",
+      }).then((data) => {
+        setReservedData(data)
+      })
+    )
 
-    .then (() => getUserHistory()
-      .then((data) => {
+    .then(() =>
+      getUserHistory().then((data) => {
         setHistoryData(data);
-    }))
+      })
+    )
 
-    .then(() => getFileList()
-      .then((data) => {
+    .then(() =>
+      getFileList().then((data) => {
         setFileList(data);
-    }))
+      })
+    );
 
     toast.promise(totalPromise, {
       loading: "로딩중...",
       success: "데이터를 가져왔습니다.",
       error: "서버에서 에러가 발생했습니다."
-    })
+    });
   }, []);
 
   return (
@@ -221,11 +226,7 @@ function Dashboard() {
           </CardContent>
 
           <CardFooter>
-            <Button
-              className={st.button}
-            >
-              더보기
-            </Button>
+            <Button className={st.button}>더보기</Button>
           </CardFooter>
         </Card>
       </div>
@@ -239,8 +240,8 @@ function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className={st.calendar_content}>
-            <Calendar 
-              className={st.calendar_main} 
+            <Calendar
+              className={st.calendar_main}
               mode="single"
               selected={date}
               onSelect={setDate}
@@ -297,26 +298,30 @@ function Dashboard() {
             </TableHeader>
             <TableBody>
               {fileList.splice(0, 10).map((item, index) => {
-                  return (
+                return (
                   <TableRow key={index}>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
                     <TableCell>{item?.file_size}MB</TableCell>
-                    <TableCell>{new Date(item?._creationTime)?.toDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(item?._creationTime)?.toDateString()}
+                    </TableCell>
                     <TableCell
                       className={st.file_name}
                       onClick={async () => {
-                        await generateDownloadURL({ key: item?.storageId })
-                        .then((url) => {
+                        await generateDownloadURL({
+                          key: item?.storageId,
+                        }).then((url) => {
                           handleDownload(url, item?.file_name);
-                        })
+                        });
                       }}
                     >
                       {item?.file_name}
-                      <Download className={st.icon}/>
+                      <Download className={st.icon} />
                     </TableCell>
-                    <TableCell>NO.13</TableCell>
+                    <TableCell>NO.{index + 1}</TableCell>
                   </TableRow>
-              )})}
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

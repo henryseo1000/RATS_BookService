@@ -29,6 +29,7 @@ import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { toast } from 'sonner';
 import { handleDownload } from '@/utils/handleDownload';
+import { Textarea } from '@/components/ui/textarea';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -39,6 +40,8 @@ function Files() {
   const [file, setFile] = useState<File>();
   const [input, setInput] = useState<string>("");
   const [fileList, setFileList] = useState<any[]>([]);
+  const [description, setDescription] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
 
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -62,27 +65,33 @@ function Files() {
       body: file
     })
 
-    const json = result.json()
+    result.json()
     .then((data) => {
       const { storageId } = data;
-      uploadFile({
+      const uploadPromise = uploadFile({
         author: "60211579",
         file_name: file.name,
         file_size: file.size,
-        description: "test",
+        description: description,
         storageId: storageId,
         format: file.type
+      })
+
+      toast.promise(uploadPromise, {
+        loading: "업로드 중...",
+        success: "업로드 성공!",
+        error: "앗... 업로드 도중 문제가 발생했습니다."
       })
     }).then(() => {
       handleFileList();
       setFile(undefined);
     })
+  }
 
-    toast.promise(json, {
-      loading: "업로드 중...",
-      success: "업로드 성공!",
-      error: "앗... 업로드 도중 문제가 발생했습니다."
-    })
+  const clearBuf = () => {
+    setOpen(!open)
+    setFile(undefined);
+    setDescription("");
   }
 
   useEffect(() => {
@@ -184,7 +193,7 @@ function Files() {
                       {item?.file_name}
                       <Download className={st.icon} />
                     </TableCell>
-                    <TableCell>NO.13</TableCell>
+                    <TableCell>NO.{index + 1}</TableCell>
                   </TableRow>
                 )})}
               </TableBody>
@@ -192,7 +201,9 @@ function Files() {
           </CardContent>
 
           <CardFooter>
-            <Dialog>
+            <Dialog
+              onOpenChange={() => clearBuf()}
+            >
               <DialogTrigger>
                 <Button>파일 등록</Button>
               </DialogTrigger>
@@ -204,27 +215,38 @@ function Files() {
                   
                   <DialogDescription>
                     <span>업로드한 파일은 Mr.Story 구성원 모두에게 공유됩니다.</span>
-                    <div>
-                      <Input
-                        type="file"
-                        placeholder='파일 이름으로 검색'
-                        onChange={(e) => {
-                          setFile(e.target.files![0]);
-                        }}
-                      />
-
-                      { file && 
-                        <Button
-                          onClick={() => {
-                            handleUpload(file);
-                          }}
-                        >
-                          업로드
-                        </Button>
-                      }
-                    </div>
                   </DialogDescription>
                 </DialogHeader>
+
+                <div className={st.input_area}>
+                    <Input
+                      type="file"
+                      placeholder='파일 이름으로 검색'
+                      onChange={(e) => {
+                        setFile(e.target.files![0]);
+                      }}
+                    />
+
+                    <Textarea 
+                      placeholder="파일에 대한 설명, 사용 방법 등을 적어주세요!" 
+                      onChange={(e) => {
+                        setDescription(e.target.value)
+                      }}
+                    />
+
+                    { file && 
+                      <Button
+                        onClick={() => {
+                          handleUpload(file)
+                          .then(() => {
+                            clearBuf()
+                          });
+                        }}
+                      >
+                        업로드
+                      </Button>
+                    }
+                  </div>
               </DialogContent>
             </Dialog>
           </CardFooter>
