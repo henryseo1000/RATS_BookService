@@ -12,20 +12,15 @@ export default function Home() {
   const { isAuthenticated } = useConvexAuth();
   const router = useRouter();
 
-  if (isAuthenticated && isSignedIn) {
-    return redirect('/dashboard');
-  }
-
   return (
     <div className={st.page_container}>
       {(isAuthenticated && isSignedIn) ?
-        <div
-          onClick={() => {
-            router.push("/dashboard")
-          }}
+        <Button 
+          className={st.login_button}
+          onClick={() => router.push('/dash ')}
         >
-          Go To DashBoard
-        </div>
+          Log In
+        </Button>
 
         :
 
