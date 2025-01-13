@@ -1,8 +1,6 @@
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 SplashScreen.preventAutoHideAsync();
 
 export default function HomeScreen() {

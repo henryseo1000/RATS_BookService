@@ -297,38 +297,27 @@ export const cancelBookmark = mutation({
 
 export const callApi = internalAction({
   args: {
-    title: v.string(),
-    isbn: v.string()
+    title: v.optional(v.string()),
+    isbn: v.optional(v.string())
   },
-  handler: async (_, args) => {
-    const data = await fetch(`https://openapi.naver.com/v1/search/book_adv.json?${args.title ? `d_titl=${args.title}` : ""}${args.isbn ? `&d_isbn=${args.isbn}` : ""}`, {
+  handler: async (ctx, args) => {
+    const data = await fetch(`https://openapi.naver.com/v1/search/book?${args.title ? `query=${args.title}` : ""}${args.isbn ? `&d_isbn=${args.isbn}` : ""}`, {
       method: "GET",
       headers: {
         "Accept": "*/*",
-        "X-Naver-Client-Id": process.env.NAVER_CLIENT_ID,
-        "X-Naver-Client-Secret": process.env.NAVER_CLIENT_SECRET
+        "X-Naver-Client-Id": process.env.NEXT_PUBLIC_API_KEY_NAVER_ID,
+        "X-Naver-Client-Secret": process.env.NEXT_PUBLIC_API_KEY_NAVER_PW
       }
     })
 
-    return data;
+    console.log(data);
+
+    return getBookApi(await data.json());
   }
 })
 
-export const getApiCall = mutation({
-  args: {
-    key: v.id("book_info")
-  },
-  handler: async (ctx, args) => {
-    const bookData = await ctx.db.get(args.key);
-    const finalData = await ctx.scheduler.runAfter(0, internal.books.callApi, 
-      {
-        title: bookData.title, 
-        isbn: bookData.isbn ? bookData.isbn : ""
-      }
-    )
+function getBookApi(data : any) {
+  const items = data.items;
 
-    console.log(finalData);
-
-    return finalData;
-  }
-})
+  return items !== null ? items : "오류가 발생했습니다.";
+}

@@ -17,7 +17,7 @@ export default function Home() {
       {(isAuthenticated && isSignedIn) ?
         <Button 
           className={st.login_button}
-          onClick={() => router.push('/dash ')}
+          onClick={() => router.push('/dashboard')}
         >
           Log In
         </Button>
