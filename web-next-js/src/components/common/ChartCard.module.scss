@@ -63,3 +63,9 @@
         line-height: 1.25rem;
     }
 }
+
+@media (max-width: 768px) {
+    .card_container {
+        max-width: 100%;
+    }
+}

@@ -330,3 +330,9 @@
         }
     }
 }
+
+@media (max-width: 768px){
+    .nav_container_max, .nav_container_min {
+        display: none;
+    }
+}

@@ -90,3 +90,15 @@
         background-color: #307cff;
     }
 }
+
+@media (max-width: 768px) {
+    .status {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .recommand {
+        max-width: none;
+        min-width: 100%;
+    }
+}

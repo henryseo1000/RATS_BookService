@@ -19,7 +19,7 @@ export default function Home() {
           className={st.login_button}
           onClick={() => router.push('/dashboard')}
         >
-          Log In
+          Go To DashBoard
         </Button>
 
         :
