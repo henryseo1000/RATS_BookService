@@ -59,3 +59,12 @@
         background-color: #ff4040;
     }
 }
+
+@media (max-width: 768px) {
+    .filter {
+        flex-direction: column;
+    }
+    .status {
+        overflow-x: scroll;
+    }
+}

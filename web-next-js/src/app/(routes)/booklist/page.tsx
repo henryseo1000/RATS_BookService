@@ -46,6 +46,7 @@ function BookList() {
     const [bookCount, setBookCount] = useState<number>(0);
     const [reservedCount, setReservedCount] = useState<number>(0);
     const [borrowedCount, setBorrowedCount] = useState<number>(0);
+    const [searchType, setSearchType] = useState<string>('');
     const [input, setInput] = useState<string>("");
     const [bookList, setBookList] = useState<any[]>([]);
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
@@ -74,6 +75,10 @@ function BookList() {
                 return item?.title?.replace(" ", "").toLowerCase().includes(input)
                     || item?.isbn?.replace(" ", "").toLowerCase().includes(input)
                 ;
+            }).filter((item) => {
+                return item?.type?.includes(searchType);
+            }).filter((item) => {
+                return item.status?.includes(borrowedFilter);
             })
 
             return searchResult;
@@ -224,6 +229,11 @@ function BookList() {
         }).then(() => handleBooks());
     }
 
+    const resetFilter = () => {
+        setBorrowedFilter('');
+        setSearchType('');
+    }
+
     useEffect(() => {
         handleBooks();
     }, [])
@@ -257,23 +267,29 @@ function BookList() {
                     onValueChange={(value) => setBorrowedFilter(value)}
                 >
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="상태" />
+                        <SelectValue 
+                            placeholder="상태" 
+                            defaultValue=""
+                        />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="total">전체</SelectItem>
-                        <SelectItem value="notBorrowed">비치중</SelectItem>
-                        <SelectItem value="borrowed">대출중</SelectItem>
+                        <SelectItem value="비치중">비치중</SelectItem>
+                        <SelectItem value="대출중">대출중</SelectItem>
                     </SelectContent>
                 </Select>
 
-                <Select>
+                <Select
+                    onValueChange={(value) => setSearchType(value)}
+                >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="분류" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="light">임베디드</SelectItem>
-                        <SelectItem value="dark">교양</SelectItem>
-                        <SelectItem value="system">물리</SelectItem>
+                        <SelectItem value="임베디드">임베디드</SelectItem>
+                        <SelectItem value="교양">교양</SelectItem>
+                        <SelectItem value="컴퓨터">컴퓨터</SelectItem>
+                        <SelectItem value="반도체">반도체</SelectItem>
+                        <SelectItem value="기계">기계</SelectItem>
                     </SelectContent>
                 </Select>
 
@@ -298,15 +314,15 @@ function BookList() {
 
                 <Button
                     className={st.button}
-                    onClick={() => handleSearch()}
+                    onClick={handleSearch}
                 >
                     검색
                     <Search size={15}/>
                 </Button>
 
                 <Button
-                    onClick={handleBooks}
                     className={st.button}
+                    onClick={handleBooks}
                 >
                     새로고침
                     <RotateCcw size={15}/>
@@ -409,18 +425,16 @@ function BookList() {
                     <PaginationContent 
                         onChange={(e) => {e.currentTarget.ariaValueText}}
                     >
-                        <PaginationItem
-
-                        >
+                        <PaginationItem>
                             <PaginationPrevious href="#" />
                         </PaginationItem>
-                        {   
+                        {
                         <PaginationItem>
                             <PaginationLink href="#">1</PaginationLink>
                         </PaginationItem>
                         }
                         <PaginationItem>
-                            <PaginationNext href="#" />
+                            <PaginationNext onClick={() => {}}/>
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>

@@ -37,6 +37,14 @@ body {
   transition-duration: 0.5s;
 }
 
+@media (max-width: 768px) {
+  .main_maximized, .main_minimized {
+    margin-left: 0px;
+    padding: 20px;
+    transition-duration: 0.5s;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

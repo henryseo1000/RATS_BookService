@@ -54,3 +54,11 @@
         }
     }
 }
+
+@media (max-width: 768px) {
+    .search_container {
+        .bar_menu {
+            display: none;
+        }
+    }
+}

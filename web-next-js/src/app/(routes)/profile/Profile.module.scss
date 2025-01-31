@@ -1,0 +1,17 @@
+@import "../../../styles/mixins.scss";
+
+.page_container {
+    @include justi-between;
+
+    .profile_header {
+        img {
+            width: 300px;
+            height: 300px;
+            border-radius: 150px;
+        }
+    }
+
+    .user_information {
+        
+    }
+}
