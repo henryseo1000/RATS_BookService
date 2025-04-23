@@ -30,12 +30,17 @@ export const getBookHistory = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_history")
     .order("desc")
-    .collect()
-    .then((datas) => {
-      const historyList = datas.map(() => {
-        return {}
-      })
-    })
+    .collect();
+    
+    // totalData.map(async (data) => {
+    //   const book = await ctx.db.get(data.book_id);
+
+    //   return {
+    //     ...data,
+    //     book_id: book.title,
+    //     book_isbn: book.isbn
+    //   }
+    // })
 
     return totalData;
   }
@@ -54,7 +59,20 @@ export const getBookInfo = mutation({
 
 export const getUserHistory = mutation({
   handler: async (ctx) => {
-    const totalData = await ctx.db.query("book_history").order("desc").take(10);
+    const totalData = await ctx.db.query("book_history")
+      .order("desc")
+      .collect()
+      .then((data) => {
+        const result = data.map((item) => { 
+
+          return {
+            ...item
+          }
+        })
+
+        return result;
+      });
+
     const totalLength = totalData.length;
 
     return {
@@ -135,7 +153,8 @@ export const borrowBook = mutation({
   handler: async (ctx, args) => {
     const getBorrowedList = await ctx.db.insert("borrowed_list", {
       book_id: args.book_id,
-      student_id: args.student_id
+      student_id: args.student_id,
+      extended: false
     }).then(() => {
       ctx.db.get( args.book_id ).then((item) => {
         if (item.reservation === args.student_id) {
@@ -295,29 +314,26 @@ export const cancelBookmark = mutation({
   }
 })
 
-export const callApi = internalAction({
+export const callNaverBookApi = action({
   args: {
     title: v.optional(v.string()),
     isbn: v.optional(v.string())
   },
   handler: async (ctx, args) => {
-    const data = await fetch(`https://openapi.naver.com/v1/search/book?${args.title ? `query=${args.title}` : ""}${args.isbn ? `&d_isbn=${args.isbn}` : ""}`, {
-      method: "GET",
-      headers: {
-        "Accept": "*/*",
-        "X-Naver-Client-Id": process.env.NEXT_PUBLIC_API_KEY_NAVER_ID,
-        "X-Naver-Client-Secret": process.env.NEXT_PUBLIC_API_KEY_NAVER_PW
+      const data = await fetch(`https://openapi.naver.com/v1/search/book_adv.json?${args.title ? `d_titl=${args.title}` : "d_titl="}${args.isbn ? `&d_isbn=${args.isbn}` : "d_isbn="}`, {
+        method: "GET",
+        headers: {
+          "Accept": "*/*",
+          "X-Naver-Client-Id": process.env.NEXT_PUBLIC_API_KEY_NAVER_ID,
+          "X-Naver-Client-Secret": process.env.NEXT_PUBLIC_API_KEY_NAVER_PW
+        }
+      })
+      
+      if (data.ok) {
+        return data.json();
       }
-    })
-
-    console.log(data);
-
-    return getBookApi(await data.json());
+      else {
+        return "Naver API 에러입니다."
+      }                                                                                                        
   }
 })
-
-function getBookApi(data : any) {
-  const items = data.items;
-
-  return items !== null ? items : "오류가 발생했습니다.";
-}

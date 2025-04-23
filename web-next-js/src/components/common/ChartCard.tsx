@@ -42,6 +42,9 @@ interface ChartProps {
   footerText?: string;
   tableData?: any[];
   columnData?: ColProps[];
+  onButtonClick?: () => void;
+  buttonText?: string
+  isButtonDisabled?: boolean
 }
 
 export function ChartCard({
@@ -55,6 +58,9 @@ export function ChartCard({
   footerText,
   tableData,
   columnData,
+  onButtonClick,
+  buttonText,
+  isButtonDisabled
 }: ChartProps) {
   const chartData = [
     { browser: "chrome", books: 200, fill: "var(--color-chrome)" },
@@ -147,7 +153,12 @@ export function ChartCard({
                       <TableCell>{item?.author}</TableCell>
                       <TableCell>{item?.book_id}</TableCell>
                       <TableCell>
-                        <Button onClick={() => {}}>연장</Button>
+                        <Button 
+                          disabled={isButtonDisabled ? isButtonDisabled : false} 
+                          onClick={onButtonClick ? onButtonClick : () => {}}
+                        >
+                          {buttonText ? buttonText : ""}
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );

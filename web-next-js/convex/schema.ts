@@ -38,7 +38,8 @@ export default defineSchema({
   }),
   borrowed_list: defineTable({
     student_id: v.string(),
-    book_id: v.id("book_info")
+    book_id: v.id("book_info"),
+    extended: v.boolean()
   }),
   reserved_list: defineTable({
     student_id: v.string(),
