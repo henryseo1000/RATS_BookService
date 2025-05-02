@@ -24,12 +24,10 @@ export default defineSchema({
   }),
   user_info: defineTable({
     user_id: v.string(),
-    user_name: v.string(),
     real_name: v.string(),
     student_id: v.string(),
     major: v.string(),
-    grade: v.string(),
-    email: v.string()
+    grade: v.string()
   }),
   book_history: defineTable({
     student_id: v.string(),
@@ -38,7 +36,8 @@ export default defineSchema({
   }),
   borrowed_list: defineTable({
     student_id: v.string(),
-    book_id: v.id("book_info")
+    book_id: v.id("book_info"),
+    extended: v.boolean()
   }),
   reserved_list: defineTable({
     student_id: v.string(),

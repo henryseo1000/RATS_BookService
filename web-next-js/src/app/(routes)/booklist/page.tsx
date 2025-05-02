@@ -46,11 +46,11 @@ function BookList() {
     const [bookCount, setBookCount] = useState<number>(0);
     const [reservedCount, setReservedCount] = useState<number>(0);
     const [borrowedCount, setBorrowedCount] = useState<number>(0);
-    const [searchType, setSearchType] = useState<string>('');
+    const [searchType, setSearchType] = useState<string>("");
     const [input, setInput] = useState<string>("");
     const [bookList, setBookList] = useState<any[]>([]);
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
-    const [borrowedFilter, setBorrowedFilter] = useState<string>("total");
+    const [borrowedFilter, setBorrowedFilter] = useState<string>("비치중");
 
     const router = useRouter();
 
@@ -229,11 +229,6 @@ function BookList() {
         }).then(() => handleBooks());
     }
 
-    const resetFilter = () => {
-        setBorrowedFilter('');
-        setSearchType('');
-    }
-
     useEffect(() => {
         handleBooks();
     }, [])
@@ -268,8 +263,8 @@ function BookList() {
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue 
-                            placeholder="상태" 
-                            defaultValue=""
+                            placeholder="비치중" 
+                            defaultValue="비치중"
                         />
                     </SelectTrigger>
                     <SelectContent>

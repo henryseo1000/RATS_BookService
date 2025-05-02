@@ -51,7 +51,7 @@ function Dashboard() {
 
   const [borrowedData, setBorrowedData] = useState<any>({});
   const [reservedData, setReservedData] = useState<any>({});
-  const [historyData, setHistoryData] = useState<any>({});
+  const [historyData, setHistoryData] = useState<any[]>([]);
   const [fileList, setFileList] = useState<any[]>([]);
   const [date, setDate] = useState<Date>(new Date());
 
@@ -140,13 +140,13 @@ function Dashboard() {
 
     .then(() =>
       getUserHistory().then((data) => {
-        setHistoryData(data);
+        setHistoryData(data.historyList.splice(0, 10));
       })
     )
 
     .then(() =>
       getFileList().then((data) => {
-        setFileList(data);
+        setFileList(data.splice(0, 5));
       })
     );
 
@@ -169,6 +169,7 @@ function Dashboard() {
           useTable
           tableData={borrowedData.borrowedList ? borrowedData.borrowedList : []}
           columnData={borrowCol}
+          buttonText="연장"
         />
         <ChartCard
           title={"예약된 책 권수"}
@@ -179,6 +180,7 @@ function Dashboard() {
           useTable
           tableData={reservedData.reservedList ? reservedData.reservedList : []}
           columnData={reserveCol}
+          buttonText="예약 취소"
         />
         <ChartCard
           title={"대출된 책 권수"}
@@ -208,16 +210,18 @@ function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {historyData?.historyList?.map((item, index) => {
+                {historyData?.map((item, index) => {
+                  const date = new Date(item?._creationTime);
+
                   return (
                     <TableRow key={index}>
                       <TableCell>{item?.type}</TableCell>
                       <TableCell>
-                        {new Date(item?._creationTime).toUTCString()}
+                        {date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일"}
                       </TableCell>
-                      <TableCell>16:55</TableCell>
-                      <TableCell>{item?.book_id}</TableCell>
-                      <TableCell>1234567890</TableCell>
+                      <TableCell>{date.getHours() + "시 " + date.getMinutes() + "분"}</TableCell>
+                      <TableCell>{item?.book_title}</TableCell>
+                      <TableCell>{item?.book_isbn}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -297,7 +301,7 @@ function Dashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {fileList.splice(0, 10).map((item, index) => {
+              {fileList.map((item, index) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>

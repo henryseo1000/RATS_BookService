@@ -1,5 +1,4 @@
-import { internal } from "./_generated/api";
-import { action, internalAction, mutation } from "./_generated/server";
+import { action, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getBooks = mutation({
@@ -30,12 +29,17 @@ export const getBookHistory = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_history")
     .order("desc")
-    .collect()
-    .then((datas) => {
-      const historyList = datas.map(() => {
-        return {}
-      })
-    })
+    .collect();
+    
+    // totalData.map(async (data) => {
+    //   const book = await ctx.db.get(data.book_id);
+
+    //   return {
+    //     ...data,
+    //     book_id: book.title,
+    //     book_isbn: book.isbn
+    //   }
+    // })
 
     return totalData;
   }
@@ -54,7 +58,20 @@ export const getBookInfo = mutation({
 
 export const getUserHistory = mutation({
   handler: async (ctx) => {
-    const totalData = await ctx.db.query("book_history").order("desc").take(10);
+    const totalData = await ctx.db.query("book_history")
+      .order("desc")
+      .collect()
+      .then((data) => {
+        const result = data.map((item) => { 
+
+          return {
+            ...item
+          }
+        })
+
+        return result;
+      });
+
     const totalLength = totalData.length;
 
     return {
@@ -135,7 +152,8 @@ export const borrowBook = mutation({
   handler: async (ctx, args) => {
     const getBorrowedList = await ctx.db.insert("borrowed_list", {
       book_id: args.book_id,
-      student_id: args.student_id
+      student_id: args.student_id,
+      extended: false
     }).then(() => {
       ctx.db.get( args.book_id ).then((item) => {
         if (item.reservation === args.student_id) {
@@ -150,12 +168,15 @@ export const borrowBook = mutation({
       })
     })
     .then(() => 
-      ctx.db.insert( "book_history", { 
+      ctx.db.insert("book_history", { 
         book_id : args.book_id,
         student_id : args.student_id,
         type: "대출"
-      } )
+      })
     )
+    .then(() => {
+      ctx.db.patch(args.book_id, { status : "대출중" })
+    })
 
     return getBorrowedList;
   }
@@ -214,6 +235,9 @@ export const returnBook = mutation({
           type: "반납"
         })
       )
+    })
+    .then(() => {
+      ctx.db.patch( args.book_id, { status : "비치중" })
     })
 
     return returnReq;
@@ -274,50 +298,45 @@ export const cancelBookmark = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const bookmarkReq = await ctx.db.query("bookmark_list")
+    const bookmarkReq = await ctx.db.query("bookmark_list") // bookmark_list에서 인자로 넘겨준 책 아이디와 학번을 확인하고, 일치하면 
     .filter((q) => {
       return q.eq(q.field("book_id"), args.book_id) && q.eq(q.field("student_id"), args.student_id)
     })
     .collect()
     .then((q) => {
-      if (q.length > 0) {
-        ctx.db.delete(q[0]._id).then(() => {
-          ctx.db.get(args.book_id).then((q) => {
-            ctx.db.patch(args.book_id, {
-              bookmark_count : q.bookmark_count <= 0 ? 0 : q.bookmark_count - 1
-            })
+      ctx.db.delete(q[0]._id).then(() => {
+        ctx.db.get(args.book_id).then((q) => {
+          ctx.db.patch(args.book_id, {
+            bookmark_count : q.bookmark_count - 1
           })
         })
-      }
+      })
     })
 
     return bookmarkReq;
   }
 })
 
-export const callApi = internalAction({
+export const callNaverBookApi = action({
   args: {
     title: v.optional(v.string()),
     isbn: v.optional(v.string())
   },
   handler: async (ctx, args) => {
-    const data = await fetch(`https://openapi.naver.com/v1/search/book?${args.title ? `query=${args.title}` : ""}${args.isbn ? `&d_isbn=${args.isbn}` : ""}`, {
-      method: "GET",
-      headers: {
-        "Accept": "*/*",
-        "X-Naver-Client-Id": process.env.NEXT_PUBLIC_API_KEY_NAVER_ID,
-        "X-Naver-Client-Secret": process.env.NEXT_PUBLIC_API_KEY_NAVER_PW
+      const data = await fetch(`https://openapi.naver.com/v1/search/book_adv.json?${args.title ? `d_titl=${args.title}` : "d_titl="}${args.isbn ? `&d_isbn=${args.isbn}` : "d_isbn="}`, {
+        method: "GET",
+        headers: {
+          "Accept": "*/*",
+          "X-Naver-Client-Id": process.env.NEXT_PUBLIC_API_KEY_NAVER_ID,
+          "X-Naver-Client-Secret": process.env.NEXT_PUBLIC_API_KEY_NAVER_PW
+        }
+      })
+      
+      if (data.ok) {
+        return data.json();
       }
-    })
-
-    console.log(data);
-
-    return getBookApi(await data.json());
+      else {
+        return "Naver API 에러입니다."
+      }                                                                                                        
   }
 })
-
-function getBookApi(data : any) {
-  const items = data.items;
-
-  return items !== null ? items : "오류가 발생했습니다.";
-}

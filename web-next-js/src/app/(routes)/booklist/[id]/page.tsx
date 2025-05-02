@@ -1,56 +1,71 @@
 'use client';
 
-import axios from 'axios';
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import st from "./BookInformation.module.scss";
 import { useEffect, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
-
+import { Book, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function BookInformation(props : any) {
     const getBookInfo = useMutation(api.books.getBookInfo);
+    const callBookApi = useAction(api.books.callNaverBookApi);
 
-    const [title, setTitle] = useState<string>("");
-
-    const CLINET_ID = process.env.NEXT_PUBLIC_API_KEY_NAVER_ID;
-    const CLINET_PW = process.env.NEXT_PUBLIC_API_KEY_NAVER_PW;
+    const [bookData, setBookData] = useState<any>();
 
     useEffect(() => {
         getBookInfo({ 
             book_id: props.params.id 
         }).then( async (data) => {
-            const apiData = await axios.get(`https://openapi.naver.com/v1/search/book_adv.json?${data.title ? `d_titl=${data.title}` : ""}${data.isbn ? `&d_isbn=${data.isbn}` : ""}`, {
-                method: "GET",
-                params: {
-                    d_titl: "hello"
-                },
-                headers: {
-                    "Accept": "*/*",
-                    "X-Naver-Client-Id": CLINET_ID,
-                    "X-Naver-Client-Secret": CLINET_PW,
-                }
+            const searchList = await callBookApi({
+                isbn : data.isbn
             })
 
-            return apiData;
-        })
-        .then((data) => {
-            console.log(data);
+            setBookData(searchList?.items[0]!);
         })
     }, []);
 
     return (
         <div className={st.page_container}>
-            <div className={st.header}>
-                {title}
-                <img src="" alt="" />
+            <span className={st.title}>
+                <Book/>
+                {bookData?.title}
+                에 대한 정보
+            </span>
 
-                <div>
-                
+            <div className={st.header}>
+                <div className={st.book_image_container}>
+                    
+                    <div
+                        className={st.search_cover}
+                    >
+                        <Search/>
+                    </div>
+
+                    <img
+                        src={bookData?.image} 
+                        alt="book_image" 
+                        onClick={() => window.open(bookData.link ? bookData.link : "")}
+                    />
+                </div>
+
+                <div
+                    className={st.book_info}
+                >
+                    <span>ISBN : {bookData?.isbn}</span>
+                    <span>저자 : {bookData?.author}</span>
+                    <span>출판사 : {bookData?.publisher}</span>
+                    <span>출판 일자 : {bookData?.pubdate}</span>
+                    <span>책 정보 : {bookData?.description}</span>
                 </div>
             </div>
 
-            <div>
-
+            <div
+                className={st.button_group}
+            >
+                <Button/>
+                <Button/>
+                <Button/>
             </div>
         </div>
     )
