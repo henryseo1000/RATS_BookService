@@ -24,12 +24,10 @@ export default defineSchema({
   }),
   user_info: defineTable({
     user_id: v.string(),
-    user_name: v.string(),
     real_name: v.string(),
     student_id: v.string(),
     major: v.string(),
-    grade: v.string(),
-    email: v.string()
+    grade: v.string()
   }),
   book_history: defineTable({
     student_id: v.string(),

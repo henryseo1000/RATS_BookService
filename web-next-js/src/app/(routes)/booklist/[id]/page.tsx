@@ -4,7 +4,7 @@ import { useAction, useMutation } from "convex/react";
 import st from "./BookInformation.module.scss";
 import { useEffect, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
-import { Book } from "lucide-react";
+import { Book, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function BookInformation(props : any) {
@@ -34,11 +34,20 @@ export default function BookInformation(props : any) {
             </span>
 
             <div className={st.header}>
-                <img 
-                    src={bookData?.image} 
-                    alt="book_image" 
-                    onClick={() => window.open(bookData.link ? bookData.link : "")}
-                />
+                <div className={st.book_image_container}>
+                    
+                    <div
+                        className={st.search_cover}
+                    >
+                        <Search/>
+                    </div>
+
+                    <img
+                        src={bookData?.image} 
+                        alt="book_image" 
+                        onClick={() => window.open(bookData.link ? bookData.link : "")}
+                    />
+                </div>
 
                 <div
                     className={st.book_info}

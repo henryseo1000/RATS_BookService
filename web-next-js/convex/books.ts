@@ -1,5 +1,4 @@
-import { internal } from "./_generated/api";
-import { action, internalAction, mutation } from "./_generated/server";
+import { action, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getBooks = mutation({
@@ -169,12 +168,15 @@ export const borrowBook = mutation({
       })
     })
     .then(() => 
-      ctx.db.insert( "book_history", { 
+      ctx.db.insert("book_history", { 
         book_id : args.book_id,
         student_id : args.student_id,
         type: "대출"
-      } )
+      })
     )
+    .then(() => {
+      ctx.db.patch(args.book_id, { status : "대출중" })
+    })
 
     return getBorrowedList;
   }
@@ -233,6 +235,9 @@ export const returnBook = mutation({
           type: "반납"
         })
       )
+    })
+    .then(() => {
+      ctx.db.patch( args.book_id, { status : "비치중" })
     })
 
     return returnReq;
@@ -293,21 +298,19 @@ export const cancelBookmark = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const bookmarkReq = await ctx.db.query("bookmark_list")
+    const bookmarkReq = await ctx.db.query("bookmark_list") // bookmark_list에서 인자로 넘겨준 책 아이디와 학번을 확인하고, 일치하면 
     .filter((q) => {
       return q.eq(q.field("book_id"), args.book_id) && q.eq(q.field("student_id"), args.student_id)
     })
     .collect()
     .then((q) => {
-      if (q.length > 0) {
-        ctx.db.delete(q[0]._id).then(() => {
-          ctx.db.get(args.book_id).then((q) => {
-            ctx.db.patch(args.book_id, {
-              bookmark_count : q.bookmark_count <= 0 ? 0 : q.bookmark_count - 1
-            })
+      ctx.db.delete(q[0]._id).then(() => {
+        ctx.db.get(args.book_id).then((q) => {
+          ctx.db.patch(args.book_id, {
+            bookmark_count : q.bookmark_count - 1
           })
         })
-      }
+      })
     })
 
     return bookmarkReq;

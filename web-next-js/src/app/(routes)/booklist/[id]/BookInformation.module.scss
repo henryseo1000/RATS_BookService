@@ -25,11 +25,33 @@
         box-sizing: border-box;
         border-radius: 10px;
         background-color: #1952b5;
-        
-        img {
-            width: 25%;
+
+        .book_image_container {
+            @include align-center;
             border-radius: 10px;
-            cursor: pointer;
+            overflow: hidden;
+
+            .search_cover {
+                @include justi-align-center;
+                display: none;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            img {
+                width: 100%;
+                cursor: pointer;
+                transition-duration: 1s;
+    
+                &:hover {
+                    scale: 1.05;
+                }
+                &:hover ~ .search_cover {
+                    display: flex;
+                }
+            }
         }
 
         .book_info {

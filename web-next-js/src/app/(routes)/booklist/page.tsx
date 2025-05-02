@@ -229,11 +229,6 @@ function BookList() {
         }).then(() => handleBooks());
     }
 
-    const resetFilter = () => {
-        setBorrowedFilter('');
-        setSearchType('');
-    }
-
     useEffect(() => {
         handleBooks();
     }, [])
