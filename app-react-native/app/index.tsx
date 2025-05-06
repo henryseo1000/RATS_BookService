@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnBoarding1 from "./(onboard)/OnBoarding1";
 import OnBoarding2 from "./(onboard)/OnBoarding2";
 import Login from "./(onboard)/Login";
-import Header from "@/components/navigation/Header";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +29,7 @@ export default function Main(){
             <Stack.Screen options={{headerShown: false}} name="OnBoardingScreen2" component={OnBoarding2} />
             <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
           </Stack.Navigator>
-          )
-            
+        )
+
     )
 }

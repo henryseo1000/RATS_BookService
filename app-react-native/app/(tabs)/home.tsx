@@ -9,8 +9,8 @@ SplashScreen.preventAutoHideAsync();
 export default function HomeScreen() {
 
   return (
-    <View>
-      <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <ScrollView style={styles.scroll}>
         <Text style={styles.text}>
           SplashScreen Demo!
           <HelloWave size={20} lineHeight={0} marginTop={0}/>
@@ -22,6 +22,11 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container : {
+    display: "flex",
+  },
+  scroll : {
+    display: "flex",
+    height: "100%",
     padding: 30
   },
   text : {

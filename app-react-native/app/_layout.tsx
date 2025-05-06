@@ -1,6 +1,5 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, NavigationContainer, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { ConvexReactClient } from "convex/react";
 import { useEffect } from 'react';
@@ -9,13 +8,15 @@ import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import * as SecureStore from 'expo-secure-store';
+import { EXPO_PUBLIC_CONVEX_URL, EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY } from "@env";
+import { Stack } from 'expo-router';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL as string);
+const convex = new ConvexReactClient(EXPO_PUBLIC_CONVEX_URL);
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const publishableKey = EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 const tokenCache = {
   async getToken(key: string) {
@@ -65,14 +66,14 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ClerkProvider publishableKey={publishableKey}>
-      <ClerkLoaded>
-      <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false}} />
-            <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }}/>
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ConvexProviderWithClerk>
+        <ClerkLoaded>
+          <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false}}/>
+                <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }}/>
+                <Stack.Screen name="+not-found"/>
+              </Stack>
+          </ConvexProviderWithClerk>
         </ClerkLoaded>
       </ClerkProvider>
     </ThemeProvider>

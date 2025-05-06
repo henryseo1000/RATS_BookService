@@ -32,10 +32,10 @@ export default function Onboarding1 () {
   ];
 
   if(isAuthenticated){
-    navigation.navigate("(tabs)" as never)
+    navigation.navigate("(tabs)" as never);
     return;
   }
-    
+  
   return (
     <SafeAreaView style={styles.container}>
       <Swiper 
@@ -65,10 +65,7 @@ export default function Onboarding1 () {
             </View>
         )
         })}
-        
-
       </Swiper>
-
     </SafeAreaView>
   );
 };

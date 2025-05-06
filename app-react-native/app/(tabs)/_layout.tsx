@@ -16,7 +16,7 @@ export default function TabLayout() {
         tabBarStyle: { position: 'absolute' },
         tabBarLabelPosition: "below-icon",
         tabBarAllowFontScaling: true,
-        headerShown: false
+        headerShown: true
       }}>
       <Tabs.Screen
         name="home"
