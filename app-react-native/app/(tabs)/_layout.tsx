@@ -4,6 +4,7 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import Header from '@/components/navigation/Header';
+import BarcodeButton from '@/components/BarcodeButton';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();

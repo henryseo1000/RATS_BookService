@@ -16,7 +16,7 @@ SplashScreen.preventAutoHideAsync();
 
 const convex = new ConvexReactClient(EXPO_PUBLIC_CONVEX_URL);
 
-const publishableKey = EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const publishableKey = EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 const tokenCache = {
   async getToken(key: string) {
