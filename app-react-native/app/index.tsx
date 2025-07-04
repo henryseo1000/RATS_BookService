@@ -22,7 +22,7 @@ export default function Main(){
           });
       }, []);
 
-    return(
+    return (
         hasOnboarded && (
           <Stack.Navigator>
             <Stack.Screen options={{headerShown: false}} name="OnBoardingScreen1" component={OnBoarding1} />
@@ -30,6 +30,5 @@ export default function Main(){
             <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
           </Stack.Navigator>
         )
-
     )
 }
