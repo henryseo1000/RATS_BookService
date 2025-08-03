@@ -6,7 +6,7 @@ export default function SharePage() {
     return (
         <View style={styles.container}>
             <TouchableOpacity>
-                <Text></Text>
+                <Text>This is Shared Page.</Text>
             </TouchableOpacity>
         </View>
     )

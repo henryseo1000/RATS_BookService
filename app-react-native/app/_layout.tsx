@@ -1,22 +1,22 @@
-import { DarkTheme, DefaultTheme, NavigationContainer, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { ConvexReactClient } from "convex/react";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import * as SecureStore from 'expo-secure-store';
-import { EXPO_PUBLIC_CONVEX_URL, EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY } from "@env";
 import { Stack } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const convex = new ConvexReactClient(EXPO_PUBLIC_CONVEX_URL);
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL as string);
 
-const publishableKey = EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string;
 
 const tokenCache = {
   async getToken(key: string) {
@@ -45,6 +45,7 @@ const tokenCache = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [hasOnboarded, setHasOnboarded] = useState<Boolean>(false);
   const [loaded] = useFonts({
     Ubuntu: require('../assets/fonts/Ubuntu-Regular.ttf'),
   });
@@ -53,6 +54,16 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
     }
+
+    // AsyncStorage.getItem('onboarded')
+    //     .then(value => {
+    //       if (value === null) {
+    //         AsyncStorage.setItem('onboarded', 'true');
+    //         setHasOnboarded(true);
+    //       } else {
+    //         setHasOnboarded(true);
+    //       }
+    // });
   }, [loaded]);
 
   if (!loaded) {
@@ -71,7 +82,7 @@ export default function RootLayout() {
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false}}/>
                 <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }}/>
-                <Stack.Screen name="+not-found"/>
+                <Stack.Screen name="+not-found" options={{ headerShown: false, gestureEnabled: false }}/>
               </Stack>
           </ConvexProviderWithClerk>
         </ClerkLoaded>

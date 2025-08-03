@@ -1,3 +1,4 @@
+import { useUserInfoStore } from "@/store/UserInfo";
 import { useSignIn } from "@clerk/clerk-expo";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useConvexAuth } from "convex/react";
@@ -10,10 +11,9 @@ export default function Login(){
     const navigation = useNavigation();
     const { isLoading, isAuthenticated } = useConvexAuth();
     const { signIn, setActive } = useSignIn();
+    const { username, setUsername, password, setPassword } = useUserInfoStore();
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [isError, setError] = useState(false);
+    const [ isError, setError ] = useState(false);
 
     const onSignInPress = useCallback(async () => {
         try {
@@ -23,7 +23,8 @@ export default function Login(){
             });
 
             if (signInAttempt?.status === 'complete' && setActive) {
-                await setActive({ session: signInAttempt.createdSessionId }).then(() => navigation.navigate("(tabs)" as never));
+                await setActive({ session: signInAttempt.createdSessionId })
+                .then(() => navigation.navigate("(tabs)" as never));
                 return;
             } else {
                 setError(true);
@@ -34,15 +35,7 @@ export default function Login(){
         }
     }, [isLoading, username, password]);
 
-    if (isLoading) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
-
-    else if (isAuthenticated) {
+   if (isAuthenticated) {
         navigation.navigate("(tabs)" as never);
         return;
     }
@@ -50,6 +43,11 @@ export default function Login(){
     else{
     return(
         <SafeAreaView style={styles.container}>
+            {isLoading && (
+                <View style={styles.loading_screen}>
+
+                </View>
+            )}
             <View style={styles.title_area}>
                 <Image source={require("../../assets/images/rats-logo.png")} style={styles.logo}/>
                 <Text style={styles.title}>SIGN IN</Text>
@@ -81,7 +79,7 @@ export default function Login(){
 
             <View style={styles.inform}>
                 <Text style={{color: "white", marginTop: 10, fontSize: 15, textDecorationLine: "underline"}}
-                    onPress={() => {navigation.navigate("(tabs)" as never)}}
+                    onPress={() => {}}
                     >
                     Forgot your password?
                 </Text>
@@ -114,6 +112,9 @@ export default function Login(){
 }
 
 const styles = StyleSheet.create({
+    loading_screen: {
+
+    },
     container: {
         display: 'flex',
         flexDirection: 'column',
