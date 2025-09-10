@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useConvexAuth } from "convex/react";
 import Swiper from 'react-native-swiper'
 import Feather from '@expo/vector-icons/Feather';
@@ -47,21 +48,22 @@ export default function Onboarding1 () {
 
           return(
             <View style={styles.slide} key={index}>
-              {item?.icon}
 
               <Image style={styles.image} source={item?.imgPath}/>
 
-              <View style={styles.inform_area}>
+              <LinearGradient style={styles.inform_area} colors={['transparent', '#182D52']}>
+                {item?.icon}
+
                 <View style={styles.title}> 
                   <Text style={styles.main}>{item?.main}</Text>
                   <Text style={styles.phrase}>{item?.phrase}</Text>
                 </View>
 
                 <View style={styles.button} onTouchEnd={() => {navigation.navigate("OnBoardingScreen2" as never)}}>
-                  <Text style={styles.button_text}>Next</Text>
+                  <Text style={styles.button_text}>Get Started</Text>
                   <Ionicons name="arrow-forward" color={"white"} size={20}/>
                 </View>
-              </View>
+              </LinearGradient>
             </View>
         )
         })}
@@ -80,23 +82,22 @@ const styles = StyleSheet.create({
   image: {
     display: "flex",
     width: "100%",
-    height: "70%",
+    height: "100%",
   },
   icon: {
-    position: "absolute",
-    left: 20,
-    bottom: "25%",
     zIndex: 1
   },
   inform_area: {
+    position: "absolute",
     display: "flex",
     width: "100%",
+    bottom: 0,
     gap: 25,
     paddingVertical: 40,
     paddingHorizontal: 35,
   },
   title: {
-    gap: 5
+    gap: 20
   },
   main: {
     fontFamily: "Ubuntu",
@@ -119,9 +120,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    maxWidth: 150,
-    minHeight: 40,
+    maxWidth: 200,
+    minHeight: 50,
     paddingHorizontal: 30,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     borderColor: "white",
     borderWidth: 1,
     borderRadius: 30,

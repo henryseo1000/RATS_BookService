@@ -5,6 +5,7 @@ import OnBoarding1 from "./(onboard)/OnBoarding1";
 import OnBoarding2 from "./(onboard)/OnBoarding2";
 import Login from "./(onboard)/Login";
 import { useRouter } from "expo-router";
+import FindPasswordPage from "./(onboard)/FindPassword";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,13 +26,13 @@ export default function Main(){
     }, []);
 
     return (
-          <Stack.Navigator
-            screenOptions={{headerShown: false}}
-          >
-            <Stack.Screen options={{headerShown: false}} name="OnBoardingScreen1" component={OnBoarding1} />
-            <Stack.Screen options={{headerShown: false}} name="OnBoardingScreen2" component={OnBoarding2} />
-            <Stack.Screen options={{headerShown: false, gestureEnabled: false}} name="Login" component={Login} />
-          </Stack.Navigator>
-        
+      <Stack.Navigator
+        screenOptions={{headerShown: false}}
+      >
+        <Stack.Screen options={{headerShown: false}} name="OnBoardingScreen1" component={OnBoarding1} />
+        <Stack.Screen options={{headerShown: false}} name="OnBoardingScreen2" component={OnBoarding2} />
+        <Stack.Screen options={{headerShown: false}} name="FindPasswordPage" component={FindPasswordPage} />
+        <Stack.Screen options={{headerShown: false, gestureEnabled: false}} name="Login" component={Login} />
+      </Stack.Navigator>
     )
 }

@@ -9,15 +9,9 @@ import { useRoute } from '@react-navigation/native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const route = useRoute();
-
-  useEffect(() => {
-    console.log(route.name)
-  },[]);
 
   return (
     <>
-      <BarcodeButton/>
       <Tabs
         screenOptions={{
         header: () => <Header/>,
@@ -76,6 +70,16 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="search"
+        options={{
+          href: null,
+          headerShown: false,
+          tabBarStyle: {
+            display: "none"
+          }
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
         options={{
           href: null,
           headerShown: false,

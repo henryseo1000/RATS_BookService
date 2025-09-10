@@ -1,15 +1,16 @@
 import { useUserInfoStore } from "@/store/UserInfo";
-import { useSignIn } from "@clerk/clerk-expo";
+import { useClerk, useSignIn } from "@clerk/clerk-expo";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useConvexAuth } from "convex/react";
 import { useNavigation } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import FindPasswordPage from "./FindPassword";
 
 
 export default function Login(){
     const navigation = useNavigation();
-    const { isLoading, isAuthenticated } = useConvexAuth();
+    const { isAuthenticated, isLoading } = useConvexAuth();
     const { signIn, setActive } = useSignIn();
     const { username, setUsername, password, setPassword } = useUserInfoStore();
 
@@ -33,87 +34,95 @@ export default function Login(){
         } catch (err: any) {
             setError(true);
         }
-    }, [isLoading, username, password]);
+    }, [isLoading, isAuthenticated, username, password]);
 
-   if (isAuthenticated) {
+   if (isAuthenticated && !isLoading) {
         navigation.navigate("(tabs)" as never);
         return;
     }
 
-    else{
-    return(
-        <SafeAreaView style={styles.container}>
-            {isLoading && (
-                <View style={styles.loading_screen}>
-
-                </View>
-            )}
-            <View style={styles.title_area}>
-                <Image source={require("../../assets/images/rats-logo.png")} style={styles.logo}/>
-                <Text style={styles.title}>SIGN IN</Text>
+    return (
+        <>
+        {   isLoading &&
+            <View style={styles.loading_screen}>
+                <Text>Loading...</Text>
             </View>
+        }
+            <SafeAreaView style={styles.container}>
 
-            <View style={styles.input_area}>
-                <TextInput 
-                    placeholder="ID" 
-                    textContentType={"username"} 
-                    value={username} 
-                    style={styles.input}
-                    onChangeText={(username) => setUsername(username)}
-                />
+                <View style={styles.title_area}>
+                    <Image source={require("../../assets/images/rats-logo.png")} style={styles.logo}/>
+                    <Text style={styles.title}>SIGN IN</Text>
+                </View>
 
-                <TextInput 
-                    placeholder="PASSWORD" 
-                    textContentType={"password"} 
-                    value={password} 
-                    secureTextEntry={true} 
-                    style={styles.input}
-                    onChangeText={(password) => setPassword(password)}
+                <View style={styles.input_area}>
+                    <TextInput 
+                        placeholder="ID" 
+                        textContentType={"username"} 
+                        value={username} 
+                        style={styles.input}
+                        onChangeText={(username) => setUsername(username)}
                     />
 
-                <TouchableOpacity style={styles.button} onPress={() => onSignInPress()}>
-                    <Ionicons name="lock-open" size={20} color={"white"}/>
-                    <Text style={styles.login_text}>LOGIN</Text>
-                </TouchableOpacity>
-            </View>
+                    <TextInput 
+                        placeholder="PASSWORD" 
+                        textContentType={"password"} 
+                        value={password} 
+                        secureTextEntry={true} 
+                        style={styles.input}
+                        onChangeText={(password) => setPassword(password)}
+                    />
 
-            <View style={styles.inform}>
-                <Text style={{color: "white", marginTop: 10, fontSize: 15, textDecorationLine: "underline"}}
-                    onPress={() => {}}
+                    <TouchableOpacity style={styles.button} onPress={() => onSignInPress()}>
+                        <Ionicons name="lock-open" size={20} color={"white"}/>
+                        <Text style={styles.login_text}>LOGIN</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.inform}>
+                    <Text style={{color: "white", marginTop: 10, fontSize: 15, textDecorationLine: "underline"}}
+                        onPress={() => { navigation.navigate("FindPasswordPage" as never) }}
                     >
-                    Forgot your password?
-                </Text>
-                { isError && (
-                    <View style={styles.error}>
-                        <AntDesign name="exclamationcircle" size={0} color="red" />
-                        <Text>Error in your input. Please check your ID and password.</Text>
-                    </View>
-                )}
-            </View>
+                        Forgot your password?
+                    </Text>
+                    { isError && (
+                        <View style={styles.error}>
+                            <AntDesign name="exclamationcircle" size={0} color="red" />
+                            <Text>Error in your input. Please check your ID and password.</Text>
+                        </View>
+                    )}
+                </View>
 
-            <View style={{width: "80%",flexDirection: 'row', alignItems: 'center'}}>
-                <View style={{flex: 1, height: 1, backgroundColor: 'white'}} />
-            </View>
+                <View style={{width: "80%",flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flex: 1, height: 1, backgroundColor: 'white'}} />
+                </View>
 
-            <View style={styles.sns}>
-                <TouchableOpacity>
-                    <AntDesign name="google" size={30} color={"#f1f1f1"}/>
-                </TouchableOpacity>
-                <TouchableOpacity> 
-                    <AntDesign name="apple1" size={30} color={"#f1f1f1"}/>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <AntDesign name="facebook-square" size={30} color={"#f1f1f1"}/>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+                <View style={styles.sns}>
+                    <TouchableOpacity>
+                        <AntDesign name="google" size={30} color={"#f1f1f1"}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity> 
+                        <AntDesign name="apple1" size={30} color={"#f1f1f1"}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <AntDesign name="facebook-square" size={30} color={"#f1f1f1"}/>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </>
     )
-    }
 }
 
 const styles = StyleSheet.create({
     loading_screen: {
-
+        position: "absolute",
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
+        zIndex: 1
     },
     container: {
         display: 'flex',

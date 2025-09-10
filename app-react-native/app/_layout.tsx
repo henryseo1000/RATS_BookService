@@ -2,14 +2,15 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { ConvexReactClient } from "convex/react";
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import * as SecureStore from 'expo-secure-store';
 import { Stack } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PortalHost } from '@rn-primitives/portal';
+import "../global.css"
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -45,7 +46,6 @@ const tokenCache = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [hasOnboarded, setHasOnboarded] = useState<Boolean>(false);
   const [loaded] = useFonts({
     Ubuntu: require('../assets/fonts/Ubuntu-Regular.ttf'),
   });
@@ -54,16 +54,6 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
     }
-
-    // AsyncStorage.getItem('onboarded')
-    //     .then(value => {
-    //       if (value === null) {
-    //         AsyncStorage.setItem('onboarded', 'true');
-    //         setHasOnboarded(true);
-    //       } else {
-    //         setHasOnboarded(true);
-    //       }
-    // });
   }, [loaded]);
 
   if (!loaded) {
@@ -80,10 +70,11 @@ export default function RootLayout() {
         <ClerkLoaded>
           <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
               <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false}}/>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false,}}/>
                 <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }}/>
                 <Stack.Screen name="+not-found" options={{ headerShown: false, gestureEnabled: false }}/>
               </Stack>
+              <PortalHost />
           </ConvexProviderWithClerk>
         </ClerkLoaded>
       </ClerkProvider>
