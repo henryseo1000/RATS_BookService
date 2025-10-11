@@ -1,131 +1,120 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useUserInfoStore } from "@/store/UserInfo";
-import { useSignIn } from "@clerk/clerk-expo";
+import {useAuth, useSignIn } from "@clerk/clerk-expo";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useConvexAuth } from "convex/react";
-import { useNavigation } from "expo-router";
+import { Redirect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { AlertCircleIcon } from 'lucide-react-native';
 
 
 export default function Login(){
     const navigation = useNavigation();
-    const { isAuthenticated, isLoading } = useConvexAuth();
+    const { isLoading, isAuthenticated } = useConvexAuth();
     const { signIn, setActive } = useSignIn();
-    const { username, setUsername, password, setPassword } = useUserInfoStore();
 
-    const [ isError, setError ] = useState(false);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isError, setError] = useState(false);
 
-    const onSignInPress = useCallback(async () => {
-        try {
-            const signInAttempt = await signIn?.create({
-                identifier: username,
-                password,
-            });
+  const onSignInPress = useCallback(async () => {
 
-            if (signInAttempt?.status === 'complete' && setActive) {
-                await setActive({ session: signInAttempt.createdSessionId })
-                .then(() => {setError(false)})
-                .then(() => navigation.navigate("(tabs)" as never));
-                return;
-            } else {
-                setError(true);
-                return;
-            }
-        } catch (err: any) {
-            setError(true);
-        }
-    }, [isLoading, isAuthenticated, username, password]);
+    try {
+      const signInAttempt = await signIn?.create({
+        identifier: username,
+        password,
+      });
 
-   if (isAuthenticated && !isLoading) {
+      if (signInAttempt?.status === 'complete' && setActive) {
+        await setActive({ session: signInAttempt.createdSessionId }).then(() => navigation.navigate("(tabs)" as never));
+        return;
+      } else {
+        setError(true);
+        return;
+      }
+    } catch (err: any) {
+      setError(true);
+    }
+  }, [isLoading, username, password]);
+
+    if (isLoading) {
+        return (
+        <View>
+            
+        </View>
+        );
+    }
+
+    else if (isAuthenticated) {
         navigation.navigate("(tabs)" as never);
         return;
     }
 
-    return (
-        <>
-        {   isLoading &&
-            <View style={styles.loading_screen}>
-                <Text>Loading...</Text>
+    else{
+    return(
+        <SafeAreaView style={styles.container}>
+            <View style={styles.title_area}>
+                <Image source={require("../../assets/images/rats-logo.png")} style={styles.logo}/>
+                <Text style={styles.title}>SIGN IN</Text>
             </View>
-        }
-            <SafeAreaView style={styles.container}>
 
-                <View style={styles.title_area}>
-                    <Image source={require("../../assets/images/rats-logo.png")} style={styles.logo}/>
-                    <Text style={styles.title}>SIGN IN</Text>
-                </View>
+            <View style={styles.input_area}>
+                <TextInput 
+                    placeholder="ID" 
+                    textContentType={"username"} 
+                    value={username} 
+                    style={styles.input}
+                    onChangeText={(username) => setUsername(username)}
+                />
 
-                <View style={styles.input_area}>
-                    <TextInput 
-                        placeholder="ID" 
-                        textContentType={"username"} 
-                        value={username} 
-                        style={styles.input}
-                        onChangeText={(username) => setUsername(username)}
+                <TextInput 
+                    placeholder="PASSWORD" 
+                    textContentType={"password"} 
+                    value={password} 
+                    secureTextEntry={true} 
+                    style={styles.input}
+                    onChangeText={(password) => setPassword(password)}
                     />
 
-                    <TextInput 
-                        placeholder="PASSWORD" 
-                        textContentType={"password"} 
-                        value={password} 
-                        secureTextEntry={true} 
-                        style={styles.input}
-                        onChangeText={(password) => setPassword(password)}
-                    />
+                <TouchableOpacity style={styles.button} onPress={onSignInPress}>
+                    <Ionicons name="lock-open" size={20} color={"white"}/>
+                    <Text style={styles.login_text}>LOGIN</Text>
+                </TouchableOpacity>
+            </View>
 
-                    <TouchableOpacity style={styles.button} onPress={() => onSignInPress()}>
-                        <Ionicons name="lock-open" size={20} color={"white"}/>
-                        <Text style={styles.login_text}>LOGIN</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.inform}>
-                    <Text style={{color: "white", marginTop: 10, fontSize: 15, textDecorationLine: "underline"}}
-                        onPress={() => { navigation.navigate("FindPasswordPage" as never) }}
+            <View style={styles.inform}>
+                <Text style={{color: "white", marginTop: 10, fontSize: 15, textDecorationLine: "underline"}}
+                    onPress={() => {navigation.navigate("(tabs)" as never)}}
                     >
-                        Forgot your password?
-                    </Text>
-                    { isError && (
-                        <Alert variant="destructive" icon={AlertCircleIcon}>
-                            <AlertTitle>Failed to Login</AlertTitle>
-                            <AlertDescription>Please check your ID and Password.</AlertDescription>
-                        </Alert>
-                    )}
-                </View>
+                    Forgot your password?
+                </Text>
+                { isError && (
+                    <View style={styles.error}>
+                        <AntDesign name="exclamationcircle" size={0} color="red" />
+                        <Text>Error in your input. Please check your ID and password.</Text>
+                    </View>
+                )}
+            </View>
 
-                <View style={{width: "80%",flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: 1, height: 1, backgroundColor: 'white'}} />
-                </View>
+            <View style={{width: "80%",flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{flex: 1, height: 1, backgroundColor: 'white'}} />
+            </View>
 
-                <View style={styles.sns}>
-                    <TouchableOpacity>
-                        <AntDesign name="google" size={30} color={"#f1f1f1"}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity> 
-                        <AntDesign name="apple1" size={30} color={"#f1f1f1"}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <AntDesign name="facebook-square" size={30} color={"#f1f1f1"}/>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        </>
+            <View style={styles.sns}>
+                <TouchableOpacity>
+                    <AntDesign name="google" size={30} color={"#f1f1f1"}/>
+                </TouchableOpacity>
+                <TouchableOpacity> 
+                    <AntDesign name="apple1" size={30} color={"#f1f1f1"}/>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <AntDesign name="facebook-square" size={30} color={"#f1f1f1"}/>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     )
+    }
 }
 
 const styles = StyleSheet.create({
-    loading_screen: {
-        position: "absolute",
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.3)",
-        zIndex: 1
-    },
     container: {
         display: 'flex',
         flexDirection: 'column',
@@ -143,7 +132,7 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 150,
-        height: 150
+        height : 150
     },
     title: {
         color: '#ffffff',

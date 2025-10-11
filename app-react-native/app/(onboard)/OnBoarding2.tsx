@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, Button, StyleSheet } from 'react-native'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from 'expo-router';
@@ -17,23 +17,22 @@ export default function OnBoarding2() {
   return (
     <SafeAreaView style={styles.container}>
 
-      <Text style={styles.title}>EnJoy!</Text>
+      <Text style={styles.title}>Go Now! EnJoy!</Text>
 
       <View style={styles.button_area}>
 
-        <View style={styles.button} onTouchEnd={() => {navigation.goBack()}}>
+        <View style={styles.button}>
           <Ionicons name="arrow-back" color={"white"} size={30}/>
-          <Text style={styles.button_text}>Prev</Text>
+          <Button title="Prev" onPress={() => {navigation.goBack()}} color={"white"}/>
         </View>
 
-        <View 
-          style={styles.button}
-          onTouchEnd={() => {
+        <View style={styles.button}>
+          <Button title='Get Started' 
+            color={"white"}
+            onPress={() => {
             navigation.navigate("Login" as never)
-          }}
-        >
-          <Text style={styles.button_text}>Next</Text>
-          <Ionicons name="arrow-forward" color={"white"} size={30}/>
+            }}/>
+            <Ionicons name="arrow-forward" color={"white"} size={30}/>
         </View>
 
       </View>
@@ -46,23 +45,22 @@ const styles = StyleSheet.create({
   container:{
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
     width: "100%",
     height: "100%",
-    gap: 20,
     backgroundColor: "#182D52",
+    justifyContent: "center",
+    // alignItems: "center",
     paddingHorizontal: 30
   },
   title: {
-    color: "white",
     fontFamily: "Ubuntu",
     fontWeight: "bold",
-    fontSize: 50,
-    textAlign: "center"
+    color: "white",
+    fontSize: 50
   },
   phrase: {
-    color: "white",
     fontFamily: "Ubuntu",
+    color: "white",
     fontSize: 30
   },
   button_area: {
@@ -73,19 +71,6 @@ const styles = StyleSheet.create({
   },
   button: {
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    maxWidth: 150,
-    minHeight: 40,
-    paddingHorizontal: 30,
-    borderColor: "white",
-    borderWidth: 1,
-    borderRadius: 30,
-  },
-  button_text: {
-    fontFamily: "Ubuntu",
-    color: "white",
-    fontSize: 20
+    flexDirection: "row"
   }
 })

@@ -3,22 +3,19 @@ import { Tabs } from 'expo-router';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import MainHeader from '@/components/navigation/MainHeader';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <>
-      <Tabs
-        screenOptions={{
-        header: () => <MainHeader/>,
-        tabBarActiveBackgroundColor: "#f1f1f1ff",
-        tabBarActiveTintColor: Colors[colorScheme === "dark" ? 'dark' : 'light'].tint,
+    <Tabs
+      screenOptions={{
+        tabBarActiveBackgroundColor: "#f1f1f1",
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         tabBarStyle: { position: 'absolute' },
         tabBarLabelPosition: "below-icon",
         tabBarAllowFontScaling: true,
-        headerShown: true
+        headerShown: false
       }}>
       <Tabs.Screen
         name="home"
@@ -56,37 +53,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="barcode"
-        options={{
-          href: null,
-          headerShown: false,
-          tabBarStyle: {
-            display: "none"
-          }
-        }}
-      />
-      <Tabs.Screen
-        name="search"
-        options={{
-          href: null,
-          headerShown: false,
-          tabBarStyle: {
-            display: "none"
-          }
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          href: null,
-          headerShown: false,
-          tabBarStyle: {
-            display: "none"
-          }
-        }}
-      />
     </Tabs>
-    </>    
   );
 }
