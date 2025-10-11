@@ -1,5 +1,4 @@
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import IMP from 'iamport-react-native';
 
 export default function SharePage() {
     

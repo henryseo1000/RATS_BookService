@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import Header from '@/components/navigation/Header';
-import BarcodeButton from '@/components/BarcodeButton';
-import { useRoute } from '@react-navigation/native';
+import MainHeader from '@/components/navigation/MainHeader';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -14,9 +12,9 @@ export default function TabLayout() {
     <>
       <Tabs
         screenOptions={{
-        header: () => <Header/>,
+        header: () => <MainHeader/>,
         tabBarActiveBackgroundColor: "#f1f1f1ff",
-        tabBarActiveTintColor: Colors[colorScheme === "dark" ? 'light' : "dark"].tint,
+        tabBarActiveTintColor: Colors[colorScheme === "dark" ? 'dark' : 'light'].tint,
         tabBarStyle: { position: 'absolute' },
         tabBarLabelPosition: "below-icon",
         tabBarAllowFontScaling: true,

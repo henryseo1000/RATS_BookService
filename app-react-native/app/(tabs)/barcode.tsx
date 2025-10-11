@@ -43,7 +43,7 @@ export default function BarcodePage() {
                 onBarcodeScanned={(result) => {
                     result.data
                 }}
-            >
+            />
                 <View style={styles.buttonContainer}>
                     <Ionicons 
                         name="camera-reverse-outline" 
@@ -62,7 +62,6 @@ export default function BarcodePage() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </CameraView>
         </View>
     )
 }
@@ -72,8 +71,6 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "100%",
         height: "100%",
-        justifyContent: "center",
-        alignItems: "center"
     },
     camera: {
         flex: 1,
@@ -86,6 +83,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "100%",
         height: "20%",
+        bottom: 0,
         padding: 50,
         justifyContent: "space-between",
         alignItems: "center",

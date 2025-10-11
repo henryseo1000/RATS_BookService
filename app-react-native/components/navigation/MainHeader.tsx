@@ -2,7 +2,7 @@ import { Image, SafeAreaView, StyleSheet, useColorScheme, View } from "react-nat
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 
-export default function Header() {
+export default function MainHeader() {
     const navigation = useNavigation();
     const colorScheme = useColorScheme();
 
@@ -25,13 +25,19 @@ export default function Header() {
                     <Ionicons 
                         name="search" 
                         size={20} 
-                        color={colorScheme === "dark" ? "#ffffff" : "#182D52"} 
-                        style={styles.icon} 
+                        color={colorScheme === "dark" ? "#ffffff" : "#182D52"}
+                        style={styles.icon}
                         onPress={() => {
                             navigation.navigate('search' as never)
                         }}
                     />
-                    <Ionicons name="settings" size={20} color={colorScheme === "dark" ? "#ffffff" : "#182D52"} style={styles.icon} onPress={() => {}}/>
+                    <Ionicons 
+                        name="settings" 
+                        size={20} 
+                        color={colorScheme === "dark" ? "#ffffff" : "#182D52"} 
+                        style={styles.icon} 
+                        onPress={() => {}}
+                    />
                 </View>
             </View>
         </SafeAreaView>
@@ -43,7 +49,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffff"
     },
     wrapper_dark: {
-        backgroundColor: "#111111"
+        backgroundColor: "#212121"
     },
     container_light : {
         display: 'flex',
@@ -51,11 +57,8 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 60,
         backgroundColor: "#ffffff",
-        shadowColor: "#f1f1f1",
-        shadowOffset: {
-            width: 100,
-            height: 100
-        },
+        borderBottomWidth: 0.5,
+        borderColor: "#eeeeee",
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 30
@@ -65,12 +68,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "100%",
         height: 60,
-        backgroundColor: "#111111",
-        shadowColor: "#f1f1f1",
-        shadowOffset: {
-            width: 100,
-            height: 100
-        },
+        backgroundColor: "#212121",
+        borderBottomWidth: 0.5,
+        borderColor: "#333333",
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 30

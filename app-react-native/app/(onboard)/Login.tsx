@@ -1,11 +1,12 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useUserInfoStore } from "@/store/UserInfo";
-import { useClerk, useSignIn } from "@clerk/clerk-expo";
+import { useSignIn } from "@clerk/clerk-expo";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useConvexAuth } from "convex/react";
 import { useNavigation } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import FindPasswordPage from "./FindPassword";
+import { AlertCircleIcon } from 'lucide-react-native';
 
 
 export default function Login(){
@@ -25,6 +26,7 @@ export default function Login(){
 
             if (signInAttempt?.status === 'complete' && setActive) {
                 await setActive({ session: signInAttempt.createdSessionId })
+                .then(() => {setError(false)})
                 .then(() => navigation.navigate("(tabs)" as never));
                 return;
             } else {
@@ -86,10 +88,10 @@ export default function Login(){
                         Forgot your password?
                     </Text>
                     { isError && (
-                        <View style={styles.error}>
-                            <AntDesign name="exclamationcircle" size={0} color="red" />
-                            <Text>Error in your input. Please check your ID and password.</Text>
-                        </View>
+                        <Alert variant="destructive" icon={AlertCircleIcon}>
+                            <AlertTitle>Failed to Login</AlertTitle>
+                            <AlertDescription>Please check your ID and Password.</AlertDescription>
+                        </Alert>
                     )}
                 </View>
 
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 150,
-        height : 150
+        height: 150
     },
     title: {
         color: '#ffffff',
