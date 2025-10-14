@@ -15,7 +15,7 @@ export default async function Home() {
   const checkRequired = useMutation(api.user.checkRequired);
   const router = useRouter();
 
-  if (isAuthenticated && isSignedIn) {
+  if (isSignedIn) {
     if (!(await checkRequired({user_id : user.user.id}))) {
       return router.push('/onboarding');
     }

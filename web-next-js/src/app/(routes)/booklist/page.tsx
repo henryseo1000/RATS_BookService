@@ -46,11 +46,12 @@ function BookList() {
     const [bookCount, setBookCount] = useState<number>(0);
     const [reservedCount, setReservedCount] = useState<number>(0);
     const [borrowedCount, setBorrowedCount] = useState<number>(0);
-    const [searchType, setSearchType] = useState<string>("");
+    const [searchType, setSearchType] = useState<string>("전체");
     const [input, setInput] = useState<string>("");
     const [bookList, setBookList] = useState<any[]>([]);
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
-    const [borrowedFilter, setBorrowedFilter] = useState<string>("비치중");
+    const [borrowedFilter, setBorrowedFilter] = useState<string>("전체");
+    const [reservedFilter, setReservedFilter] = useState<string>("all")
 
     const router = useRouter();
 
@@ -76,9 +77,29 @@ function BookList() {
                     || item?.isbn?.replace(" ", "").toLowerCase().includes(input)
                 ;
             }).filter((item) => {
-                return item?.type?.includes(searchType);
+                if (searchType === "전체") {
+                    return true;
+                }
+                else {
+                    return item?.type?.includes(searchType);
+                }
             }).filter((item) => {
-                return item.status?.includes(borrowedFilter);
+                if (borrowedFilter === "전체") {
+                    return true;
+                }
+                else {
+                    return item.status?.includes(borrowedFilter);
+                }
+            }).filter((item) => {
+                if (reservedFilter === "all") {
+                    return true;
+                }
+                else if (reservedFilter === "reserved") {
+                    return item.reservation && item.reservation !== ""
+                }
+                else {
+                    return !item.reservation || item.reservation === ""
+                }
             })
 
             return searchResult;
@@ -263,11 +284,12 @@ function BookList() {
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue 
-                            placeholder="비치중" 
-                            defaultValue="비치중"
+                            placeholder="대출 여부"
+                            defaultValue="전체"
                         />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="전체">전체</SelectItem>
                         <SelectItem value="비치중">비치중</SelectItem>
                         <SelectItem value="대출중">대출중</SelectItem>
                     </SelectContent>
@@ -277,9 +299,13 @@ function BookList() {
                     onValueChange={(value) => setSearchType(value)}
                 >
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="분류" />
+                        <SelectValue 
+                            placeholder="분류"
+                            defaultValue="전체"
+                        />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="전체">전체</SelectItem>
                         <SelectItem value="임베디드">임베디드</SelectItem>
                         <SelectItem value="교양">교양</SelectItem>
                         <SelectItem value="컴퓨터">컴퓨터</SelectItem>
@@ -288,11 +314,17 @@ function BookList() {
                     </SelectContent>
                 </Select>
 
-                <Select>
+                <Select
+                    onValueChange={(value) => setReservedFilter(value)}
+                >
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="예약 여부" />
+                        <SelectValue 
+                            placeholder="예약 여부"
+                            defaultValue="all"
+                        />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
                         <SelectItem value="reserved">예약자 있음</SelectItem>
                         <SelectItem value="notReserved">예약자 없음</SelectItem>
                     </SelectContent>
