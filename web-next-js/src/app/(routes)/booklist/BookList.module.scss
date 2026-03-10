@@ -33,6 +33,14 @@
         gap: 20px;
         padding: 20px 30px;
 
+        .borrowed_filter {
+            width: 180px;
+        }
+
+        .type_filter {
+            width: 180px;
+        }
+
         .button {
             display: flex;
             gap: 5px;
@@ -61,10 +69,25 @@
 }
 
 @media (max-width: 768px) {
-    .filter {
-        flex-direction: column;
-    }
-    .status {
-        overflow-x: scroll;
-    }
+    .page_container {
+        .filter {
+            flex-direction: column;
+
+            .select_filter {
+                width: 100%;
+            }
+
+            .input {
+                max-width: none;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+
+        .status {
+            overflow-x: scroll;
+        }
+    } 
 }

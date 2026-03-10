@@ -343,12 +343,13 @@
     }
 }
 
-@media (max-width: 768px){
+@media (max-width: 1100px){
     .nav_container_max, .nav_container_min {
         width: calc(100% - 20px);
         height: 80px;
         margin: 10px;
         z-index: 100;
+        transition-duration: 0.5s;
 
         .logo_area {
             display: none;

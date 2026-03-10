@@ -296,7 +296,7 @@ function BookList() {
                 <Select
                     onValueChange={(value) => setBorrowedFilter(value)}
                 >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className={st.select_filter}>
                         <SelectValue 
                             placeholder="대출 여부"
                             defaultValue="전체"
@@ -312,7 +312,7 @@ function BookList() {
                 <Select
                     onValueChange={(value) => setSearchType(value)}
                 >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className={st.select_filter}>
                         <SelectValue 
                             placeholder="분류"
                             defaultValue="전체"
@@ -331,7 +331,7 @@ function BookList() {
                 <Select
                     onValueChange={(value) => setReservedFilter(value)}
                 >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className={st.select_filter}>
                         <SelectValue 
                             placeholder="예약 여부"
                             defaultValue="all"
