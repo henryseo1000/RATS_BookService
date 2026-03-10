@@ -46,7 +46,13 @@ function Files() {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   const handleFileList = () => {
-    const listPromise = getFileList().then((data) => {
+    const listPromise = getFileList()
+    .then((data) => {
+      return data.filter((item) => {
+        return item.file_name.replace(' ', '').toLowerCase().includes(input.toLowerCase())
+      })
+    })
+    .then((data) => {
       setFileList(data);
     })
 
@@ -103,7 +109,10 @@ function Files() {
       <Card className={st.filter}>
         <Select>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="유형" />
+            <SelectValue 
+              placeholder="유형"
+              defaultValue="전체"
+            />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="notBorrowed">이미지</SelectItem>

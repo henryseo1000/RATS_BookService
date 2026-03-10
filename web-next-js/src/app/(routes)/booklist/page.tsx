@@ -51,7 +51,8 @@ function BookList() {
     const [bookList, setBookList] = useState<any[]>([]);
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
     const [borrowedFilter, setBorrowedFilter] = useState<string>("전체");
-    const [reservedFilter, setReservedFilter] = useState<string>("all")
+    const [reservedFilter, setReservedFilter] = useState<string>("all");
+    const [pageCount, setPageCount] = useState<number>(1);
 
     const router = useRouter();
 
@@ -73,8 +74,8 @@ function BookList() {
         })
         .then((booklist) => {
             const searchResult = booklist.filter((item) => {
-                return item?.title?.replace(" ", "").toLowerCase().includes(input)
-                    || item?.isbn?.replace(" ", "").toLowerCase().includes(input)
+                return item?.title?.replace(" ", "").toLowerCase().includes(input.toLowerCase())
+                    || item?.isbn?.replace(" ", "").toLowerCase().includes(input.toLowerCase())
                 ;
             }).filter((item) => {
                 if (searchType === "전체") {
@@ -126,6 +127,7 @@ function BookList() {
             setBookCount(data?.totalCount!);
             setReservedCount(reservedCount);
             setBorrowedCount(borrowedCount);
+            setPageCount(data.totalPageNum);
         })
         .then(() => {
             getUserBookmark({
@@ -248,6 +250,18 @@ function BookList() {
                 })
             }
         }).then(() => handleBooks());
+    }
+
+    const pagination = () => {
+        let arr = []
+        for (let i = 1; i <= pageCount; i++) {
+            arr.push(
+                <PaginationItem>
+                    <PaginationLink href={`#${i}`}>{i}</PaginationLink>
+                </PaginationItem>
+            );
+        }
+        return arr;
     }
 
     useEffect(() => {
@@ -456,9 +470,7 @@ function BookList() {
                             <PaginationPrevious href="#" />
                         </PaginationItem>
                         {
-                        <PaginationItem>
-                            <PaginationLink href="#">1</PaginationLink>
-                        </PaginationItem>
+                            pagination().map((page, i) => (page))
                         }
                         <PaginationItem>
                             <PaginationNext onClick={() => {}}/>

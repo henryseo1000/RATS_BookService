@@ -220,7 +220,9 @@ function Dashboard() {
                         {date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일"}
                       </TableCell>
                       <TableCell>{date.getHours() + "시 " + date.getMinutes() + "분"}</TableCell>
-                      <TableCell>{item?.book_title}</TableCell>
+                      <TableCell onClick={(e) => {
+                        router.push(`/booklist/${item?.book_id}`);
+                      }}>{item?.book_title}</TableCell>
                       <TableCell>{item?.book_isbn}</TableCell>
                     </TableRow>
                   );

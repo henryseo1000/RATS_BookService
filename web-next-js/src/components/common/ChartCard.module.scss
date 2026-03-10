@@ -22,6 +22,16 @@
                 background-color: #f7f7f7;
                 font-weight: 700;
             }
+
+            .button {
+                background-color: #307cff;
+            }
+
+            .no_data {
+                @include align-center;
+                width: 100%;
+                height: 100%;
+            }
         }
     }
 

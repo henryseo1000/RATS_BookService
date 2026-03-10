@@ -32,8 +32,14 @@ export default function BookInformation(props : any) {
                 {bookData?.title}
                 에 대한 정보
             </span>
-
+            
             <div className={st.header}>
+                {bookData == undefined ? 
+                <div>
+                    정보 없음
+                </div>
+                :
+                <>
                 <div className={st.book_image_container}>
                     
                     <div
@@ -58,6 +64,8 @@ export default function BookInformation(props : any) {
                     <span>출판 일자 : {bookData?.pubdate}</span>
                     <span>책 정보 : {bookData?.description}</span>
                 </div>
+                </>
+                }
             </div>
 
             <div
@@ -67,6 +75,7 @@ export default function BookInformation(props : any) {
                 <Button/>
                 <Button/>
             </div>
+            
         </div>
     )
 }

@@ -46,3 +46,21 @@ export const generateDownloadURL = mutation({
         return await ctx.storage.getUrl(args.key)
     }
 })
+
+export const getFileListByPage = mutation({
+    args: {
+        page: v.int64(),
+        borrowed: v.string(),
+        reserved: v.string(),
+        type: v.string()
+    },
+    handler: async (ctx) => {
+        const fileList = await ctx.db.query("file_list")
+        .collect()
+        .then((data) => {
+                
+            }
+        )
+        
+    }
+})

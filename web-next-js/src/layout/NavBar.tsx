@@ -64,9 +64,11 @@ function NavBar({
     return (
         <nav className={isMinimized ? st.nav_container_min : st.nav_container_max}>
             <div className={st.nav_main}>
-                {
-                   !isMinimized && <Logo/>
-                }
+                <div className={st.logo_area}>
+                    {
+                        !isMinimized && <Logo/>
+                    }   
+                </div>
 
                 <div className={st.profile_section}>
                     <img 

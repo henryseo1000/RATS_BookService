@@ -98,7 +98,7 @@ export function ChartCard({
               className={st.polar_grid}
               polarRadius={[86, 74]}
             />
-            <RadialBar dataKey="books" background cornerRadius={10} />
+            <RadialBar dataKey="books" cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
@@ -150,10 +150,11 @@ export function ChartCard({
                   return (
                     <TableRow key={index}>
                       <TableCell>{item?.title}</TableCell>
+                      <TableCell>{item?.date}</TableCell>
                       <TableCell>{item?.author}</TableCell>
-                      <TableCell>{item?.book_id}</TableCell>
                       <TableCell>
                         <Button 
+                          className={st.button}
                           disabled={isButtonDisabled ? isButtonDisabled : false} 
                           onClick={onButtonClick ? onButtonClick : () => {}}
                         >
@@ -164,7 +165,7 @@ export function ChartCard({
                   );
                 })
               ) : (
-                <span>No Data Found</span>
+                <div className="no_data">발견된 데이터가 없습니다.</div>
               )}
             </TableBody>
           </Table>

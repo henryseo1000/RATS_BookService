@@ -35,7 +35,7 @@
 .nav_container_max {
     display: flex;
     position: fixed;
-    width: 300px;
+    width: 250px;
     height: calc(100% - 40px);
     margin: 20px;
     border: 0.5px solid #23447d;
@@ -43,8 +43,12 @@
     background: linear-gradient(45deg, #182D52, #112c5b, #1952b5, #23447d , #204079);
     background-size: 200% 200%;
     animation: gradientMove 10s ease-in-out infinite;
-    overflow: hidden;
+    overflow-y: scroll;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+    .logo_area {
+        @include align-center;
+    }
 
     .nav_main {
         @include flex-column;
@@ -163,7 +167,7 @@
     .nav_controller {
         @include justi-align-center;
         position: absolute;
-        height: 100%;
+        height: 100vh;
         width: 7px;
         right: 0px;
         cursor: col-resize;
@@ -230,6 +234,10 @@
     animation: gradientMove 10s ease-in-out infinite;
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+    .logo_area {
+        display: none;
+    }
 
     .nav_main {
         @include flex-column-center;
@@ -337,13 +345,19 @@
 
 @media (max-width: 768px){
     .nav_container_max, .nav_container_min {
-        width: calc(100% - 40px);
+        width: calc(100% - 20px);
         height: 80px;
+        margin: 10px;
         z-index: 100;
+
+        .logo_area {
+            display: none;
+        }
 
         .nav_main {
             flex-direction: row;
             padding: 0px;
+            margin: 0px;
 
             .profile_section {
                 @include flex-column-center;
@@ -409,9 +423,9 @@
                 }
             }
         }
-    }
 
-    .nav_controller {
-        display: none;
+        .nav_controller {
+            display: none;
+        }
     }
 }

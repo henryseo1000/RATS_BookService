@@ -4,13 +4,62 @@ import { v } from "convex/values";
 export const getBooks = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_info").order("desc").collect()
-    const totalLength = await totalData.length;
+    const totalLength = totalData.length;
+    const totalPages = totalLength % 10 == 0 ? totalLength / 10 : totalLength / 10 + 1;
 
     return {
       totalCount : totalLength,
-      bookList : totalData
+      bookList : totalData,
+      totalPageNum : totalPages
     }
   }
+})
+
+export const getBookListByFliter = mutation({
+  args : {
+    input: v.string(),
+    searchType: v.string(),
+    borrowedFilter: v.string(),
+    reservedFilter: v.string()
+  },
+  handler: async (ctx, args) => {
+    const filteredList = await ctx.db.query("book_info").order("desc").collect()
+        .then((booklist) => {
+            const searchResult = booklist.filter((item) => {
+                return item?.title?.replace(" ", "").toLowerCase().includes(args.input.toLowerCase())
+                    || item?.isbn?.replace(" ", "").toLowerCase().includes(args.input.toLowerCase())
+                ;
+            }).filter((item) => {
+                if (args.searchType === "전체") {
+                    return true;
+                }
+                else {
+                    return item?.type?.includes(args.searchType);
+                }
+            }).filter((item) => {
+                if (args.borrowedFilter === "전체") {
+                    return true;
+                }
+                else {
+                    return item.status?.includes(args.borrowedFilter);
+                }
+            }).filter((item) => {
+                if (args.reservedFilter === "all") {
+                    return true;
+                }
+                else if (args.reservedFilter === "reserved") {
+                    return item.reservation && item.reservation !== "";
+                }
+                else {
+                    return !item.reservation || item.reservation === "";
+                }
+            })
+
+            return searchResult;
+        })
+
+        return filteredList;
+    }
 })
 
 export const recommandList = mutation({
@@ -29,17 +78,19 @@ export const getBookHistory = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_history")
     .order("desc")
-    .collect();
-    
-    // totalData.map(async (data) => {
-    //   const book = await ctx.db.get(data.book_id);
-
-    //   return {
-    //     ...data,
-    //     book_id: book.title,
-    //     book_isbn: book.isbn
-    //   }
-    // })
+    .collect()
+    .then(async (data) => {
+      const historyResult = [];
+      for(let i = 0; i < data.length; i++) {
+        const book_data = await ctx.db.get(data[i].book_id);
+        historyResult.push({
+          ...data[i],
+          book_title : book_data.title,
+          book_isbn : book_data.isbn
+        })
+      }
+      return historyResult;
+    })
 
     return totalData;
   }
@@ -61,16 +112,18 @@ export const getUserHistory = mutation({
     const totalData = await ctx.db.query("book_history")
       .order("desc")
       .collect()
-      .then((data) => {
-        const result = data.map((item) => { 
-
-          return {
-            ...item
-          }
+      .then(async (data) => {
+      const historyResult = [];
+      for(let i = 0; i < data.length; i++) {
+        const book_data = await ctx.db.get(data[i].book_id);
+        historyResult.push({
+          ...data[i],
+          book_title : book_data.title,
+          book_isbn : book_data.isbn
         })
-
-        return result;
-      });
+      }
+      return historyResult;
+    })
 
     const totalLength = totalData.length;
 
@@ -90,8 +143,21 @@ export const getUserBorrowed = mutation({
     .filter((q) => 
       q.eq(q.field("student_id"), args.student_id)
     )
-    .order("desc")
-    .collect();
+    .collect()
+    .then(async (data) => {
+      const borrowedResult = [];
+      for (let i = 0; i < data.length; i++) {
+        await ctx.db.get(data[i].book_id).then((data) => {
+          const date = new Date(data?._creationTime);
+
+          borrowedResult.push({
+            date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+            ...data
+          });
+        })
+      }
+      return borrowedResult;
+    });
 
     const totalBorrowed = userBorrowed.length;
 
@@ -111,10 +177,23 @@ export const getUserReserved = mutation({
     .filter((q) => 
       q.eq(q.field("student_id"), args.student_id)
     )
-    .order("desc")
-    .collect();
+    .collect()
+    .then(async (data) => {
+      const reservedResult = [];
+      for (let i = 0; i < data.length; i++) {
+        await ctx.db.get(data[i].book_id).then((data) => {
+          const date = new Date(data?._creationTime);
 
-    const totalReserved = await userReserved.length;
+          reservedResult.push({
+            date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+            ...data
+          });
+        })
+      }
+      return reservedResult;
+    });
+
+    const totalReserved = userReserved.length;
 
     return {
       totalReserved: totalReserved,
