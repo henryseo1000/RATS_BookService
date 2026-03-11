@@ -140,7 +140,7 @@ function Dashboard() {
 
     .then(() =>
       getUserHistory().then((data) => {
-        setHistoryData(data.historyList.splice(0, 10));
+        setHistoryData(data.historyList.splice(0, 5));
       })
     )
 

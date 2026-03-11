@@ -57,8 +57,16 @@
 
 @media (max-width: 768px) {
     .search_container {
+        span {
+            font-weight: 700;
+            font-size: 35px;
+        }
+
         .bar_menu {
-            display: none;
+
+            .input_area{
+                display: none;
+            }
         }
     }
 }

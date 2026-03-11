@@ -4,13 +4,6 @@
     @include flex-column;
     gap: 20px;
 
-    .history {
-
-        .history_content {
-            min-height: 400px;
-        }
-    }
-
     .status {
         display: flex;
         gap: 20px;
