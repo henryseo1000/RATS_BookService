@@ -20,9 +20,12 @@ export const getBookListByFliter = mutation({
     input: v.string(),
     searchType: v.string(),
     borrowedFilter: v.string(),
-    reservedFilter: v.string()
+    reservedFilter: v.string(),
+    pageNum: v.number()
   },
   handler: async (ctx, args) => {
+    let totalLength = 0;
+    let totalPages = 0;
     const filteredList = await ctx.db.query("book_info").order("desc").collect()
         .then((booklist) => {
             const searchResult = booklist.filter((item) => {
@@ -55,10 +58,31 @@ export const getBookListByFliter = mutation({
                 }
             })
 
+            totalLength = searchResult.length;
+            totalPages = (totalLength % 10 == 0) && totalLength != 0 ? Math.floor(totalLength) / 10 : Math.floor(totalLength / 10) + 1;
+
             return searchResult;
+        }).then((result) => {
+            if(result.length == 0) {
+              return [];
+            }
+
+            if (args.pageNum < totalPages) {
+              return result.splice((args.pageNum - 1) * 10, 10);
+            }
+            else if (args.pageNum == totalPages) {
+              return result.splice((args.pageNum - 1) * 10, totalLength % 10);
+            }
+            else {
+              throw new Error("Page number is bigger than total pages. Please try again.");
+            }
         })
 
-        return filteredList;
+        return {
+          filteredList: filteredList,
+          totalLength: totalLength,
+          totalPages : totalPages,
+        };
     }
 })
 

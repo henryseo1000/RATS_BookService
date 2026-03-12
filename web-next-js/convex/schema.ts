@@ -27,7 +27,9 @@ export default defineSchema({
     real_name: v.string(),
     student_id: v.string(),
     major: v.string(),
-    grade: v.string()
+    grade: v.string(),
+    user_email: v.string(),
+    username: v.string()
   }),
   book_history: defineTable({
     student_id: v.string(),

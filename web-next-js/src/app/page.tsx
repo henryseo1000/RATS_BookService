@@ -1,22 +1,28 @@
 "use client";
 
-import { SignInButton, useAuth, useUser } from "@clerk/clerk-react";
-import { useConvexAuth, useMutation } from "convex/react";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
+import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 
 import st from "./Home.module.scss";
 import { Button } from "@/components/ui/button";
 import { api } from "../../convex/_generated/api";
 
-export default async function Home() {
-  const { isSignedIn } = useAuth();
-  const { isAuthenticated } = useConvexAuth();
-  const user = useUser();
+export default function Home() {
+  const { isSignedIn, getToken } = useAuth();
   const checkRequired = useMutation(api.user.checkRequired);
   const router = useRouter();
 
+  const checkForCurrentUser = async () => {
+    const checkResult = await getToken().then((token) => {
+      return checkRequired({user_id : token});
+    })
+
+    return checkResult;
+  }
+
   if (isSignedIn) {
-    if (!(await checkRequired({user_id : user.user.id}))) {
+    if (!checkForCurrentUser()) {
       return router.push('/onboarding');
     }
     else {

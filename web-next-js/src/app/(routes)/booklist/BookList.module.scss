@@ -44,6 +44,7 @@
         .button {
             display: flex;
             gap: 5px;
+            background-color: #307cff;
         }
 
         .input {
@@ -58,7 +59,7 @@
     .default_button {
         min-width: 90px;
         gap: 10px;
-        background-color: #182D52;
+        background-color: #307cff;
     }
 
     .activated_button {

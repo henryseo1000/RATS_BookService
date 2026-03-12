@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import { Book, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function BookInformation(props : any) {
     const getBookInfo = useMutation(api.books.getBookInfo);
@@ -13,8 +14,8 @@ export default function BookInformation(props : any) {
 
     const [bookData, setBookData] = useState<any>();
 
-    useEffect(() => {
-        getBookInfo({ 
+    const searchFromApi = () => {
+        const apiPromise = getBookInfo({ 
             book_id: props.params.id 
         }).then( async (data) => {
             const searchList = await callBookApi({
@@ -23,6 +24,16 @@ export default function BookInformation(props : any) {
 
             setBookData(searchList?.items[0]!);
         })
+
+        toast.promise(apiPromise, {
+            loading: "정보를 가져오는 중...",
+            success: bookData == undefined ? "책 정보가 없습니다!" : "책에 대한 정보를 가져왔습니다!",
+            error: "앗, 무언가 잘못된 것 같군요..."
+        })
+    }
+
+    useEffect(() => {
+        searchFromApi();
     }, []);
 
     return (

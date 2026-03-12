@@ -70,7 +70,7 @@ function NavBar({
     useEffect(() => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [location, window.scrollY, window.pageYOffset]);
+    }, [location]);
 
     return (
         <nav className={isMinimized ? st.nav_container_min : st.nav_container_max} ref={navCon}>
