@@ -81,7 +81,7 @@ export const getBookListByFliter = mutation({
         return {
           filteredList: filteredList,
           totalLength: totalLength,
-          totalPages : totalPages,
+          totalPages : totalPages
         };
     }
 })

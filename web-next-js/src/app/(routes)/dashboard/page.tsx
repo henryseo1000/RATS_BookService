@@ -35,7 +35,6 @@ import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 
 import { useRouter } from "next/navigation";
-import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { handleDownload } from "@/utils/handleDownload";
 import { Download } from "lucide-react";
@@ -45,7 +44,6 @@ function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
   const getUserReserved = useMutation(api.books.getUserReserved);
   const getUserHistory = useMutation(api.books.getUserHistory);
-  const getBookInfo = useMutation(api.books.getBookInfo);
   const getFileList = useMutation(api.files.getFileList);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
 

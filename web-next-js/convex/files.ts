@@ -1,6 +1,4 @@
-import { internal } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
-import { action, mutation } from "./_generated/server";
+import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const generateUploadUrl = mutation(async (ctx) => {
@@ -35,6 +33,67 @@ export const getFileList = mutation({
         const fileList = await ctx.db.query("file_list").collect();
 
         return fileList;
+    }
+})
+
+export const getFileListByFilter = mutation ({
+    args : {
+        input: v.string(),
+        searchType: v.string(),
+        pageNum: v.number()
+    },
+    handler : async (ctx, args) => {
+        let totalLength = 0;
+        let totalPages = 0;
+        const filteredList = await ctx.db.query("file_list")
+        .collect()
+        .then((filelist) => {
+            const searchResult = filelist.filter((item) => {
+                return item?.file_name?.replace(" ", "").toLowerCase().includes(args.input.toLowerCase());
+            })
+            .filter((item) => {
+                if (args.searchType === "image") {
+                    return item.format.includes('image');
+                }
+                else if (args.searchType === "docs") {
+                    return item.format.includes('pdf');
+                }
+                else if (args.searchType === "zip") {
+                    return item.format.includes('zip');
+                }
+                else if (args.searchType === "etc") {
+                    return !item.format.includes('pdf') && !item.format.includes('zip') && !item.format.includes('image');
+                }
+                else {
+                    return true;
+                }
+            })
+
+            totalLength = searchResult.length;
+            totalPages = (totalLength % 10 == 0) && totalLength != 0 ? Math.floor(totalLength) / 10 : Math.floor(totalLength / 10) + 1;
+
+            return searchResult;
+        }).then((result) => {
+            if(result.length == 0) {
+              return [];
+            }
+
+            if (args.pageNum < totalPages) {
+              return result.splice((args.pageNum - 1) * 10, 10);
+            }
+            else if (args.pageNum == totalPages) {
+              return result.splice((args.pageNum - 1) * 10, totalLength % 10);
+            }
+            else {
+              throw new Error("Page number is bigger than total pages. Please try again.");
+            }
+        })
+
+        return {
+            totalPages : totalPages,
+            totalLength : totalLength,
+            filteredList : filteredList
+        }
     }
 })
 

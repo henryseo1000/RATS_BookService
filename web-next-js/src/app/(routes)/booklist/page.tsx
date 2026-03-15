@@ -55,6 +55,7 @@ function BookList() {
     const [reservedFilter, setReservedFilter] = useState<string>("all");
     const [pageCount, setPageCount] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [searched, setSearched] = useState<boolean>(true);
 
     const router = useRouter();
 
@@ -84,43 +85,14 @@ function BookList() {
             setPageCount(filteredList.totalPages);
 
             return filteredList.filteredList;
-        }).then((data) => setBookList(data))
+        }).then((data) => {
+            setBookList(data); 
+            setSearched(true);
+        })
 
         toast.promise(searchPromise, {
             loading: "검색 중입니다...",
             success: "검색 목록을 가져왔습니다!",
-            error: "앗, 무언가 잘못된 것 같군요..."
-        })
-    }
-
-    const handleBooks = () => {
-        const bookPromise = getBooks().then((data) => {
-            const reservedCount = data.bookList.filter((item) => {
-                return item.reservation && item.reservation !== "";
-            }).length;
-
-            const borrowedCount = data.bookList.filter((item) => {
-                return item.borrowed && item.borrowed !== "";
-            }).length;
-
-            setBookList(data.bookList);
-            setBookCount(data?.totalCount!);
-            setReservedCount(reservedCount);
-            setBorrowedCount(borrowedCount);
-            setPageCount(data.totalPageNum);
-        })
-        .then(() => {
-            getUserBookmark({
-                student_id: "60211579"
-            })
-            .then((data) => {
-                setBookmarkData(data.bookmarkList);
-            })
-        })
-
-        toast.promise(bookPromise, {
-            loading: "책 목록을 가져오는 중입니다...",
-            success: "데이터베이스로부터 목록을 가져왔습니다!",
             error: "앗, 무언가 잘못된 것 같군요..."
         })
     }
@@ -232,6 +204,13 @@ function BookList() {
         }).then(() => handleSearch());
     }
 
+    const onEnter = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            setCurrentPage(1);
+            handleSearch();
+        }
+    }
+
     const pagination = () => {
         const arr = []
         let startIdx = 1;
@@ -258,6 +237,7 @@ function BookList() {
                     <PaginationLink 
                         onClick={() => {
                             setCurrentPage(i);
+                            setSearched(false);
                         }}
                         isActive={i === currentPage}
                     >
@@ -272,7 +252,7 @@ function BookList() {
 
     useEffect(() => {
         handleSearch();
-    }, [currentPage])
+    }, [searched])
 
     return (
         <div className={st.page_container}>
@@ -300,6 +280,7 @@ function BookList() {
             </div>
             <Card className={st.filter}>
                 <Select
+                    value={borrowedFilter}
                     onValueChange={(value) => setBorrowedFilter(value)}
                 >
                     <SelectTrigger className={st.select_filter}>
@@ -309,13 +290,14 @@ function BookList() {
                         />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="전체">전체</SelectItem>
+                        <SelectItem value="전체">대출 여부</SelectItem>
                         <SelectItem value="비치중">비치중</SelectItem>
                         <SelectItem value="대출중">대출중</SelectItem>
                     </SelectContent>
                 </Select>
 
                 <Select
+                    value={searchType}
                     onValueChange={(value) => setSearchType(value)}
                 >
                     <SelectTrigger className={st.select_filter}>
@@ -325,7 +307,7 @@ function BookList() {
                         />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="전체">전체</SelectItem>
+                        <SelectItem value="전체">분류</SelectItem>
                         <SelectItem value="임베디드">임베디드</SelectItem>
                         <SelectItem value="교양">교양</SelectItem>
                         <SelectItem value="컴퓨터">컴퓨터</SelectItem>
@@ -335,6 +317,7 @@ function BookList() {
                 </Select>
 
                 <Select
+                    value={reservedFilter}
                     onValueChange={(value) => setReservedFilter(value)}
                 >
                     <SelectTrigger className={st.select_filter}>
@@ -344,7 +327,7 @@ function BookList() {
                         />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">전체</SelectItem>
+                        <SelectItem value="all">예약 여부</SelectItem>
                         <SelectItem value="reserved">예약자 있음</SelectItem>
                         <SelectItem value="notReserved">예약자 없음</SelectItem>
                     </SelectContent>
@@ -354,9 +337,11 @@ function BookList() {
                     className={st.input}
                     type="text"
                     placeholder='Type ISBN or Book Title...'
+                    value={input}
                     onChange={(e) => {
                         setInput(e.target.value);
                     }}
+                    onKeyUp={onEnter}
                 />
 
                 <Button
@@ -372,7 +357,14 @@ function BookList() {
 
                 <Button
                     className={st.button}
-                    onClick={handleBooks}
+                    onClick={() => {
+                        setInput("");
+                        setSearchType("전체");
+                        setReservedFilter("all");
+                        setBorrowedFilter("전체");
+                        setCurrentPage(1);
+                        setSearched(!searched);
+                    }}
                 >
                     초기화
                     <RotateCcw size={15}/>
@@ -488,7 +480,9 @@ function BookList() {
                                         else {
                                             return currentPage;
                                         }
-                                })}}
+                                })
+                                setSearched(false);
+                            }}
                             />
                         </PaginationItem>
                         {
@@ -498,13 +492,15 @@ function BookList() {
                             <PaginationNext
                             onClick={(e) => {
                                 setCurrentPage((currentPage) => {
-                                if(currentPage < pageCount) {
-                                    return currentPage + 1;
-                                }
-                                else {
-                                    return currentPage;
-                                }
-                            })}}/>
+                                    if(currentPage < pageCount) {
+                                        return currentPage + 1;
+                                    }
+                                    else {
+                                        return currentPage;
+                                    }
+                                })
+                                setSearched(false);
+                            }}/>
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
