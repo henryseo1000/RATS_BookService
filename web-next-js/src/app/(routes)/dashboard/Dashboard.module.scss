@@ -50,7 +50,6 @@
 
         .recommand_content {
             @include justi-align-center;
-            padding-bottom: 0px;
         }
     }
 
@@ -93,5 +92,11 @@
     .recommand {
         max-width: none;
         min-width: 100%;
+
+        .recommand_content {
+            .swiper {
+                margin-bottom: 30px;
+            }
+        }
     }
 }

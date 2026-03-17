@@ -168,13 +168,16 @@ export const getUserBorrowed = mutation({
       q.eq(q.field("student_id"), args.student_id)
     )
     .collect()
-    .then(async (data) => {
+    .then(async (res) => {
       const borrowedResult = [];
-      for (let i = 0; i < data.length; i++) {
-        await ctx.db.get(data[i].book_id).then((data) => {
+      for (let i = 0; i < res.length; i++) {
+        await ctx.db.get(res[i].book_id)
+        .then((data) => {
           const date = new Date(data?._creationTime);
 
           borrowedResult.push({
+            book_id: res[i]?.book_id,
+            extended: res[i]?.extended,
             date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
             ...data
           });
@@ -329,8 +332,8 @@ export const returnBook = mutation({
     .collect()
     .then((arr) => {
       const id = arr[0]._id
-      ctx.db.delete(id).then(() => 
-        ctx.db.patch(args.book_id, { borrowed : "" })
+      ctx.db.delete(id).then(() =>
+        ctx.db.patch(args.book_id, { borrowed : ""})
       ).then(() => 
         ctx.db.insert("book_history", { 
           book_id : args.book_id,
@@ -439,7 +442,31 @@ export const callNaverBookApi = action({
         return data.json();
       }
       else {
-        return "Naver API 에러입니다."
+        return "Naver API 에러입니다.";
       }                                                                                                        
+  }
+})
+
+export const extendDeadline = mutation({
+  args: {
+    book_id: v.id("book_info"),
+    student_id: v.string()
+  },
+  handler: async(ctx, args) => {
+    await ctx.db.query("borrowed_list").filter((q) => {
+      return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id)
+    })
+    .collect()
+    .then((result) => {
+      console.log(result)
+      ctx.db.get(result[0]?._id).then((data) => {
+        if (data?.extended) {
+          throw new Error("이미 연장된 책입니다!");
+        }
+        else {
+          ctx.db.patch(data?._id, { extended: true });
+        }
+      })
+    })
   }
 })

@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { handleDownload } from "@/utils/handleDownload";
 import { Download } from "lucide-react";
 import { ColProps } from "@/types/common/ColProps";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
@@ -46,12 +47,14 @@ function Dashboard() {
   const getUserHistory = useMutation(api.books.getUserHistory);
   const getFileList = useMutation(api.files.getFileList);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
+  const extendDeadline = useMutation(api.books.extendDeadline);
 
   const [borrowedData, setBorrowedData] = useState<any>({});
   const [reservedData, setReservedData] = useState<any>({});
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [fileList, setFileList] = useState<any[]>([]);
   const [date, setDate] = useState<Date>(new Date());
+  const [updated, setUpdated] = useState<boolean>(false);
 
   const { user } = useUser();
   const router = useRouter();
@@ -122,6 +125,19 @@ function Dashboard() {
     },
   ];
 
+  const handleExtend = (id : string) => {
+    const extendPromise = extendDeadline({book_id: id as Id<"book_info">, student_id:"60211579"})
+    .then(() => {
+      setUpdated(true);
+    })
+
+    toast.promise(extendPromise, {
+      success: "연장되었습니다!",
+      loading: "책 연장을 시도하고 있습니다...",
+      error: "이미 연장된 책입니다!"
+    })
+  }
+
   useEffect(() => {
     const totalPromise = getUserBorrowed({
       student_id: "60211579",
@@ -153,7 +169,7 @@ function Dashboard() {
       success: "데이터를 가져왔습니다.",
       error: "서버에서 에러가 발생했습니다."
     });
-  }, []);
+  }, [updated]);
 
   return (
     <div className={st.page_container}>
@@ -168,6 +184,10 @@ function Dashboard() {
           tableData={borrowedData.borrowedList ? borrowedData.borrowedList : []}
           columnData={borrowCol}
           buttonText="연장"
+          onButtonClick={(id) => {
+            setUpdated(false);
+            handleExtend(id);
+          }} 
         />
         <ChartCard
           title={"예약된 책 권수"}
@@ -262,6 +282,7 @@ function Dashboard() {
           </CardHeader>
           <CardContent className={st.recommand_content}>
             <Swiper
+              className={st.swiper}
               modules={[Autoplay, Pagination]}
               spaceBetween={30}
               slidesPerView={1}
@@ -311,8 +332,8 @@ function Dashboard() {
                     </TableCell>
                     <TableCell
                       className={st.file_name}
-                      onClick={async () => {
-                        await generateDownloadURL({
+                      onClick={() => {
+                        generateDownloadURL({
                           key: item?.storageId,
                         }).then((url) => {
                           handleDownload(url, item?.file_name);

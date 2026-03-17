@@ -42,7 +42,7 @@ interface ChartProps {
   footerText?: string;
   tableData?: any[];
   columnData?: ColProps[];
-  onButtonClick?: () => void;
+  onButtonClick?: (props: any) => void;
   buttonText?: string
   isButtonDisabled?: boolean
 }
@@ -155,8 +155,8 @@ export function ChartCard({
                       <TableCell>
                         <Button 
                           className={st.button}
-                          disabled={isButtonDisabled ? isButtonDisabled : false} 
-                          onClick={onButtonClick ? onButtonClick : () => {}}
+                          disabled={item?.extended} 
+                          onClick={onButtonClick ? () => onButtonClick(item?.book_id) : () => {}}
                         >
                           {buttonText ? buttonText : ""}
                         </Button>

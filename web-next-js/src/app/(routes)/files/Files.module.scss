@@ -58,6 +58,14 @@
     
 }
 
+.modal_button {
+    background-color: #307cff;
+
+    &:hover {
+        background-color: #307cff;;
+    }
+}
+
 .input_area {
     display: flex;
     flex-direction: column;

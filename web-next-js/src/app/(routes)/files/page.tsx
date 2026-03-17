@@ -1,6 +1,6 @@
 "use client";
 
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
@@ -35,7 +35,6 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const uploadFile = useMutation(api.files.uploadFile);
-  const getFileList = useMutation(api.files.getFileList);
   const getFileListByFilter = useMutation(api.files.getFileListByFilter);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
 
@@ -192,6 +191,7 @@ function Files() {
 
         <Button
           onClick={()=> {
+            setCurrentPage(1);
             setSearched(false);
           }}
           className={st.button}
@@ -295,7 +295,7 @@ function Files() {
           <CardFooter>
             <Dialog>
               <DialogTrigger ref={buttonRef}>
-                <Button>파일 등록</Button>
+                <Button className={st.modal_button}>파일 등록</Button>
               </DialogTrigger>
               <DialogContent ref={dialogRef}>
                 <DialogHeader>
