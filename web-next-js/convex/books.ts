@@ -21,7 +21,8 @@ export const getBookListByFliter = mutation({
     searchType: v.string(),
     borrowedFilter: v.string(),
     reservedFilter: v.string(),
-    pageNum: v.number()
+    pageNum: v.number(),
+    studentId:v.optional(v.string())
   },
   handler: async (ctx, args) => {
     let totalLength = 0;
@@ -47,10 +48,10 @@ export const getBookListByFliter = mutation({
                     return item.status?.includes(args.borrowedFilter);
                 }
             }).filter((item) => {
-                if (args.reservedFilter === "all") {
+                if (args.reservedFilter === "전체") {
                     return true;
                 }
-                else if (args.reservedFilter === "reserved") {
+                else if (args.reservedFilter === "예약됨") {
                     return item.reservation && item.reservation !== "";
                 }
                 else {
@@ -62,7 +63,19 @@ export const getBookListByFliter = mutation({
             totalPages = (totalLength % 10 == 0) && totalLength != 0 ? Math.floor(totalLength) / 10 : Math.floor(totalLength / 10) + 1;
 
             return searchResult;
-        }).then((result) => {
+        })
+        .then(async (list) => {
+          const arr = [];
+          const len = list.length
+          for(let i = 0; i < len; i++) {
+            const bookmarkCount = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === list[i]?._id}).length;
+            const isUserBookmark = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === list[i]?._id && q?.student_id === args?.studentId}).length >= 1
+            arr.push({bookmarkCount: bookmarkCount, isUserBookmark: isUserBookmark, ...list[i]})
+          }
+
+          return arr;
+        })
+        .then((result) => {
             if(result.length == 0) {
               return [];
             }
@@ -239,9 +252,25 @@ export const getUserBookmark = mutation({
       q.eq(q.field("student_id"), args.student_id)
     )
     .order("desc")
-    .collect();
+    .collect()
+    .then(async (data) => {
+      const arr = [];
+      const len = data.length;
 
-    const totalBookmark = await userBookmarks.length;
+      for (let i = 0; i < len; i++) {
+        const bookInfo = await ctx.db.get(data[i].book_id);
+        const date = new Date(data[i]?._creationTime);
+        arr.push({
+          date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+          student_id: data[i].student_id,
+          ...bookInfo
+        })
+      }
+
+      return arr;
+    })
+
+    const totalBookmark = userBookmarks.length;
 
     return {
       totalBookmark: totalBookmark,
@@ -386,12 +415,6 @@ export const addBookmark = mutation({
     const bookmarkReq = await ctx.db.insert("bookmark_list", {
       book_id : args.book_id,
       student_id : args.student_id
-    }).then(() => {
-      ctx.db.get(args.book_id).then((q) => {
-        ctx.db.patch(args.book_id, {
-          bookmark_count : q.bookmark_count + 1
-        })
-      })
     })
 
     return bookmarkReq;
@@ -410,13 +433,7 @@ export const cancelBookmark = mutation({
     })
     .collect()
     .then((q) => {
-      ctx.db.delete(q[0]._id).then(() => {
-        ctx.db.get(args.book_id).then((q) => {
-          ctx.db.patch(args.book_id, {
-            bookmark_count : q.bookmark_count - 1
-          })
-        })
-      })
+      ctx.db.delete(q[0]._id);
     })
 
     return bookmarkReq;
@@ -444,6 +461,42 @@ export const callNaverBookApi = action({
       else {
         return "Naver API 에러입니다.";
       }                                                                                                        
+  }
+})
+
+export const bookRecommendationApi = action({
+  handler: async (ctx) => {
+    function convertXmlToJson(xmlString : string) {
+      const jsonData = {};
+      for (const result of xmlString.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
+        const key = result[1] || result[3];
+        const value = result[2] && convertXmlToJson(result[2]);
+        jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
+      }
+      return jsonData;
+    }
+
+      const data = await fetch(`https://nl.go.kr/NL/search/openApi/saseoApi.do?key=${process.env.LIBRARY_API_KEY}&startRowNumApi=1&endRowNumApi=10&drcode=4`, {
+        method: "GET",
+        headers: {
+          "Accept": "*/*"
+        }
+      }) 
+      .then(async (resData) => {
+        
+        const jsonData = await resData.text().then((text) => {
+          if (resData.ok) {
+            return convertXmlToJson(text);
+          }
+          else {
+            throw new Error("추천 도서 API 오류입니다.");
+          }
+        })
+        
+        return jsonData;
+      })
+      
+      return data
   }
 })
 

@@ -3,7 +3,6 @@
 .card_container {
     @include flex-column;
     width: 100%;
-    max-width: 33%;
 
     .card_header {
         padding-bottom: 5px;

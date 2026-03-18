@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Card } from '@/components/ui/card';
 import { useMutation } from 'convex/react';
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 
 import st from './BookList.module.scss';
+import Loading from '@/app/loading';
 
 function BookList() {
     const getBooks = useMutation(api.books.getBooks);
@@ -52,14 +53,21 @@ function BookList() {
     const [bookList, setBookList] = useState<any[]>([]);
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
     const [borrowedFilter, setBorrowedFilter] = useState<string>("전체");
-    const [reservedFilter, setReservedFilter] = useState<string>("all");
+    const [reservedFilter, setReservedFilter] = useState<string>("전체");
     const [pageCount, setPageCount] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [searched, setSearched] = useState<boolean>(true);
+    const [searched, setSearched] = useState<boolean>(false);
+    const searchButtonRef = useRef<HTMLButtonElement>(null);
 
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const handleSearch = async () => {
+        const urlParamInput = searchParams.get('searchInput');
+        const urlParamBorrowed = searchParams.get('borrowed');
+        const urlParamReserved = searchParams.get('reserved');
+        const urlParamType = searchParams.get('type');
+        
         const searchPromise = getBooks().then((data) => {
             const reservedCount = data.bookList.filter((item) => {
                 return item.reservation && item.reservation !== "";
@@ -75,18 +83,22 @@ function BookList() {
         })
         .then(async () => {
             const filteredList = await getBookListByFliter({
-                input : input,
-                searchType: searchType,
-                borrowedFilter: borrowedFilter,
-                reservedFilter: reservedFilter,
-                pageNum: currentPage
+                input : urlParamInput ? urlParamInput : "",
+                searchType: urlParamType ? urlParamType : "전체",
+                borrowedFilter: urlParamBorrowed ? urlParamBorrowed : "전체",
+                reservedFilter: urlParamReserved ? urlParamReserved : "전체",
+                pageNum: currentPage,
+                studentId: "60211579"
             });
 
             setPageCount(filteredList.totalPages);
 
             return filteredList.filteredList;
-        }).then((data) => {
-            setBookList(data); 
+        })
+        .then((data) => {
+            setBookList(data);
+        })
+        .finally(() => {
             setSearched(true);
         })
 
@@ -178,12 +190,11 @@ function BookList() {
             student_id: "60211579"
         })
         .then((data) => {
-            setBookmarkData(data.bookmarkList);
-        })
-        .then(() => {
-            if(bookmarkData.filter((item) => {
-                return item.book_id === bookId && item.student_id == "60211579";
-            })?.length >= 1) {
+            const filteredRes = data.bookmarkList.filter((item) => {
+                return item?._id === bookId && item?.student_id === "60211579";
+            });
+
+            if(filteredRes.length >= 1) {
                 cancelBookmark({
                     book_id: bookId as Id<"book_info">,
                     student_id: "60211579"
@@ -206,8 +217,7 @@ function BookList() {
 
     const onEnter = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
-            setCurrentPage(1);
-            handleSearch();
+            searchButtonRef.current.click();
         }
     }
 
@@ -250,9 +260,39 @@ function BookList() {
         return arr;
     }
 
+    const handleReset = () => {
+        router.replace('/booklist');
+        setInput("");
+        setSearchType("전체");
+        setReservedFilter("전체");
+        setBorrowedFilter("전체");
+        setCurrentPage(1);
+        setSearched(!searched);
+    }
+
     useEffect(() => {
+        if(searchParams.get('searchInput')) {
+            setInput(searchParams.get('searchInput'));
+        }
+
+        if(searchParams.get('borrowed')) {
+            setBorrowedFilter(searchParams.get('borrowed'));
+        }
+
+        if(searchParams.get('reserved')) {
+            setReservedFilter(searchParams.get('reserved'));
+        }
+
+        if(searchParams.get('type')) {
+            setSearchType(searchParams.get('type'));
+        }
+
         handleSearch();
     }, [searched])
+
+    if (!searched) {
+        return <Loading/>
+    }
 
     return (
         <div className={st.page_container}>
@@ -323,13 +363,13 @@ function BookList() {
                     <SelectTrigger className={st.select_filter}>
                         <SelectValue 
                             placeholder="예약 여부"
-                            defaultValue="all"
+                            defaultValue="전체"
                         />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">예약 여부</SelectItem>
-                        <SelectItem value="reserved">예약자 있음</SelectItem>
-                        <SelectItem value="notReserved">예약자 없음</SelectItem>
+                        <SelectItem value="전체">예약 여부</SelectItem>
+                        <SelectItem value="예약됨">예약자 있음</SelectItem>
+                        <SelectItem value="예약안됨">예약자 없음</SelectItem>
                     </SelectContent>
                 </Select>
 
@@ -345,10 +385,12 @@ function BookList() {
                 />
 
                 <Button
+                    ref={searchButtonRef}
                     className={st.button}
                     onClick={() => {
                         setCurrentPage(1);
-                        handleSearch();
+                        router.replace(`/booklist?searchInput=${input=="" ? "" :input}&borrowed=${borrowedFilter}&reserved=${reservedFilter}&type=${searchType}`);
+                        setSearched(false);
                     }}
                 >
                     검색
@@ -357,14 +399,7 @@ function BookList() {
 
                 <Button
                     className={st.button}
-                    onClick={() => {
-                        setInput("");
-                        setSearchType("전체");
-                        setReservedFilter("all");
-                        setBorrowedFilter("전체");
-                        setCurrentPage(1);
-                        setSearched(!searched);
-                    }}
+                    onClick={handleReset}
                 >
                     초기화
                     <RotateCcw size={15}/>
@@ -448,11 +483,11 @@ function BookList() {
 
                                         <TableCell width={12.5} align='center'>
                                             <Button 
-                                                className={st.default_button}
+                                                className={item?.isUserBookmark ? st.bookmarked_button : st.default_button}
                                                 onClick={() => handleBookmark(item?._id)}
                                             >
                                                 <Bookmark size={20}/>
-                                                {item?.bookmark_count ? item?.bookmark_count : 0}
+                                                {item?.bookmarkCount ? item?.bookmarkCount : 0}
                                             </Button>
                                         </TableCell>
                                     </TableRow>

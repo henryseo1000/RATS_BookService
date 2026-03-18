@@ -31,6 +31,8 @@ import { toast } from 'sonner';
 import { handleDownload } from '@/utils/handleDownload';
 import { Textarea } from '@/components/ui/textarea';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import Loading from '@/app/loading';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -41,15 +43,18 @@ function Files() {
   const [file, setFile] = useState<File>();
   const [input, setInput] = useState<string>("");
   const [fileList, setFileList] = useState<any[]>([]);
-  const [typeFilter, setTypeFiler] = useState<string>("");
+  const [typeFilter, setTypeFiler] = useState<string>("all");
   const [description, setDescription] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>(1);
-  const [searched, setSearched] = useState<boolean>(true);
+  const [searched, setSearched] = useState<boolean>(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const handleUpload = async (file : File) => {
     const url = await generateUploadUrl();
@@ -85,9 +90,12 @@ function Files() {
   }
 
   const handleFileSearch = () => {
+    const inputParam = searchParams.get('searchInput');
+    const typeParam = searchParams.get('type');
+
     const searchResult = getFileListByFilter({
-      input: input,
-      searchType: typeFilter,
+      input: inputParam ? inputParam : "",
+      searchType: typeParam ? typeParam : "all",
       pageNum: currentPage
     }).then((data) => {
       setFileList(data.filteredList);
@@ -103,10 +111,11 @@ function Files() {
   }
 
   const handleReset = () => {
-    setCurrentPage(1);
+    router.replace(`/files`);
     setTypeFiler("all");
     setInput("");
-    setSearched(false)
+    setCurrentPage(1);
+    setSearched(false);
   }
 
   const onEnter = (e: React.KeyboardEvent) => {
@@ -156,8 +165,20 @@ function Files() {
       }
 
   useEffect(() => {
+    if(searchParams.get('searchInput')) {
+      setInput(searchParams.get('searchInput'));
+    }
+
+    if(searchParams.get('type')) {
+      setTypeFiler(searchParams.get('type'));
+    }
+
     handleFileSearch();
   }, [searched]);
+
+  if (!searched) {
+    return <Loading/>
+  }
 
   return (
     <div className={st.page_container}>
@@ -192,6 +213,7 @@ function Files() {
         <Button
           onClick={()=> {
             setCurrentPage(1);
+            router.replace(`/files?searchInput=${input=="" ? "" :input}&type=${typeFilter}`);
             setSearched(false);
           }}
           className={st.button}
@@ -219,17 +241,20 @@ function Files() {
             <Table>
               <TableHeader className={st.table_header}>
                 <TableRow>
+                  <TableCell>파일 번호</TableCell>
                   <TableCell>유형</TableCell>
                   <TableCell>파일 크기</TableCell>
                   <TableCell>날짜</TableCell>
                   <TableCell>파일 이름</TableCell>
-                  <TableCell>파일 번호</TableCell>
+                  <TableCell>작성자</TableCell>
+                  <TableCell>삭제/수정</TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fileList.map((item, index) => {
                   return (
                   <TableRow key={index}>
+                    <TableCell>NO.{index + 1}</TableCell>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
                     <TableCell>{item?.file_size}KB</TableCell>
                     <TableCell>{new Date(item?._creationTime).toDateString()}</TableCell>
@@ -245,7 +270,10 @@ function Files() {
                       {item?.file_name}
                       <Download className={st.icon} />
                     </TableCell>
-                    <TableCell>NO.{index + 1}</TableCell>
+                    <TableCell>{item?.author}</TableCell>
+                    <TableCell>
+                      {item?.author === "60211579" ? <Button className={st.button}>삭제/수정</Button> : ""}
+                    </TableCell>
                   </TableRow>
                 )})}
               </TableBody>

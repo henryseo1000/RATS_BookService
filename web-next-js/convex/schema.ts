@@ -12,7 +12,7 @@ export default defineSchema({
     title: v.string(),
     status: v.optional(v.string()),
     type: v.optional(v.string()),
-    bookmark_count: v.number()
+    bookmark_count: v.optional(v.number())
   }),
   file_list: defineTable({
     author: v.string(),

@@ -7,23 +7,26 @@ import { api } from "../../../../../convex/_generated/api";
 import { Book, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import Loading from "@/app/loading";
 
 export default function BookInformation(props : any) {
     const getBookInfo = useMutation(api.books.getBookInfo);
     const callBookApi = useAction(api.books.callNaverBookApi);
 
     const [bookData, setBookData] = useState<any>();
+    const [isLoading, setLoading] = useState<boolean>(true);
 
     const searchFromApi = () => {
         const apiPromise = getBookInfo({ 
             book_id: props.params.id 
         }).then( async (data) => {
+            setLoading(true);
             const searchList = await callBookApi({
                 isbn : data.isbn
             })
 
             setBookData(searchList?.items[0]!);
-        })
+        }).then(() => setLoading(false))
 
         toast.promise(apiPromise, {
             loading: "정보를 가져오는 중...",
@@ -33,8 +36,13 @@ export default function BookInformation(props : any) {
     }
 
     useEffect(() => {
-        searchFromApi();
+        searchFromApi()
+
     }, []);
+
+    if (isLoading) {
+        return <Loading/>
+    }
 
     return (
         <div className={st.page_container}>

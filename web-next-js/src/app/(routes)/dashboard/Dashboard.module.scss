@@ -9,6 +9,19 @@
         gap: 20px;
     }
 
+    .history {
+
+        .history_content {
+
+            .table_row {
+                &:hover {
+                    cursor: pointer;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+
     .calendar {
         @include flex-column;
         width: 100%;
@@ -28,7 +41,7 @@
             .calendar_main {
                 padding: 0px;
                 color: #182D52;
-                background-color: #fff;
+                background-color: #ffffff;
             }
 
             .no_results {

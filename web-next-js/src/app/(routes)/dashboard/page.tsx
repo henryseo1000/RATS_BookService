@@ -40,6 +40,7 @@ import { handleDownload } from "@/utils/handleDownload";
 import { Download } from "lucide-react";
 import { ColProps } from "@/types/common/ColProps";
 import { Id } from "../../../../convex/_generated/dataModel";
+import Loading from "@/app/loading";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
@@ -138,7 +139,7 @@ function Dashboard() {
     })
   }
 
-  useEffect(() => {
+  const handleDashboard = () => {
     const totalPromise = getUserBorrowed({
       student_id: "60211579",
     })
@@ -148,28 +149,52 @@ function Dashboard() {
       getUserReserved({
         student_id: "60211579",
       }).then((data) => {
-        setReservedData(data)
+        setReservedData(data);
       })
     )
 
     .then(() =>
       getUserHistory().then((data) => {
-        setHistoryData(data.historyList.splice(0, 5));
+        const len = data.historyList.length;
+        if (len >= 5) {
+          setHistoryData(data.historyList.splice(0, 5));
+        }
+        else {
+          setFileList(data.historyList.splice(0, len));
+        }
       })
     )
 
     .then(() =>
       getFileList().then((data) => {
-        setFileList(data.splice(0, 5));
+        const len = data.length;
+        if (len >= 5) {
+          setFileList(data.splice(0, 5));
+        }
+        else {
+          setFileList(data.splice(0, len));
+        }
       })
-    );
+    )
+
+    .finally(() => {
+      setUpdated(true);
+    })
 
     toast.promise(totalPromise, {
       loading: "로딩중...",
       success: "데이터를 가져왔습니다.",
       error: "서버에서 에러가 발생했습니다."
     });
+  }
+
+  useEffect(() => {
+    handleDashboard();
   }, [updated]);
+
+  if (!updated) {
+    return <Loading/>
+  }
 
   return (
     <div className={st.page_container}>
@@ -200,20 +225,15 @@ function Dashboard() {
           columnData={reserveCol}
           buttonText="예약 취소"
         />
-        <ChartCard
-          title={"대출된 책 권수"}
-          description={`${user?.username}님이 1개월동안 대출한 책 현황입니다`}
-          countVal={30}
-          chartInsideText="1개월 동안 대출 권수"
-          useTable
-          columnData={borrowCol}
-        />
       </div>
 
       <div>
         <Card className={st.history}>
           <CardHeader>
             <CardTitle>{user?.username}님의 히스토리입니다.</CardTitle>
+            <CardDescription>
+              대출, 반납 기록을 확인할 수 있습니다.
+            </CardDescription>
           </CardHeader>
 
           <CardContent className={st.history_content}>
@@ -232,7 +252,7 @@ function Dashboard() {
                   const date = new Date(item?._creationTime);
 
                   return (
-                    <TableRow key={index}>
+                    <TableRow className={st.table_row} key={index}>
                       <TableCell>{item?.type}</TableCell>
                       <TableCell>
                         {date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일"}
