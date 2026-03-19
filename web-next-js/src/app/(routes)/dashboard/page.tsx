@@ -41,6 +41,7 @@ import { Download } from "lucide-react";
 import { ColProps } from "@/types/common/ColProps";
 import { Id } from "../../../../convex/_generated/dataModel";
 import Loading from "@/app/loading";
+import utcToKorea from "@/utils/utcToKorea";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
@@ -101,7 +102,7 @@ function Dashboard() {
       label: "책 이름",
     },
     {
-      label: "날짜",
+      label: "대출 날짜",
     },
     {
       label: "저자",
@@ -249,15 +250,14 @@ function Dashboard() {
               </TableHeader>
               <TableBody>
                 {historyData?.map((item, index) => {
-                  const date = new Date(item?._creationTime);
 
                   return (
                     <TableRow className={st.table_row} key={index}>
                       <TableCell>{item?.type}</TableCell>
                       <TableCell>
-                        {date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일"}
+                        {item?.date}
                       </TableCell>
-                      <TableCell>{date.getHours() + "시 " + date.getMinutes() + "분"}</TableCell>
+                      <TableCell>{item?.time}</TableCell>
                       <TableCell onClick={(e) => {
                         router.push(`/booklist/${item?.book_id}`);
                       }}>{item?.book_title}</TableCell>
@@ -336,9 +336,9 @@ function Dashboard() {
               <TableRow>
                 <TableCell>유형</TableCell>
                 <TableCell>파일 크기</TableCell>
-                <TableCell>날짜</TableCell>
+                <TableCell>게시 날짜</TableCell>
                 <TableCell>파일 이름</TableCell>
-                <TableCell>파일 번호</TableCell>
+                <TableCell>작성자</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -348,7 +348,7 @@ function Dashboard() {
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
                     <TableCell>{item?.file_size}MB</TableCell>
                     <TableCell>
-                      {new Date(item?._creationTime)?.toDateString()}
+                      {utcToKorea(item?._creationTime, "onlyDate")}
                     </TableCell>
                     <TableCell
                       className={st.file_name}
@@ -363,7 +363,7 @@ function Dashboard() {
                       {item?.file_name}
                       <Download className={st.icon} />
                     </TableCell>
-                    <TableCell>NO.{index + 1}</TableCell>
+                    <TableCell>{item?.author}</TableCell>
                   </TableRow>
                 );
               })}

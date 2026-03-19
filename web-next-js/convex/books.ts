@@ -1,3 +1,4 @@
+import utcToKorea from "@/utils/utcToKorea";
 import { action, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -69,7 +70,7 @@ export const getBookListByFliter = mutation({
           const len = list.length
           for(let i = 0; i < len; i++) {
             const bookmarkCount = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === list[i]?._id}).length;
-            const isUserBookmark = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === list[i]?._id && q?.student_id === args?.studentId}).length >= 1
+            const isUserBookmark = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return (q?.book_id === list[i]?._id) && (q?.student_id === args?.studentId)}).length >= 1
             arr.push({bookmarkCount: bookmarkCount, isUserBookmark: isUserBookmark, ...list[i]})
           }
 
@@ -156,7 +157,9 @@ export const getUserHistory = mutation({
         historyResult.push({
           ...data[i],
           book_title : book_data.title,
-          book_isbn : book_data.isbn
+          book_isbn : book_data.isbn,
+          time : utcToKorea(data[i]?._creationTime, "onlyTime"),
+          date : utcToKorea(data[i]?._creationTime, "onlyDate"),
         })
       }
       return historyResult;
@@ -186,12 +189,11 @@ export const getUserBorrowed = mutation({
       for (let i = 0; i < res.length; i++) {
         await ctx.db.get(res[i].book_id)
         .then((data) => {
-          const date = new Date(data?._creationTime);
 
           borrowedResult.push({
             book_id: res[i]?.book_id,
             extended: res[i]?.extended,
-            date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+            date: utcToKorea(res[i]?._creationTime, "onlyDate"),
             ...data
           });
         })
@@ -222,10 +224,9 @@ export const getUserReserved = mutation({
       const reservedResult = [];
       for (let i = 0; i < data.length; i++) {
         await ctx.db.get(data[i].book_id).then((data) => {
-          const date = new Date(data?._creationTime);
 
           reservedResult.push({
-            date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+            date: utcToKorea(data?._creationTime, "onlyDate"),
             ...data
           });
         })
@@ -259,9 +260,9 @@ export const getUserBookmark = mutation({
 
       for (let i = 0; i < len; i++) {
         const bookInfo = await ctx.db.get(data[i].book_id);
-        const date = new Date(data[i]?._creationTime);
+
         arr.push({
-          date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+          date: utcToKorea(data[i]?._creationTime),
           student_id: data[i].student_id,
           ...bookInfo
         })
@@ -289,7 +290,8 @@ export const borrowBook = mutation({
       book_id: args.book_id,
       student_id: args.student_id,
       extended: false
-    }).then(() => {
+    })
+    .then(() => {
       ctx.db.get( args.book_id ).then((item) => {
         if (item.reservation === args.student_id) {
           ctx.db.patch( args.book_id, { 
@@ -412,12 +414,10 @@ export const addBookmark = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const bookmarkReq = await ctx.db.insert("bookmark_list", {
+    await ctx.db.insert("bookmark_list", {
       book_id : args.book_id,
       student_id : args.student_id
     })
-
-    return bookmarkReq;
   }
 })
 
@@ -427,16 +427,13 @@ export const cancelBookmark = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const bookmarkReq = await ctx.db.query("bookmark_list") // bookmark_list에서 인자로 넘겨준 책 아이디와 학번을 확인하고, 일치하면 
-    .filter((q) => {
-      return q.eq(q.field("book_id"), args.book_id) && q.eq(q.field("student_id"), args.student_id)
-    })
-    .collect()
-    .then((q) => {
-      ctx.db.delete(q[0]._id);
-    })
+    const resArr = (await ctx.db.query("bookmark_list") // bookmark_list에서 인자로 넘겨준 책 아이디와 학번을 확인하고, 일치하면 
+    .collect())
+    .filter((item) => {
+      return (item?.book_id === args.book_id) && (item?.student_id === args.student_id)
+    });
 
-    return bookmarkReq;
+    await ctx.db.delete(resArr[0]._id);
   }
 })
 
@@ -466,15 +463,15 @@ export const callNaverBookApi = action({
 
 export const bookRecommendationApi = action({
   handler: async (ctx) => {
-    function convertXmlToJson(xmlString : string) {
-      const jsonData = {};
-      for (const result of xmlString.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
-        const key = result[1] || result[3];
-        const value = result[2] && convertXmlToJson(result[2]);
-        jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
-      }
-      return jsonData;
-    }
+    // function convertXmlToJson(xmlString : string) {
+    //   const jsonData = {};
+    //   for (const result of xmlString.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
+    //     const key = result[1] || result[3];
+    //     const value = result[2] && convertXmlToJson(result[2]);
+    //     jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
+    //   }
+    //   return jsonData;
+    // }
 
       const data = await fetch(`https://nl.go.kr/NL/search/openApi/saseoApi.do?key=${process.env.LIBRARY_API_KEY}&startRowNumApi=1&endRowNumApi=10&drcode=4`, {
         method: "GET",
@@ -486,7 +483,7 @@ export const bookRecommendationApi = action({
         
         const jsonData = await resData.text().then((text) => {
           if (resData.ok) {
-            return convertXmlToJson(text);
+            return resData;
           }
           else {
             throw new Error("추천 도서 API 오류입니다.");
@@ -496,7 +493,7 @@ export const bookRecommendationApi = action({
         return jsonData;
       })
       
-      return data
+      return data;
   }
 })
 
@@ -511,7 +508,6 @@ export const extendDeadline = mutation({
     })
     .collect()
     .then((result) => {
-      console.log(result)
       ctx.db.get(result[0]?._id).then((data) => {
         if (data?.extended) {
           throw new Error("이미 연장된 책입니다!");
@@ -519,6 +515,13 @@ export const extendDeadline = mutation({
         else {
           ctx.db.patch(data?._id, { extended: true });
         }
+      })
+    })
+    .then(() => {
+      ctx.db.insert("book_history",{
+        type: "연장",
+        student_id: args.student_id,
+        book_id: args.book_id
       })
     })
   }

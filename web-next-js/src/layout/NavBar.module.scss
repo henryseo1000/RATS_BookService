@@ -385,7 +385,7 @@
 
             .link_section {
                 flex-direction: row;
-                gap: 30px;
+                gap: 25px;
 
                 span {
                     display: none;
@@ -455,7 +455,14 @@
             }
 
             .additional_section {
-                display: none;
+                display: flex;
+                padding: 5px;
+                border-radius: 10px;
+                margin: 0px;
+
+                span {
+                    display: none;
+                }
             }
         }
 

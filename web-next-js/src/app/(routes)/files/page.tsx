@@ -33,6 +33,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Loading from '@/app/loading';
 import { useRouter, useSearchParams } from 'next/navigation';
+import utcToKorea from '@/utils/utcToKorea';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -241,7 +242,6 @@ function Files() {
             <Table>
               <TableHeader className={st.table_header}>
                 <TableRow>
-                  <TableCell>파일 번호</TableCell>
                   <TableCell>유형</TableCell>
                   <TableCell>파일 크기</TableCell>
                   <TableCell>날짜</TableCell>
@@ -254,10 +254,9 @@ function Files() {
                 {fileList.map((item, index) => {
                   return (
                   <TableRow key={index}>
-                    <TableCell>NO.{index + 1}</TableCell>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
                     <TableCell>{item?.file_size}KB</TableCell>
-                    <TableCell>{new Date(item?._creationTime).toDateString()}</TableCell>
+                    <TableCell>{utcToKorea(item?._creationTime)}</TableCell>
                     <TableCell
                       className={st.file_name}
                       onClick={async () => {

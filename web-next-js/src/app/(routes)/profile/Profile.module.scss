@@ -2,16 +2,49 @@
 
 .page_container {
     @include justi-between;
+    width: 100%;
+    height: 100%;
 
-    .profile_header {
-        img {
-            width: 300px;
-            height: 300px;
-            border-radius: 150px;
+    .profile_area {
+        @include flex-column-center;
+        width: 100%;
+
+        .profile_header {
+            
+            img {
+                width: 200px;
+                height: 200px;
+                border: 5px solid #182d52;
+                border-radius: 150px;
+            }
         }
-    }
 
-    .user_information {
-        
+        .user_information {
+            @include flex-column;
+            width: 100%;
+            max-width: 400px;
+            gap: 25px;
+
+            .inform_area {
+                @include flex-column;
+                gap: 5px;
+
+                .subtitle {
+                    font-size: 17px;
+                    font-weight: bold;
+                }
+
+                .input {
+                    width: 100%;
+                    height: 35px;
+                    font-size: 15px;
+                    background-color: #eeeeee;
+                    border: 1px solid #aaaaaa;
+                    border-radius: 15px;
+                    padding: 10px 20px;
+                    outline: none;
+                }
+            }
+        }
     }
 }

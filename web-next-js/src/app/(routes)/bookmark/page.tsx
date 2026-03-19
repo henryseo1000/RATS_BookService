@@ -63,23 +63,13 @@ function Bookmark() {
     <div className={st.page_container}>
       <Card className={st.filter}>
         <Select>
-          <SelectTrigger className={st.select}>
-            <SelectValue placeholder="유형"/>
+          <SelectTrigger value={status} className={st.select}>
+            <SelectValue placeholder="상태"/>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="notBorrowed">이미지</SelectItem>
-            <SelectItem value="borrowed">문서</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select>
-          <SelectTrigger className={st.select}>
-            <SelectValue placeholder="분류" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="light">임베디드</SelectItem>
-            <SelectItem value="dark">교양</SelectItem>
-            <SelectItem value="system">물리</SelectItem>
+            <SelectItem value="전체">전체</SelectItem>
+            <SelectItem value="비치중">비치중</SelectItem>
+            <SelectItem value="대출중">대출중</SelectItem>
           </SelectContent>
         </Select>
 
@@ -120,8 +110,8 @@ function Bookmark() {
                 <TableRow>
                   <TableCell>상태</TableCell>
                   <TableCell>예약 날짜</TableCell>
-                  <TableCell>분류</TableCell>
                   <TableCell>책 이름</TableCell>
+                  <TableCell>저자</TableCell>
                   <TableCell>ISBN</TableCell>
                 </TableRow>
               </TableHeader>
@@ -130,14 +120,16 @@ function Bookmark() {
                   return (
                   <TableRow key={index}>
                     <TableCell>{item?.status}</TableCell>
-                    <TableCell>{item.date}</TableCell>
+                    <TableCell>{item?.date}</TableCell>
                     <TableCell>{item.title}</TableCell>
+                    <TableCell className={st.author}>
+                      {item?.author}
+                    </TableCell>
                     <TableCell
                       className={st.file_name}
                     >
                       {item?.isbn}
                     </TableCell>
-                    <TableCell>NO.13</TableCell>
                   </TableRow>
                 )})}
               </TableBody>

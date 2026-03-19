@@ -25,6 +25,13 @@
                     font-weight: 700;
                 }
             }
+
+            .author {
+                max-width: 150px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
     }
 
@@ -53,21 +60,21 @@
     }
 
     .default_button {
-        min-width: 90px;
+        min-width: 80px;
         gap: 10px;
         background-color: #307cff;
     }
 
     .activated_button {
-        min-width: 90px;
+        min-width: 80px;
         gap: 10px;
         background-color: #ff4040;
     }
 
     .bookmarked_button {
-        min-width: 90px;
+        min-width: 80px;
         gap: 10px;
-        background-color: #f64fee;
+        background-color: #2a23ad;
     }
 }
 
