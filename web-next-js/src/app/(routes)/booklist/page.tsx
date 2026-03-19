@@ -411,9 +411,9 @@ function BookList() {
                         <TableHeader>
                             <TableRow>
                                 <TableCell>상태</TableCell>
-                                <TableCell>등록 날짜</TableCell>
                                 <TableCell>분류</TableCell>
                                 <TableCell>책 이름</TableCell>
+                                <TableCell>저자</TableCell>
                                 <TableCell>ISBN</TableCell>
                                 <TableCell align='center'>대출자</TableCell>
                                 <TableCell align='center'>예약자</TableCell>
@@ -428,20 +428,20 @@ function BookList() {
                                         className={st.table_row}
                                         key={item?._id}
                                     >
-                                        <TableCell width={12.5}>{item?.status ? item?.status : "비치중"}</TableCell>
-                                        <TableCell width={12.5}>{new Date(item?._creationTime).toLocaleDateString()}</TableCell>
-                                        <TableCell width={12.5}>{item?.type ? item?.type : ""}</TableCell>
+                                        <TableCell width={"10%"}>{item?.status ? item?.status : "비치중"}</TableCell>
+                                        <TableCell width={"10%"}>{item?.type ? item?.type : ""}</TableCell>
                                         <TableCell 
                                             className={st.book_title}
-                                            width={12.5}
+                                            width={"30%"}
                                             onClick={() => {
                                                 router.push(`/booklist/${item?._id}`);
                                             }}
                                         >
                                             {item?.title}
                                         </TableCell>
-                                        <TableCell width={12.5}>{item?.isbn}</TableCell>
-                                        <TableCell width={12.5} align='center'>
+                                        <TableCell className={st.author} width={"10%"}>{item?.author}</TableCell>
+                                        <TableCell width={"10%"}>{item?.isbn}</TableCell>
+                                        <TableCell width={"10%"} align='center'>
                                             { item?.borrowed ? 
 
                                             item.borrowed === "60211579" ? 
@@ -461,7 +461,7 @@ function BookList() {
                                             </Button>
                                             }
                                         </TableCell>
-                                        <TableCell width={12.5} align='center'>
+                                        <TableCell width={"10%"} align='center'>
                                             { item?.reservation && item?.reservation !== "" ? 
 
                                             item.reservation === "60211579" ? <Button className={st.activated_button} onClick={() => handleCancelRes(item?._id)}>예약 취소</Button> : `예약중 : ${item.reservation}` 
@@ -481,7 +481,7 @@ function BookList() {
                                             }
                                         </TableCell>
 
-                                        <TableCell width={12.5} align='center'>
+                                        <TableCell width={"10%"} align='center'>
                                             <Button 
                                                 className={item?.isUserBookmark ? st.bookmarked_button : st.default_button}
                                                 onClick={() => handleBookmark(item?._id)}

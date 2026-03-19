@@ -33,6 +33,13 @@
             .file_name {
                 cursor: pointer;
             }
+
+            .author {
+                max-width: 150px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
         .dialog_title {
