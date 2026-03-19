@@ -1,3 +1,4 @@
+import utcToKorea from "@/utils/utcToKorea";
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -46,6 +47,8 @@ export const getFileListByFilter = mutation ({
         let totalLength = 0;
         let totalPages = 0;
         const filteredList = await ctx.db.query("file_list")
+        .withIndex("by_creation_time")
+        .order("desc")
         .collect()
         .then((filelist) => {
             const searchResult = filelist.filter((item) => {
@@ -77,12 +80,20 @@ export const getFileListByFilter = mutation ({
             if(result.length == 0) {
               return [];
             }
-
+            
             if (args.pageNum < totalPages) {
-              return result.splice((args.pageNum - 1) * 10, 10);
+              return result
+              .map((item) => {
+                return {date: utcToKorea(item._creationTime) , ...item}
+              })
+              .splice((args.pageNum - 1) * 10, 10);
             }
             else if (args.pageNum == totalPages) {
-              return result.splice((args.pageNum - 1) * 10, totalLength % 10);
+              return result
+              .map((item) => {
+                return {date: utcToKorea(item._creationTime) , ...item}
+              })
+              .splice((args.pageNum - 1) * 10, totalLength % 10);
             }
             else {
               throw new Error("Page number is bigger than total pages. Please try again.");

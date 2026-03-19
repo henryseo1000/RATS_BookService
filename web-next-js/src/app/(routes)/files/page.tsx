@@ -260,7 +260,7 @@ function Files() {
                   <TableRow key={index}>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
                     <TableCell>{item?.file_size}KB</TableCell>
-                    <TableCell>{utcToKorea(item?._creationTime)}</TableCell>
+                    <TableCell>{item?.date}</TableCell>
                     <TableCell
                       className={st.file_name}
                       onClick={async () => {

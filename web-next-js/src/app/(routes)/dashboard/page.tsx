@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useUser } from "@clerk/clerk-react";
+
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ import st from "./Dashboard.module.scss";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 
@@ -52,6 +52,8 @@ function Dashboard() {
   const getFileList = useMutation(api.files.getFileList);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
   const extendDeadline = useMutation(api.books.extendDeadline);
+  const cancelReservation = useMutation(api.books.cancelReservation);
+  const bookRecommendationApi = useAction(api.books.bookRecommendationApi);
 
   const [borrowedData, setBorrowedData] = useState<any>({});
   const [reservedData, setReservedData] = useState<any>({});
@@ -61,45 +63,9 @@ function Dashboard() {
   const [updated, setUpdated] = useState<boolean>(false);
   const [swiper, setSwiper] = useState<SwiperCore>();
   const userData = useRecoilValue(userDataState);
+  const [recommandData, setRecommandData] = useState<any[]>([]);
 
-  const { user } = useUser();
   const router = useRouter();
-  
-
-  const bookData: BookData[] = [
-    {
-      title: "과학책 읽어주는 공대생",
-      description:
-        "‘요즘 공대생’의 마음을 훔친 ‘과학 고전’ 18권을 소개하는 가이드북! 과학은 수식과 이론이 가득하고 첨단을 달리는 분야인데, 짧게는 수십 년, 길게는 수백 년 전에 쓰인 과학 고전들이 공대생의 마음을 사로잡은 이유는 무엇일까? 과학 고전 속엔 과학자들의 인간미 넘치는 이야기부터 지금의 이 세계를 만든 거대한 발견의 순간까지 지금껏 빛을 보지 못한 원석 같은 이야기들이 숨겨져 있다.과학 고전 읽기의 어려움을 잘 알고 있는 작가는 독자들이 자신과 같은 혼란을 겪지 않도록 18권의 과학책을 꼼꼼히 해설한다. 어렵게 느껴질 수 있는 과학 용어와 개념 설명은 물론, 소개하는 책의 작가와 시대적 배경에 대한 정보를 상세히 담았다. 공대생다운 발칙하고 신선한 발상들도 함께 느낄 수 있다. 이 책을 읽는 독자들은 친절한 공대생의 안내를 따라 지금의 세계를 만든 거대한 과학 지식들을 습득할 뿐만 아니라 매력적인 과학자의 세계를 들여다볼 수 있을 것이다.",
-      imgPath:
-        "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280",
-    },
-    {
-      title: "책 이름2",
-      description: "책에 대한 설명입니다. 참고해주세요.",
-      imgPath:
-        "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280",
-    },
-    {
-      title: "책 이름3",
-      description: "책에 대한 설명입니다. 참고해주세요.",
-      imgPath:
-        "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280",
-    },
-    {
-      title: "책 이름4",
-      description: "책에 대한 설명입니다. 참고해주세요.",
-      imgPath:
-        "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280",
-    },
-    {
-      title: "책 이름5",
-      description:
-        "책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.책에 대한 설명입니다. 참고해주세요.",
-      imgPath:
-        "https://books.google.co.kr/books/publisher/content?id=bazDDwAAQBAJ&hl=ko&pg=PP1&img=1&zoom=3&bul=1&sig=ACfU3U0O_l6LQQsVHjySdQyyxwtGHErZBQ&w=1280",
-    },
-  ];
 
   const borrowCol: ColProps[] = [
     {
@@ -144,6 +110,19 @@ function Dashboard() {
     })
   }
 
+  const handelCancelReservation = (id: string) => {
+    const cancelPromise = cancelReservation({book_id: id as Id<"book_info">, student_id: userData.student_id})
+    .then(() => {
+      setUpdated(true);
+    })
+
+    toast.promise(cancelPromise, {
+      success: "예약 취소되었습니다!",
+      loading: "예약 취소를 시도하고 있습니다...",
+      error: "앗, 문제가 생겼어오!"
+    })
+  }
+
   const handleDashboard = () => {
     const totalPromise = getUserBorrowed({
       student_id: userData.student_id,
@@ -183,6 +162,12 @@ function Dashboard() {
         }
       })
     )
+
+    .then(() => {
+      bookRecommendationApi().then((data) => {
+        setRecommandData(data);
+      })
+    })
 
     .finally(() => {
       setUpdated(true);
@@ -231,6 +216,10 @@ function Dashboard() {
           tableData={reservedData.reservedList ? reservedData.reservedList : []}
           columnData={reserveCol}
           buttonText="예약 취소"
+          onButtonClick={(id) => {
+            setUpdated(false);
+            handelCancelReservation(id);
+          }}
         />
       </div>
 
@@ -304,7 +293,7 @@ function Dashboard() {
         <Card className={st.recommand}>
           <CardHeader className={st.recommand_header}>
             <CardTitle>이 달의 추천도서</CardTitle>
-            <CardDescription>크롤링을 통한 추천 도서</CardDescription>
+            <CardDescription>알라딘 추천 도서</CardDescription>
           </CardHeader>
           <CardContent className={st.recommand_content}>
             <Swiper
@@ -314,9 +303,12 @@ function Dashboard() {
               slidesPerView={1}
               autoplay={true}
               onSwiper={setSwiper}
-              pagination={true}
+              pagination={{
+                horizontalClass: st.swiper_pagination,
+                clickable: true
+              }}
             >
-              {bookData.map((item, index) => {
+              {recommandData.map((item, index) => {
                 return (
                   <SwiperSlide key={index}>
                     <BookCard data={item} />

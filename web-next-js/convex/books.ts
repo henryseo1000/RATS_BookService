@@ -151,6 +151,8 @@ export const getUserHistory = mutation({
   },
   handler: async (ctx, args) => {
     const totalData = await ctx.db.query("book_history")
+      .withIndex("by_creation_time")
+      .order("desc")
       .filter((q) => {
         return q.eq(q.field("student_id"), args.student_id)
       })
@@ -229,8 +231,8 @@ export const getUserReserved = mutation({
       const reservedResult = [];
       for (let i = 0; i < data.length; i++) {
         await ctx.db.get(data[i].book_id).then((data) => {
-
           reservedResult.push({
+            book_id: data?._id,
             date: utcToKorea(data?._creationTime, "onlyDate"),
             ...data
           });
@@ -392,19 +394,20 @@ export const cancelReservation = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const cancelReq = await ctx.db.query("reserved_list").filter((q) => {
-      return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id)
+    const cancelReq = await ctx.db.query("reserved_list")
+    .filter((q) => {
+      return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id);
     })
     .collect()
     .then((arr) => {
-      const id = arr[0]._id
-      ctx.db.delete(id).then(() => 
+      ctx.db.delete(arr[0]._id)
+      .then(() => 
         ctx.db.patch(args.book_id, { reservation : "" })
       ).then(() => 
         ctx.db.insert("book_history", { 
           book_id : args.book_id,
           student_id : args.student_id,
-          type: "예약"
+          type: "예약취소"
         })
       )
     })
@@ -468,37 +471,23 @@ export const callNaverBookApi = action({
 
 export const bookRecommendationApi = action({
   handler: async (ctx) => {
-    // function convertXmlToJson(xmlString : string) {
-    //   const jsonData = {};
-    //   for (const result of xmlString.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
-    //     const key = result[1] || result[3];
-    //     const value = result[2] && convertXmlToJson(result[2]);
-    //     jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
-    //   }
-    //   return jsonData;
-    // }
-
-      const data = await fetch(`https://nl.go.kr/NL/search/openApi/saseoApi.do?key=${process.env.LIBRARY_API_KEY}&startRowNumApi=1&endRowNumApi=10&drcode=4`, {
+      const data = await fetch(`http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=${process.env.LIBRARY_API_KEY}&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101&CategoryId=2719`, {
         method: "GET",
         headers: {
           "Accept": "*/*"
         }
       }) 
       .then(async (resData) => {
-        
-        const jsonData = await resData.text().then((text) => {
           if (resData.ok) {
-            return resData;
+            return resData.json();
           }
+
           else {
-            throw new Error("추천 도서 API 오류입니다.");
+            throw new Error("추천 도서 API 오류입니다");
           }
-        })
-        
-        return jsonData;
       })
       
-      return data;
+      return data?.item;
   }
 })
 
