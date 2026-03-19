@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { redirect, useRouter } from 'next/navigation';
-import { useAuth } from '@clerk/clerk-react';
+import { useState } from 'react';
 import { Toaster } from 'sonner';
 
 import NavBar from "@/layout/NavBar";
 
 import "./globals.css";
 import SearchBar from '@/components/common/SearchBar';
-import { useConvexAuth } from 'convex/react';
 
 export default function RouteLayout({
   children

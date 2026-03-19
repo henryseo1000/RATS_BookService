@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Dosis } from "next/font/google";
 import { Toaster } from 'sonner';
 
+import "./globals.css";
+
 const nanumGothic = Dosis({
   style: "normal",
   weight: "400",
