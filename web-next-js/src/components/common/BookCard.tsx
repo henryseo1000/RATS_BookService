@@ -12,7 +12,12 @@ interface Props {
 function BookCard({ data } : Props) {
 
     return (
-        <Card className={st.card_container}>
+        <Card 
+            onClick={() => {
+                window.open(data?.link)
+            }}
+            className={st.card_container}
+        >
             <img 
                 src={data?.cover} 
                 alt="book_img" 
@@ -30,7 +35,7 @@ function BookCard({ data } : Props) {
                     size={40}
                     color='#b0b0b0'
                     onClick={() => {
-                        window.open(data?.link)
+                        
                     }}
                 />
             </div>
