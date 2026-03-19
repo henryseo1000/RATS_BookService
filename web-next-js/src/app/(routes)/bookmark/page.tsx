@@ -20,14 +20,18 @@ import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { useUser } from '@clerk/clerk-react';
 import { toast } from 'sonner';
+import Loading from '@/app/loading';
 
 function Bookmark() {
   const getUserBookmark = useMutation(api.books.getUserBookmark);
 
   const [input, setInput] = useState<string>("");
   const [bookmarkList, setBookmarkList] = useState<any[]>([]);
+  const [searched, setSearched] = useState<boolean>(false);
+  const [status, setStatus] = useState<string>("전체");
 
-  const { user } = useUser();
+
+  const { user, isLoaded } = useUser();
 
   const handleBookmarkList =() => {
     const bookmarkPromise = getUserBookmark({
@@ -35,6 +39,9 @@ function Bookmark() {
     })
     .then((data) => {
       setBookmarkList(data.bookmarkList);
+    })
+    .finally(() => {
+      setSearched(true);
     })
 
     toast.promise(bookmarkPromise, {
@@ -46,14 +53,18 @@ function Bookmark() {
 
   useEffect(() => {
     handleBookmarkList();
-  }, [])
+  }, [searched])
+
+  if (!isLoaded) {
+    return <Loading/>
+  }
 
   return (
     <div className={st.page_container}>
       <Card className={st.filter}>
         <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="유형" />
+          <SelectTrigger className={st.select}>
+            <SelectValue placeholder="유형"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="notBorrowed">이미지</SelectItem>
@@ -62,23 +73,13 @@ function Bookmark() {
         </Select>
 
         <Select>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className={st.select}>
             <SelectValue placeholder="분류" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="light">임베디드</SelectItem>
             <SelectItem value="dark">교양</SelectItem>
             <SelectItem value="system">물리</SelectItem>
-          </SelectContent>
-        </Select>       
-
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="예약 여부" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="reserved">예약자 있음</SelectItem>
-            <SelectItem value="notReserved">예약자 없음</SelectItem>
           </SelectContent>
         </Select>
 
@@ -118,7 +119,7 @@ function Bookmark() {
               <TableHeader className={st.table_header}>
                 <TableRow>
                   <TableCell>상태</TableCell>
-                  <TableCell>등록 날짜</TableCell>
+                  <TableCell>예약 날짜</TableCell>
                   <TableCell>분류</TableCell>
                   <TableCell>책 이름</TableCell>
                   <TableCell>ISBN</TableCell>
@@ -128,13 +129,13 @@ function Bookmark() {
                 {bookmarkList.map((item, index) => {
                   return (
                   <TableRow key={index}>
-                    <TableCell>{item?.format?.split("/")[0]}</TableCell>
-                    <TableCell>{item?.file_size}KB</TableCell>
-                    <TableCell>{item._creationTime}</TableCell>
+                    <TableCell>{item?.status}</TableCell>
+                    <TableCell>{item.date}</TableCell>
+                    <TableCell>{item.title}</TableCell>
                     <TableCell
                       className={st.file_name}
                     >
-                      {item?.file_name}
+                      {item?.isbn}
                     </TableCell>
                     <TableCell>NO.13</TableCell>
                   </TableRow>

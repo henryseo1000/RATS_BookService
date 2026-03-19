@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Card } from '@/components/ui/card';
 import { useMutation } from 'convex/react';
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 
 import st from './BookList.module.scss';
+import Loading from '@/app/loading';
 
 function BookList() {
     const getBooks = useMutation(api.books.getBooks);
@@ -42,24 +43,36 @@ function BookList() {
     const addBookmark = useMutation(api.books.addBookmark);
     const cancelBookmark = useMutation(api.books.cancelBookmark);
     const getUserBookmark = useMutation(api.books.getUserBookmark);
+    const getBookListByFliter = useMutation(api.books.getBookListByFliter);
 
     const [bookCount, setBookCount] = useState<number>(0);
     const [reservedCount, setReservedCount] = useState<number>(0);
     const [borrowedCount, setBorrowedCount] = useState<number>(0);
-    const [searchType, setSearchType] = useState<string>("");
+    const [searchType, setSearchType] = useState<string>("전체");
     const [input, setInput] = useState<string>("");
     const [bookList, setBookList] = useState<any[]>([]);
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
-    const [borrowedFilter, setBorrowedFilter] = useState<string>("비치중");
+    const [borrowedFilter, setBorrowedFilter] = useState<string>("전체");
+    const [reservedFilter, setReservedFilter] = useState<string>("전체");
+    const [pageCount, setPageCount] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [searched, setSearched] = useState<boolean>(false);
+    const searchButtonRef = useRef<HTMLButtonElement>(null);
 
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const handleSearch = async () => {
+        const urlParamInput = searchParams.get('searchInput');
+        const urlParamBorrowed = searchParams.get('borrowed');
+        const urlParamReserved = searchParams.get('reserved');
+        const urlParamType = searchParams.get('type');
+        
         const searchPromise = getBooks().then((data) => {
             const reservedCount = data.bookList.filter((item) => {
                 return item.reservation && item.reservation !== "";
             }).length;
-    
+
             const borrowedCount = data.bookList.filter((item) => {
                 return item.borrowed && item.borrowed !== "";
             }).length;
@@ -67,57 +80,31 @@ function BookList() {
             setBookCount(data?.totalCount!);
             setReservedCount(reservedCount);
             setBorrowedCount(borrowedCount);
-
-            return data.bookList;
         })
-        .then((booklist) => {
-            const searchResult = booklist.filter((item) => {
-                return item?.title?.replace(" ", "").toLowerCase().includes(input)
-                    || item?.isbn?.replace(" ", "").toLowerCase().includes(input)
-                ;
-            }).filter((item) => {
-                return item?.type?.includes(searchType);
-            }).filter((item) => {
-                return item.status?.includes(borrowedFilter);
-            })
+        .then(async () => {
+            const filteredList = await getBookListByFliter({
+                input : urlParamInput ? urlParamInput : "",
+                searchType: urlParamType ? urlParamType : "전체",
+                borrowedFilter: urlParamBorrowed ? urlParamBorrowed : "전체",
+                reservedFilter: urlParamReserved ? urlParamReserved : "전체",
+                pageNum: currentPage,
+                studentId: "60211579"
+            });
 
-            return searchResult;
-        }).then((data) => setBookList(data))
+            setPageCount(filteredList.totalPages);
+
+            return filteredList.filteredList;
+        })
+        .then((data) => {
+            setBookList(data);
+        })
+        .finally(() => {
+            setSearched(true);
+        })
 
         toast.promise(searchPromise, {
             loading: "검색 중입니다...",
             success: "검색 목록을 가져왔습니다!",
-            error: "앗, 무언가 잘못된 것 같군요..."
-        })
-    }
-
-    const handleBooks = () => {
-        const bookPromise = getBooks().then((data) => {
-            const reservedCount = data.bookList.filter((item) => {
-                return item.reservation && item.reservation !== "";
-            }).length;
-
-            const borrowedCount = data.bookList.filter((item) => {
-                return item.borrowed && item.borrowed !== "";
-            }).length;
-
-            setBookList(data.bookList);
-            setBookCount(data?.totalCount!);
-            setReservedCount(reservedCount);
-            setBorrowedCount(borrowedCount);
-        })
-        .then(() => {
-            getUserBookmark({
-                student_id: "60211579"
-            })
-            .then((data) => {
-                setBookmarkData(data.bookmarkList);
-            })
-        })
-
-        toast.promise(bookPromise, {
-            loading: "책 목록을 가져오는 중입니다...",
-            success: "데이터베이스로부터 목록을 가져왔습니다!",
             error: "앗, 무언가 잘못된 것 같군요..."
         })
     }
@@ -143,7 +130,7 @@ function BookList() {
                 })
             }
         })
-        .then(() =>  handleBooks())
+        .then(() =>  handleSearch())
     }
 
     const handleReserve = (bookId : string) => {
@@ -167,7 +154,7 @@ function BookList() {
                 })
             }
         })
-        .then(() => handleBooks())
+        .then(() => handleSearch())
     }
 
     const handleReturn = (bookId : string) => {
@@ -175,7 +162,7 @@ function BookList() {
             book_id : bookId as Id<"book_info">, 
             student_id: "60211579"
         })
-        .then(() => handleBooks())
+        .then(() => handleSearch())
 
         toast.promise(returnPromise, {
             loading: "반납 시도중...",
@@ -189,7 +176,7 @@ function BookList() {
             book_id : bookId as Id<"book_info">,
             student_id: "60211579"
         })
-        .then(() => handleBooks())
+        .then(() => handleSearch())
 
         toast.promise(cancelPromise, {
             loading: "예약 취소 시도중...",
@@ -203,12 +190,11 @@ function BookList() {
             student_id: "60211579"
         })
         .then((data) => {
-            setBookmarkData(data.bookmarkList);
-        })
-        .then(() => {
-            if(bookmarkData.filter((item) => {
-                return item.book_id === bookId;
-            })?.length >= 1) {
+            const filteredRes = data.bookmarkList.filter((item) => {
+                return item?._id === bookId && item?.student_id === "60211579";
+            });
+
+            if(filteredRes.length >= 1) {
                 cancelBookmark({
                     book_id: bookId as Id<"book_info">,
                     student_id: "60211579"
@@ -226,12 +212,87 @@ function BookList() {
                     error: "앗, 무언가 잘못된 것 같군요..."
                 })
             }
-        }).then(() => handleBooks());
+        }).then(() => handleSearch());
+    }
+
+    const onEnter = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            searchButtonRef.current.click();
+        }
+    }
+
+    const pagination = () => {
+        const arr = []
+        let startIdx = 1;
+        let endIdx = 1;
+
+        if (currentPage + 9 <= pageCount) {
+            startIdx = currentPage;
+            endIdx = currentPage + 9;
+        }
+        else {
+            if (pageCount < 10) {
+                startIdx = 1;
+                endIdx = pageCount;
+            }
+            else {
+                startIdx = pageCount - 9;
+                endIdx = pageCount;
+            }
+        }
+
+        for (let i = startIdx; i <= endIdx; i++) {
+            arr.push(
+                <PaginationItem key={i}>
+                    <PaginationLink 
+                        onClick={() => {
+                            setCurrentPage(i);
+                            setSearched(false);
+                        }}
+                        isActive={i === currentPage}
+                    >
+                        {i}
+                    </PaginationLink>
+                </PaginationItem>
+            );
+        }
+        
+        return arr;
+    }
+
+    const handleReset = () => {
+        router.replace('/booklist');
+        setInput("");
+        setSearchType("전체");
+        setReservedFilter("전체");
+        setBorrowedFilter("전체");
+        setCurrentPage(1);
+        setSearched(!searched);
     }
 
     useEffect(() => {
-        handleBooks();
-    }, [])
+        if(searchParams.get('searchInput')) {
+            setInput(searchParams.get('searchInput'));
+        }
+
+        if(searchParams.get('borrowed')) {
+            setBorrowedFilter(searchParams.get('borrowed'));
+        }
+
+        if(searchParams.get('reserved')) {
+            setReservedFilter(searchParams.get('reserved'));
+        }
+
+        if(searchParams.get('type')) {
+            setSearchType(searchParams.get('type'));
+        }
+
+        handleSearch();
+    }, [searched])
+
+    if (!searched) {
+        return <Loading/>
+    }
 
     return (
         <div className={st.page_container}>
@@ -259,27 +320,34 @@ function BookList() {
             </div>
             <Card className={st.filter}>
                 <Select
+                    value={borrowedFilter}
                     onValueChange={(value) => setBorrowedFilter(value)}
                 >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className={st.select_filter}>
                         <SelectValue 
-                            placeholder="비치중" 
-                            defaultValue="비치중"
+                            placeholder="대출 여부"
+                            defaultValue="전체"
                         />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="전체">대출 여부</SelectItem>
                         <SelectItem value="비치중">비치중</SelectItem>
                         <SelectItem value="대출중">대출중</SelectItem>
                     </SelectContent>
                 </Select>
 
                 <Select
+                    value={searchType}
                     onValueChange={(value) => setSearchType(value)}
                 >
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="분류" />
+                    <SelectTrigger className={st.select_filter}>
+                        <SelectValue 
+                            placeholder="분류"
+                            defaultValue="전체"
+                        />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="전체">분류</SelectItem>
                         <SelectItem value="임베디드">임베디드</SelectItem>
                         <SelectItem value="교양">교양</SelectItem>
                         <SelectItem value="컴퓨터">컴퓨터</SelectItem>
@@ -288,13 +356,20 @@ function BookList() {
                     </SelectContent>
                 </Select>
 
-                <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="예약 여부" />
+                <Select
+                    value={reservedFilter}
+                    onValueChange={(value) => setReservedFilter(value)}
+                >
+                    <SelectTrigger className={st.select_filter}>
+                        <SelectValue 
+                            placeholder="예약 여부"
+                            defaultValue="전체"
+                        />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="reserved">예약자 있음</SelectItem>
-                        <SelectItem value="notReserved">예약자 없음</SelectItem>
+                        <SelectItem value="전체">예약 여부</SelectItem>
+                        <SelectItem value="예약됨">예약자 있음</SelectItem>
+                        <SelectItem value="예약안됨">예약자 없음</SelectItem>
                     </SelectContent>
                 </Select>
 
@@ -302,14 +377,21 @@ function BookList() {
                     className={st.input}
                     type="text"
                     placeholder='Type ISBN or Book Title...'
+                    value={input}
                     onChange={(e) => {
                         setInput(e.target.value);
                     }}
+                    onKeyUp={onEnter}
                 />
 
                 <Button
+                    ref={searchButtonRef}
                     className={st.button}
-                    onClick={handleSearch}
+                    onClick={() => {
+                        setCurrentPage(1);
+                        router.replace(`/booklist?searchInput=${input=="" ? "" :input}&borrowed=${borrowedFilter}&reserved=${reservedFilter}&type=${searchType}`);
+                        setSearched(false);
+                    }}
                 >
                     검색
                     <Search size={15}/>
@@ -317,9 +399,9 @@ function BookList() {
 
                 <Button
                     className={st.button}
-                    onClick={handleBooks}
+                    onClick={handleReset}
                 >
-                    새로고침
+                    초기화
                     <RotateCcw size={15}/>
                 </Button>
             </Card>
@@ -340,7 +422,7 @@ function BookList() {
                         </TableHeader>
                         { bookList.length >= 1 ?
                             <TableBody>
-                            { bookList.map((item) => {
+                            { bookList.map((item, index) => {
                                 return (
                                     <TableRow
                                         className={st.table_row}
@@ -362,17 +444,20 @@ function BookList() {
                                         <TableCell width={12.5} align='center'>
                                             { item?.borrowed ? 
 
-                                            item.borrowed === "60211579" ? <Button className={st.activated_button} onClick={() => handleReturn(item?._id)}>반납</Button> : `대출중 : ${item.borrowed}` 
+                                            item.borrowed === "60211579" ? 
+                                            <Button 
+                                            className={st.activated_button} 
+                                            onClick={() => handleReturn(item?._id)}>
+                                                반납하기
+                                            </Button> : `대출중 : ${item.borrowed}` 
 
                                             : 
 
                                             <Button
                                                 className={st.default_button}
-                                                onClick={() => {
-                                                    handleBorrow(item?._id);
-                                                }}
+                                                onClick={() => handleBorrow(item?._id)}
                                             >
-                                                대출
+                                                대출하기
                                             </Button>
                                             }
                                         </TableCell>
@@ -398,11 +483,11 @@ function BookList() {
 
                                         <TableCell width={12.5} align='center'>
                                             <Button 
-                                                className={st.default_button}
+                                                className={item?.isUserBookmark ? st.bookmarked_button : st.default_button}
                                                 onClick={() => handleBookmark(item?._id)}
                                             >
                                                 <Bookmark size={20}/>
-                                                {item?.bookmark_count ? item?.bookmark_count : 0}
+                                                {item?.bookmarkCount ? item?.bookmarkCount : 0}
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -421,15 +506,36 @@ function BookList() {
                         onChange={(e) => {e.currentTarget.ariaValueText}}
                     >
                         <PaginationItem>
-                            <PaginationPrevious href="#" />
+                            <PaginationPrevious 
+                                onClick={(e) => {
+                                    setCurrentPage((currentPage) => {
+                                        if(currentPage > 1) {
+                                            return currentPage - 1;
+                                        }
+                                        else {
+                                            return currentPage;
+                                        }
+                                })
+                                setSearched(false);
+                            }}
+                            />
                         </PaginationItem>
                         {
-                        <PaginationItem>
-                            <PaginationLink href="#">1</PaginationLink>
-                        </PaginationItem>
+                            pagination().map((page, index) => (page))
                         }
                         <PaginationItem>
-                            <PaginationNext onClick={() => {}}/>
+                            <PaginationNext
+                            onClick={(e) => {
+                                setCurrentPage((currentPage) => {
+                                    if(currentPage < pageCount) {
+                                        return currentPage + 1;
+                                    }
+                                    else {
+                                        return currentPage;
+                                    }
+                                })
+                                setSearched(false);
+                            }}/>
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>

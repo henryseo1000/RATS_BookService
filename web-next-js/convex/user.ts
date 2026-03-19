@@ -3,26 +3,37 @@ import { mutation } from "./_generated/server";
 
 export const createUser = mutation({
     args: {
-        user_id: v.string(),
         real_name: v.string(),
         student_id: v.string(),
         major: v.string(),
-        grade: v.string()
+        grade: v.string(),
+        username: v.string()
     },
     handler: async (ctx, args) => {
-        const identity = await ctx.auth.getUserIdentity();
+        const userData = await ctx.auth.getUserIdentity()
+        .then((data) => {
+            if (data === null) {
+                throw new Error("Not authenticated");
+            }
+            else {
+                return data;
+            }
+        })
+        .then(async (data) => {
+            const createUser = await ctx.db.insert("user_info", {
+                user_id: data.tokenIdentifier,
+                real_name: args.real_name,
+                student_id: args.student_id,
+                major: args.major,
+                grade: args.grade,
+                user_email: data.email,
+                username: args.username
+            });
 
-        const userId = identity.subject;
+            return createUser;
+        })
 
-        const createUser = ctx.db.insert("user_info", {
-            user_id: userId,
-            real_name: args.real_name,
-            student_id: args.student_id,
-            major: args.major,
-            grade: args.grade
-        });
-
-        return createUser;
+        return userData;
     }
 });
 

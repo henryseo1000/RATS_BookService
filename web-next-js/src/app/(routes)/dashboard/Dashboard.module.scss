@@ -4,16 +4,22 @@
     @include flex-column;
     gap: 20px;
 
-    .history {
-
-        .history_content {
-            min-height: 400px;
-        }
-    }
-
     .status {
         display: flex;
         gap: 20px;
+    }
+
+    .history {
+
+        .history_content {
+
+            .table_row {
+                &:hover {
+                    cursor: pointer;
+                    font-weight: 700;
+                }
+            }
+        }
     }
 
     .calendar {
@@ -35,7 +41,7 @@
             .calendar_main {
                 padding: 0px;
                 color: #182D52;
-                background-color: #fff;
+                background-color: #ffffff;
             }
 
             .no_results {
@@ -57,7 +63,6 @@
 
         .recommand_content {
             @include justi-align-center;
-            padding-bottom: 0px;
         }
     }
 
@@ -100,5 +105,11 @@
     .recommand {
         max-width: none;
         min-width: 100%;
+
+        .recommand_content {
+            .swiper {
+                margin-bottom: 30px;
+            }
+        }
     }
 }

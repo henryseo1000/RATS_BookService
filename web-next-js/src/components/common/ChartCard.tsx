@@ -42,7 +42,7 @@ interface ChartProps {
   footerText?: string;
   tableData?: any[];
   columnData?: ColProps[];
-  onButtonClick?: () => void;
+  onButtonClick?: (props: any) => void;
   buttonText?: string
   isButtonDisabled?: boolean
 }
@@ -98,7 +98,7 @@ export function ChartCard({
               className={st.polar_grid}
               polarRadius={[86, 74]}
             />
-            <RadialBar dataKey="books" background cornerRadius={10} />
+            <RadialBar dataKey="books" cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
@@ -150,12 +150,13 @@ export function ChartCard({
                   return (
                     <TableRow key={index}>
                       <TableCell>{item?.title}</TableCell>
+                      <TableCell>{item?.date}</TableCell>
                       <TableCell>{item?.author}</TableCell>
-                      <TableCell>{item?.book_id}</TableCell>
                       <TableCell>
                         <Button 
-                          disabled={isButtonDisabled ? isButtonDisabled : false} 
-                          onClick={onButtonClick ? onButtonClick : () => {}}
+                          className={st.button}
+                          disabled={item?.extended} 
+                          onClick={onButtonClick ? () => onButtonClick(item?.book_id) : () => {}}
                         >
                           {buttonText ? buttonText : ""}
                         </Button>
@@ -164,7 +165,7 @@ export function ChartCard({
                   );
                 })
               ) : (
-                <span>No Data Found</span>
+                <text className="no_data">발견된 데이터가 없습니다.</text>
               )}
             </TableBody>
           </Table>

@@ -4,13 +4,99 @@ import { v } from "convex/values";
 export const getBooks = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_info").order("desc").collect()
-    const totalLength = await totalData.length;
+    const totalLength = totalData.length;
+    const totalPages = totalLength % 10 == 0 ? totalLength / 10 : totalLength / 10 + 1;
 
     return {
       totalCount : totalLength,
-      bookList : totalData
+      bookList : totalData,
+      totalPageNum : totalPages
     }
   }
+})
+
+export const getBookListByFliter = mutation({
+  args : {
+    input: v.string(),
+    searchType: v.string(),
+    borrowedFilter: v.string(),
+    reservedFilter: v.string(),
+    pageNum: v.number(),
+    studentId:v.optional(v.string())
+  },
+  handler: async (ctx, args) => {
+    let totalLength = 0;
+    let totalPages = 0;
+    const filteredList = await ctx.db.query("book_info").order("desc").collect()
+        .then((booklist) => {
+            const searchResult = booklist.filter((item) => {
+                return item?.title?.replace(" ", "").toLowerCase().includes(args.input.toLowerCase())
+                    || item?.isbn?.replace(" ", "").toLowerCase().includes(args.input.toLowerCase())
+                ;
+            }).filter((item) => {
+                if (args.searchType === "전체") {
+                    return true;
+                }
+                else {
+                    return item?.type?.includes(args.searchType);
+                }
+            }).filter((item) => {
+                if (args.borrowedFilter === "전체") {
+                    return true;
+                }
+                else {
+                    return item.status?.includes(args.borrowedFilter);
+                }
+            }).filter((item) => {
+                if (args.reservedFilter === "전체") {
+                    return true;
+                }
+                else if (args.reservedFilter === "예약됨") {
+                    return item.reservation && item.reservation !== "";
+                }
+                else {
+                    return !item.reservation || item.reservation === "";
+                }
+            })
+
+            totalLength = searchResult.length;
+            totalPages = (totalLength % 10 == 0) && totalLength != 0 ? Math.floor(totalLength) / 10 : Math.floor(totalLength / 10) + 1;
+
+            return searchResult;
+        })
+        .then(async (list) => {
+          const arr = [];
+          const len = list.length
+          for(let i = 0; i < len; i++) {
+            const bookmarkCount = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === list[i]?._id}).length;
+            const isUserBookmark = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === list[i]?._id && q?.student_id === args?.studentId}).length >= 1
+            arr.push({bookmarkCount: bookmarkCount, isUserBookmark: isUserBookmark, ...list[i]})
+          }
+
+          return arr;
+        })
+        .then((result) => {
+            if(result.length == 0) {
+              return [];
+            }
+
+            if (args.pageNum < totalPages) {
+              return result.splice((args.pageNum - 1) * 10, 10);
+            }
+            else if (args.pageNum == totalPages) {
+              return result.splice((args.pageNum - 1) * 10, totalLength % 10);
+            }
+            else {
+              throw new Error("Page number is bigger than total pages. Please try again.");
+            }
+        })
+
+        return {
+          filteredList: filteredList,
+          totalLength: totalLength,
+          totalPages : totalPages
+        };
+    }
 })
 
 export const recommandList = mutation({
@@ -29,17 +115,19 @@ export const getBookHistory = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_history")
     .order("desc")
-    .collect();
-    
-    // totalData.map(async (data) => {
-    //   const book = await ctx.db.get(data.book_id);
-
-    //   return {
-    //     ...data,
-    //     book_id: book.title,
-    //     book_isbn: book.isbn
-    //   }
-    // })
+    .collect()
+    .then(async (data) => {
+      const historyResult = [];
+      for(let i = 0; i < data.length; i++) {
+        const book_data = await ctx.db.get(data[i].book_id);
+        historyResult.push({
+          ...data[i],
+          book_title : book_data.title,
+          book_isbn : book_data.isbn
+        })
+      }
+      return historyResult;
+    })
 
     return totalData;
   }
@@ -61,16 +149,18 @@ export const getUserHistory = mutation({
     const totalData = await ctx.db.query("book_history")
       .order("desc")
       .collect()
-      .then((data) => {
-        const result = data.map((item) => { 
-
-          return {
-            ...item
-          }
+      .then(async (data) => {
+      const historyResult = [];
+      for(let i = 0; i < data.length; i++) {
+        const book_data = await ctx.db.get(data[i].book_id);
+        historyResult.push({
+          ...data[i],
+          book_title : book_data.title,
+          book_isbn : book_data.isbn
         })
-
-        return result;
-      });
+      }
+      return historyResult;
+    })
 
     const totalLength = totalData.length;
 
@@ -90,8 +180,24 @@ export const getUserBorrowed = mutation({
     .filter((q) => 
       q.eq(q.field("student_id"), args.student_id)
     )
-    .order("desc")
-    .collect();
+    .collect()
+    .then(async (res) => {
+      const borrowedResult = [];
+      for (let i = 0; i < res.length; i++) {
+        await ctx.db.get(res[i].book_id)
+        .then((data) => {
+          const date = new Date(data?._creationTime);
+
+          borrowedResult.push({
+            book_id: res[i]?.book_id,
+            extended: res[i]?.extended,
+            date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+            ...data
+          });
+        })
+      }
+      return borrowedResult;
+    });
 
     const totalBorrowed = userBorrowed.length;
 
@@ -111,10 +217,23 @@ export const getUserReserved = mutation({
     .filter((q) => 
       q.eq(q.field("student_id"), args.student_id)
     )
-    .order("desc")
-    .collect();
+    .collect()
+    .then(async (data) => {
+      const reservedResult = [];
+      for (let i = 0; i < data.length; i++) {
+        await ctx.db.get(data[i].book_id).then((data) => {
+          const date = new Date(data?._creationTime);
 
-    const totalReserved = await userReserved.length;
+          reservedResult.push({
+            date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+            ...data
+          });
+        })
+      }
+      return reservedResult;
+    });
+
+    const totalReserved = userReserved.length;
 
     return {
       totalReserved: totalReserved,
@@ -133,9 +252,25 @@ export const getUserBookmark = mutation({
       q.eq(q.field("student_id"), args.student_id)
     )
     .order("desc")
-    .collect();
+    .collect()
+    .then(async (data) => {
+      const arr = [];
+      const len = data.length;
 
-    const totalBookmark = await userBookmarks.length;
+      for (let i = 0; i < len; i++) {
+        const bookInfo = await ctx.db.get(data[i].book_id);
+        const date = new Date(data[i]?._creationTime);
+        arr.push({
+          date: date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일",
+          student_id: data[i].student_id,
+          ...bookInfo
+        })
+      }
+
+      return arr;
+    })
+
+    const totalBookmark = userBookmarks.length;
 
     return {
       totalBookmark: totalBookmark,
@@ -226,8 +361,8 @@ export const returnBook = mutation({
     .collect()
     .then((arr) => {
       const id = arr[0]._id
-      ctx.db.delete(id).then(() => 
-        ctx.db.patch(args.book_id, { borrowed : "" })
+      ctx.db.delete(id).then(() =>
+        ctx.db.patch(args.book_id, { borrowed : ""})
       ).then(() => 
         ctx.db.insert("book_history", { 
           book_id : args.book_id,
@@ -280,12 +415,6 @@ export const addBookmark = mutation({
     const bookmarkReq = await ctx.db.insert("bookmark_list", {
       book_id : args.book_id,
       student_id : args.student_id
-    }).then(() => {
-      ctx.db.get(args.book_id).then((q) => {
-        ctx.db.patch(args.book_id, {
-          bookmark_count : q.bookmark_count + 1
-        })
-      })
     })
 
     return bookmarkReq;
@@ -304,13 +433,7 @@ export const cancelBookmark = mutation({
     })
     .collect()
     .then((q) => {
-      ctx.db.delete(q[0]._id).then(() => {
-        ctx.db.get(args.book_id).then((q) => {
-          ctx.db.patch(args.book_id, {
-            bookmark_count : q.bookmark_count - 1
-          })
-        })
-      })
+      ctx.db.delete(q[0]._id);
     })
 
     return bookmarkReq;
@@ -336,7 +459,67 @@ export const callNaverBookApi = action({
         return data.json();
       }
       else {
-        return "Naver API 에러입니다."
+        return "Naver API 에러입니다.";
       }                                                                                                        
+  }
+})
+
+export const bookRecommendationApi = action({
+  handler: async (ctx) => {
+    function convertXmlToJson(xmlString : string) {
+      const jsonData = {};
+      for (const result of xmlString.matchAll(/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\1).)*)(?:<\/\1>)|<(\w*)(?:\s*)*\/>/gm)) {
+        const key = result[1] || result[3];
+        const value = result[2] && convertXmlToJson(result[2]);
+        jsonData[key] = ((value && Object.keys(value).length) ? value : result[2]) || null;
+      }
+      return jsonData;
+    }
+
+      const data = await fetch(`https://nl.go.kr/NL/search/openApi/saseoApi.do?key=${process.env.LIBRARY_API_KEY}&startRowNumApi=1&endRowNumApi=10&drcode=4`, {
+        method: "GET",
+        headers: {
+          "Accept": "*/*"
+        }
+      }) 
+      .then(async (resData) => {
+        
+        const jsonData = await resData.text().then((text) => {
+          if (resData.ok) {
+            return convertXmlToJson(text);
+          }
+          else {
+            throw new Error("추천 도서 API 오류입니다.");
+          }
+        })
+        
+        return jsonData;
+      })
+      
+      return data
+  }
+})
+
+export const extendDeadline = mutation({
+  args: {
+    book_id: v.id("book_info"),
+    student_id: v.string()
+  },
+  handler: async(ctx, args) => {
+    await ctx.db.query("borrowed_list").filter((q) => {
+      return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id)
+    })
+    .collect()
+    .then((result) => {
+      console.log(result)
+      ctx.db.get(result[0]?._id).then((data) => {
+        if (data?.extended) {
+          throw new Error("이미 연장된 책입니다!");
+        }
+        else {
+          ctx.db.patch(data?._id, { extended: true });
+        }
+      })
+    })
   }
 })

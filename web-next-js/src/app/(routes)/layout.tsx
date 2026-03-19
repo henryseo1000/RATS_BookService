@@ -9,6 +9,7 @@ import NavBar from "@/layout/NavBar";
 
 import "./globals.css";
 import SearchBar from '@/components/common/SearchBar';
+import { useConvexAuth } from 'convex/react';
 
 export default function RouteLayout({
   children
@@ -16,11 +17,6 @@ export default function RouteLayout({
   children: React.ReactNode;
 }) {
   const [minimize, setMinimize] = useState<boolean>(false);
-  const { isSignedIn } = useAuth();
-
-  if ( !isSignedIn ) {
-    return redirect('/');
-  }
 
   return (
     <div>

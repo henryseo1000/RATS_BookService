@@ -12,10 +12,17 @@
         .button {
             display: flex;
             gap: 5px;
+            background-color: #307cff;
         }
 
         .input {
+            width: 100%;
             max-width: 300px;
+        }
+
+        .select {
+            width: 100%;
+            max-width: 180px;
         }
     }
 
@@ -35,6 +42,27 @@
             span {
                 display: flex;
                 color: black !important;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .page_container { 
+
+        .filter {
+            flex-direction: column;
+
+            .button {
+                width: 100%;
+            }
+
+            .input {
+                max-width: none;
+            }
+
+            .select {
+                max-width: none;
             }
         }
     }

@@ -4,7 +4,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     width: 100%;
 
     span {
@@ -27,7 +27,7 @@
         .input_area {
             display: flex;
 
-            div {
+            .link {
                 position: absolute;
                 top: 7px;
                 right: 20px;
@@ -38,7 +38,7 @@
             input[type="text"] {
                 height: 40px;
                 min-width: 300px;
-                padding: 10px 20px;
+                padding: 10px 50px 10px 20px;
                 box-sizing: border-box;
                 border-radius: 20px;
                 color: #182D52;
@@ -57,8 +57,16 @@
 
 @media (max-width: 768px) {
     .search_container {
+        span {
+            font-weight: 700;
+            font-size: 35px;
+        }
+
         .bar_menu {
-            display: none;
+
+            .input_area{
+                display: none;
+            }
         }
     }
 }

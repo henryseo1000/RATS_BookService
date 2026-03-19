@@ -33,9 +33,14 @@
         gap: 20px;
         padding: 20px 30px;
 
+        .select_filter {
+            max-width: 180px;
+        }
+
         .button {
             display: flex;
             gap: 5px;
+            background-color: #307cff;
         }
 
         .input {
@@ -50,7 +55,7 @@
     .default_button {
         min-width: 90px;
         gap: 10px;
-        background-color: #182D52;
+        background-color: #307cff;
     }
 
     .activated_button {
@@ -58,13 +63,35 @@
         gap: 10px;
         background-color: #ff4040;
     }
+
+    .bookmarked_button {
+        min-width: 90px;
+        gap: 10px;
+        background-color: #f64fee;
+    }
 }
 
 @media (max-width: 768px) {
-    .filter {
-        flex-direction: column;
-    }
-    .status {
-        overflow-x: scroll;
-    }
+    .page_container {
+        .filter {
+            flex-direction: column;
+
+            .select_filter {
+                width: 100%;
+                max-width: none;
+            }
+
+            .input {
+                max-width: none;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+
+        .status {
+            overflow-x: scroll;
+        }
+    } 
 }

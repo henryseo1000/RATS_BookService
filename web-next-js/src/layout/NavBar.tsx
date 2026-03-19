@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useEffect, useRef } from 'react';
 import { SetterOrUpdater } from 'recoil';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -28,6 +28,7 @@ function NavBar({
     const router = useRouter();
     const location = usePathname();
     const { user } = useUser();
+    const navCon = useRef(null);
 
     const pathList : PathProps[] = [
         {
@@ -57,16 +58,28 @@ function NavBar({
         }
     ];
 
-    useEffect(() => {
+    const handleScroll = () => {
+        if(window.innerWidth <= 1100 && (window.scrollY > 200 || window.pageYOffset > 200)) {
+            navCon.current.style.transform = 'translate(0px, -250px)';
+        }
+        else {
+            navCon.current.style.transform = 'none';
+        }
+    }
 
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, [location]);
 
     return (
-        <nav className={isMinimized ? st.nav_container_min : st.nav_container_max}>
+        <nav className={isMinimized ? st.nav_container_min : st.nav_container_max} ref={navCon}>
             <div className={st.nav_main}>
-                {
-                   !isMinimized && <Logo/>
-                }
+                <div className={st.logo_area}>
+                    {
+                        !isMinimized && <Logo/>
+                    }   
+                </div>
 
                 <div className={st.profile_section}>
                     <img 

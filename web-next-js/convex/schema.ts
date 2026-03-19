@@ -12,7 +12,7 @@ export default defineSchema({
     title: v.string(),
     status: v.optional(v.string()),
     type: v.optional(v.string()),
-    bookmark_count: v.number()
+    bookmark_count: v.optional(v.number())
   }),
   file_list: defineTable({
     author: v.string(),
@@ -27,7 +27,9 @@ export default defineSchema({
     real_name: v.string(),
     student_id: v.string(),
     major: v.string(),
-    grade: v.string()
+    grade: v.string(),
+    user_email: v.string(),
+    username: v.string()
   }),
   book_history: defineTable({
     student_id: v.string(),

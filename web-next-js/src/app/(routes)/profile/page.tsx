@@ -1,12 +1,25 @@
 "use client"
 import { useUser } from '@clerk/clerk-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import st from "./Profile.module.scss";
+import Loading from '@/app/loading';
 
 function Profile() {
-  const { user } = useUser();
-  const [name, setName] = useState<string>(user.username);
+  const { user, isLoaded } = useUser();
+  const [name, setName] = useState<string>("");
   const [id, setId] = useState<string>("60211579");
+
+  const handleUserData = () => {
+    setName(user?.username);
+  }
+
+  useEffect(() => {
+    handleUserData();
+  }, [isLoaded]);
+
+  if (!isLoaded) {
+    return <Loading/>
+  }
 
   return (
     <div className={st.page_container}>

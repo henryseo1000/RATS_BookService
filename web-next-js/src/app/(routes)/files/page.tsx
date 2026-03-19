@@ -1,6 +1,6 @@
 "use client";
 
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
@@ -30,32 +30,31 @@ import { api } from '../../../../convex/_generated/api';
 import { toast } from 'sonner';
 import { handleDownload } from '@/utils/handleDownload';
 import { Textarea } from '@/components/ui/textarea';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import Loading from '@/app/loading';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const uploadFile = useMutation(api.files.uploadFile);
-  const getFileList = useMutation(api.files.getFileList);
+  const getFileListByFilter = useMutation(api.files.getFileListByFilter);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
 
   const [file, setFile] = useState<File>();
   const [input, setInput] = useState<string>("");
   const [fileList, setFileList] = useState<any[]>([]);
+  const [typeFilter, setTypeFiler] = useState<string>("all");
   const [description, setDescription] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageCount, setPageCount] = useState<number>(1);
+  const [searched, setSearched] = useState<boolean>(false);
 
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  const handleFileList = () => {
-    const listPromise = getFileList().then((data) => {
-      setFileList(data);
-    })
-
-    toast.promise(listPromise, {
-      loading: "파일 리스트 가져오는 중...",
-      success: "파일 리스트를 가져왔습니다!",
-      error: "앗, 무언가 잘못된 것 같군요..."
-    })
-  }
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const handleUpload = async (file : File) => {
     const url = await generateUploadUrl();
@@ -83,65 +82,140 @@ function Files() {
         error: "앗... 업로드 도중 문제가 발생했습니다."
       })
     }).then(() => {
-      handleFileList();
+      handleFileSearch();
       setFile(undefined);
+      setOpen(!open);
+      setDescription("");
     })
   }
 
-  const clearBuf = () => {
-    setOpen(!open)
-    setFile(undefined);
-    setDescription("");
+  const handleFileSearch = () => {
+    const inputParam = searchParams.get('searchInput');
+    const typeParam = searchParams.get('type');
+
+    const searchResult = getFileListByFilter({
+      input: inputParam ? inputParam : "",
+      searchType: typeParam ? typeParam : "all",
+      pageNum: currentPage
+    }).then((data) => {
+      setFileList(data.filteredList);
+      setPageCount(data.totalPages);
+      setSearched(true);
+    })
+
+    toast.promise(searchResult, {
+      loading: "파일 리스트 가져오는 중...",
+      success: "파일 리스트를 가져왔습니다!",
+      error: "앗, 무언가 잘못된 것 같군요..."
+    })
   }
 
+  const handleReset = () => {
+    router.replace(`/files`);
+    setTypeFiler("all");
+    setInput("");
+    setCurrentPage(1);
+    setSearched(false);
+  }
+
+  const onEnter = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        setCurrentPage(1);
+        handleFileSearch();
+      }
+  }
+
+  const pagination = () => {
+          const arr = []
+          let startIdx = 1;
+          let endIdx = 1;
+  
+          if (currentPage + 9 <= pageCount) {
+              startIdx = currentPage;
+              endIdx = currentPage + 9;
+          }
+          else {
+              if (pageCount < 10) {
+                  startIdx = 1;
+                  endIdx = pageCount;
+              }
+              else {
+                  startIdx = pageCount - 9;
+                  endIdx = pageCount;
+              }
+          }
+  
+          for (let i = startIdx; i <= endIdx; i++) {
+              arr.push(
+                  <PaginationItem key={i}>
+                      <PaginationLink
+                          onClick={() => {
+                              setCurrentPage(i);
+                              setSearched(false);
+                          }}
+                          isActive={i === currentPage}
+                      >
+                          {i}
+                      </PaginationLink>
+                  </PaginationItem>
+              );
+          }
+          
+          return arr;
+      }
+
   useEffect(() => {
-    handleFileList();
-  }, []);
+    if(searchParams.get('searchInput')) {
+      setInput(searchParams.get('searchInput'));
+    }
+
+    if(searchParams.get('type')) {
+      setTypeFiler(searchParams.get('type'));
+    }
+
+    handleFileSearch();
+  }, [searched]);
+
+  if (!searched) {
+    return <Loading/>
+  }
 
   return (
     <div className={st.page_container}>
       <Card className={st.filter}>
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="유형" />
+        <Select value={typeFilter} onValueChange={(value) => setTypeFiler(value)}>
+          <SelectTrigger className={st.select_filter}>
+            <SelectValue
+              placeholder="파일 유형"
+              defaultValue="all"
+            />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="notBorrowed">이미지</SelectItem>
-            <SelectItem value="borrowed">문서</SelectItem>
+            <SelectItem value="all">전체</SelectItem>
+            <SelectItem value="image">이미지</SelectItem>
+            <SelectItem value="docs">문서</SelectItem>
+            <SelectItem value="zip">압축파일</SelectItem>
+            <SelectItem value="etc">기타</SelectItem>
           </SelectContent>
-        </Select>
-
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="분류" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="light">임베디드</SelectItem>
-            <SelectItem value="dark">교양</SelectItem>
-            <SelectItem value="system">물리</SelectItem>
-          </SelectContent>
-        </Select>       
-
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="예약 여부" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="reserved">예약자 있음</SelectItem>
-            <SelectItem value="notReserved">예약자 없음</SelectItem>
-          </SelectContent>
-        </Select>
+        </Select>   
 
         <Input
           className={st.input}
+          value={input}
           type="text"
           placeholder='파일 이름으로 검색'
           onChange={(e) => {
             setInput(e.target.value);
           }}
+          onKeyUp={onEnter}
         />
 
         <Button
+          onClick={()=> {
+            setCurrentPage(1);
+            router.replace(`/files?searchInput=${input=="" ? "" :input}&type=${typeFilter}`);
+            setSearched(false);
+          }}
           className={st.button}
         >
           검색
@@ -149,10 +223,10 @@ function Files() {
         </Button>
 
         <Button
-          onClick={handleFileList}
+          onClick={handleReset}
           className={st.button}
         >
-          새로고침
+          초기화
           <RotateCcw size={15}/>
         </Button>
       </Card>
@@ -167,17 +241,20 @@ function Files() {
             <Table>
               <TableHeader className={st.table_header}>
                 <TableRow>
+                  <TableCell>파일 번호</TableCell>
                   <TableCell>유형</TableCell>
                   <TableCell>파일 크기</TableCell>
                   <TableCell>날짜</TableCell>
                   <TableCell>파일 이름</TableCell>
-                  <TableCell>파일 번호</TableCell>
+                  <TableCell>작성자</TableCell>
+                  <TableCell>삭제/수정</TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fileList.map((item, index) => {
                   return (
                   <TableRow key={index}>
+                    <TableCell>NO.{index + 1}</TableCell>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
                     <TableCell>{item?.file_size}KB</TableCell>
                     <TableCell>{new Date(item?._creationTime).toDateString()}</TableCell>
@@ -193,19 +270,60 @@ function Files() {
                       {item?.file_name}
                       <Download className={st.icon} />
                     </TableCell>
-                    <TableCell>NO.{index + 1}</TableCell>
+                    <TableCell>{item?.author}</TableCell>
+                    <TableCell>
+                      {item?.author === "60211579" ? <Button className={st.button}>삭제/수정</Button> : ""}
+                    </TableCell>
                   </TableRow>
                 )})}
               </TableBody>
             </Table>
+
+            <Pagination>
+                    <PaginationContent
+                        onChange={(e) => {e.currentTarget.ariaValueText}}
+                    >
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={(e) => {
+                                    setCurrentPage((currentPage) => {
+                                        if(currentPage > 1) {
+                                            return currentPage - 1;
+                                        }
+                                        else {
+                                            return currentPage;
+                                        }
+                                    })
+                                    setSearched(false);
+                                }   
+                              }
+                            />
+                        </PaginationItem>
+                        {
+                            pagination().map((page, index) => (page))
+                        }
+                        <PaginationItem>
+                            <PaginationNext
+                            onClick={(e) => {
+                                setCurrentPage((currentPage) => {
+                                if(currentPage < pageCount) {
+                                    return currentPage + 1;
+                                }
+                                else {
+                                    return currentPage;
+                                }
+                            })
+                            setSearched(false);
+                            }}/>
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
           </CardContent>
 
           <CardFooter>
-            <Dialog
-              onOpenChange={() => clearBuf()}
-            >
-              <DialogTrigger>
-                <Button>파일 등록</Button>
+            <Dialog>
+              <DialogTrigger ref={buttonRef}>
+                <Button className={st.modal_button}>파일 등록</Button>
               </DialogTrigger>
               <DialogContent ref={dialogRef}>
                 <DialogHeader>
@@ -221,31 +339,31 @@ function Files() {
                 <div className={st.input_area}>
                     <Input
                       type="file"
-                      placeholder='파일 이름으로 검색'
                       onChange={(e) => {
                         setFile(e.target.files![0]);
                       }}
                     />
 
                     <Textarea 
+                      className={st.file_description}
                       placeholder="파일에 대한 설명, 사용 방법 등을 적어주세요!" 
                       onChange={(e) => {
                         setDescription(e.target.value)
                       }}
                     />
 
-                    { file && 
                       <Button
+                        disabled={file === undefined}
+                        className={st.upload_button}
                         onClick={() => {
                           handleUpload(file)
-                          .then(() => {
-                            clearBuf()
-                          });
+                          .then(() => {handleFileSearch()})
+                          .then(() => buttonRef.current.click())
                         }}
                       >
                         업로드
                       </Button>
-                    }
+
                   </div>
               </DialogContent>
             </Dialog>

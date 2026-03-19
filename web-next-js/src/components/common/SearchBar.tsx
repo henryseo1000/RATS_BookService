@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import pathToTitle from '@/utils/pathToTitle';
@@ -13,12 +13,25 @@ function SearchBar() {
     const router = useRouter();
     const [input, setInput] = useState<string>('');
     const pathname = usePathname();
+    const inputRef = useRef<HTMLInputElement>(null);
+    const linkRef = useRef<HTMLDivElement>(null);
+
+    const onEnter = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            linkRef.current.click();
+        }
+    }
+
+    useEffect(() => {
+        console.log(pathname)
+        setInput("");
+    }, [pathname])
 
     return (
         <div className={st.search_container}>
             <span>{pathToTitle(pathname.split('/')[1])}</span>
 
-            { !pathname.includes('/booklist') && 
+            { !(pathname === '/booklist') && 
             <div className={st.bar_menu}>
                 <Button 
                     className={st.button}
@@ -32,20 +45,26 @@ function SearchBar() {
 
                 <div className={st.input_area}>
                     <div
+                        ref={linkRef}
+                        className={st.link}
                         onClick={() => {
-                            // Search API
+                            router.replace(`/booklist?searchInput=${input}`)
                         }}
+                        
                     >
                         <Search/>
                     </div>
+                        
 
                     <input
+                        onKeyUp={onEnter}
                         type="text"
                         value={input}
                         onChange={(e) => {
                             setInput(e.target.value)
                         }}
                         placeholder='Search For Book Name, ISBN...'
+                        ref={inputRef}
                     />
                 </div>
             </div>

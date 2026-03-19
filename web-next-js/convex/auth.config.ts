@@ -1,8 +1,8 @@
 export default {
-    providers: [
-      {
-        domain: "https://selected-grubworm-33.clerk.accounts.dev",
-        applicationID: "convex",
-      },
-    ],
-  };
+  providers: [
+    {
+      domain: process.env.CLERK_FRONTEND_API_URL!,
+      applicationID: 'convex',
+    },
+  ],
+}

@@ -35,25 +35,27 @@ import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 
 import { useRouter } from "next/navigation";
-import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { handleDownload } from "@/utils/handleDownload";
 import { Download } from "lucide-react";
 import { ColProps } from "@/types/common/ColProps";
+import { Id } from "../../../../convex/_generated/dataModel";
+import Loading from "@/app/loading";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
   const getUserReserved = useMutation(api.books.getUserReserved);
   const getUserHistory = useMutation(api.books.getUserHistory);
-  const getBookInfo = useMutation(api.books.getBookInfo);
   const getFileList = useMutation(api.files.getFileList);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
+  const extendDeadline = useMutation(api.books.extendDeadline);
 
   const [borrowedData, setBorrowedData] = useState<any>({});
   const [reservedData, setReservedData] = useState<any>({});
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [fileList, setFileList] = useState<any[]>([]);
   const [date, setDate] = useState<Date>(new Date());
+  const [updated, setUpdated] = useState<boolean>(false);
 
   const { user } = useUser();
   const router = useRouter();
@@ -124,7 +126,20 @@ function Dashboard() {
     },
   ];
 
-  useEffect(() => {
+  const handleExtend = (id : string) => {
+    const extendPromise = extendDeadline({book_id: id as Id<"book_info">, student_id:"60211579"})
+    .then(() => {
+      setUpdated(true);
+    })
+
+    toast.promise(extendPromise, {
+      success: "연장되었습니다!",
+      loading: "책 연장을 시도하고 있습니다...",
+      error: "이미 연장된 책입니다!"
+    })
+  }
+
+  const handleDashboard = () => {
     const totalPromise = getUserBorrowed({
       student_id: "60211579",
     })
@@ -134,28 +149,52 @@ function Dashboard() {
       getUserReserved({
         student_id: "60211579",
       }).then((data) => {
-        setReservedData(data)
+        setReservedData(data);
       })
     )
 
     .then(() =>
       getUserHistory().then((data) => {
-        setHistoryData(data.historyList.splice(0, 10));
+        const len = data.historyList.length;
+        if (len >= 5) {
+          setHistoryData(data.historyList.splice(0, 5));
+        }
+        else {
+          setFileList(data.historyList.splice(0, len));
+        }
       })
     )
 
     .then(() =>
       getFileList().then((data) => {
-        setFileList(data.splice(0, 5));
+        const len = data.length;
+        if (len >= 5) {
+          setFileList(data.splice(0, 5));
+        }
+        else {
+          setFileList(data.splice(0, len));
+        }
       })
-    );
+    )
+
+    .finally(() => {
+      setUpdated(true);
+    })
 
     toast.promise(totalPromise, {
       loading: "로딩중...",
       success: "데이터를 가져왔습니다.",
       error: "서버에서 에러가 발생했습니다."
     });
-  }, []);
+  }
+
+  useEffect(() => {
+    handleDashboard();
+  }, [updated]);
+
+  if (!updated) {
+    return <Loading/>
+  }
 
   return (
     <div className={st.page_container}>
@@ -170,6 +209,10 @@ function Dashboard() {
           tableData={borrowedData.borrowedList ? borrowedData.borrowedList : []}
           columnData={borrowCol}
           buttonText="연장"
+          onButtonClick={(id) => {
+            setUpdated(false);
+            handleExtend(id);
+          }} 
         />
         <ChartCard
           title={"예약된 책 권수"}
@@ -182,20 +225,15 @@ function Dashboard() {
           columnData={reserveCol}
           buttonText="예약 취소"
         />
-        <ChartCard
-          title={"대출된 책 권수"}
-          description={`${user?.username}님이 1개월동안 대출한 책 현황입니다`}
-          countVal={30}
-          chartInsideText="1개월 동안 대출 권수"
-          useTable
-          columnData={borrowCol}
-        />
       </div>
 
       <div>
         <Card className={st.history}>
           <CardHeader>
             <CardTitle>{user?.username}님의 히스토리입니다.</CardTitle>
+            <CardDescription>
+              대출, 반납 기록을 확인할 수 있습니다.
+            </CardDescription>
           </CardHeader>
 
           <CardContent className={st.history_content}>
@@ -214,13 +252,15 @@ function Dashboard() {
                   const date = new Date(item?._creationTime);
 
                   return (
-                    <TableRow key={index}>
+                    <TableRow className={st.table_row} key={index}>
                       <TableCell>{item?.type}</TableCell>
                       <TableCell>
                         {date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일"}
                       </TableCell>
                       <TableCell>{date.getHours() + "시 " + date.getMinutes() + "분"}</TableCell>
-                      <TableCell>{item?.book_title}</TableCell>
+                      <TableCell onClick={(e) => {
+                        router.push(`/booklist/${item?.book_id}`);
+                      }}>{item?.book_title}</TableCell>
                       <TableCell>{item?.book_isbn}</TableCell>
                     </TableRow>
                   );
@@ -262,6 +302,7 @@ function Dashboard() {
           </CardHeader>
           <CardContent className={st.recommand_content}>
             <Swiper
+              className={st.swiper}
               modules={[Autoplay, Pagination]}
               spaceBetween={30}
               slidesPerView={1}
@@ -311,8 +352,8 @@ function Dashboard() {
                     </TableCell>
                     <TableCell
                       className={st.file_name}
-                      onClick={async () => {
-                        await generateDownloadURL({
+                      onClick={() => {
+                        generateDownloadURL({
                           key: item?.storageId,
                         }).then((url) => {
                           handleDownload(url, item?.file_name);

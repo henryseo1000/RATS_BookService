@@ -9,9 +9,14 @@
         gap: 20px;
         padding: 20px 30px;
 
+        .select_filter {
+            width: 180px;
+        }
+
         .button {
             display: flex;
             gap: 5px;
+            background-color: #307cff;
         }
 
         .input {
@@ -37,6 +42,10 @@
                     font-weight: 700;
                 }
             }
+
+            .button {
+                background-color: #ff4040;
+            }
         }
 
         .dialog_title {
@@ -49,11 +58,49 @@
                 color: black !important;
             }
         }
+    }
+    
+}
 
-        .input_area {
-            display: flex;
-            width: 100%;
-            gap: 10px;
+.modal_button {
+    background-color: #307cff;
+
+    &:hover {
+        background-color: #307cff;;
+    }
+}
+
+.input_area {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+
+    .file_description {
+        height: 150px;
+    }
+
+    .upload_button {
+        background-color: #307cff;
+    }
+}
+
+@media (max-width : 768px) {
+    .page_container {
+        .filter {
+            flex-direction: column;
+
+            .select_filter {
+                width: 100%;
+            }
+
+            .input {
+                max-width: none;
+            }
+
+            .button {
+                width: 100%;
+            }
         }
     }
 }
