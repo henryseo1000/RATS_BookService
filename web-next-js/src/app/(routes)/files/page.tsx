@@ -122,7 +122,8 @@ function Files() {
   const onEnter = (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
         setCurrentPage(1);
-        handleFileSearch();
+        router.replace(`/files?searchInput=${input=="" ? "" :input}&type=${typeFilter}`);
+        setSearched(false);
       }
   }
 
@@ -356,7 +357,7 @@ function Files() {
                         className={st.upload_button}
                         onClick={() => {
                           handleUpload(file)
-                          .then(() => {handleFileSearch()})
+                          .then(() => {handleReset()})
                           .then(() => buttonRef.current.click())
                         }}
                       >

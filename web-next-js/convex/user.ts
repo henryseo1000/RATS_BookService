@@ -21,7 +21,7 @@ export const createUser = mutation({
         })
         .then(async (data) => {
             const createUser = await ctx.db.insert("user_info", {
-                user_id: data.tokenIdentifier,
+                user_id: data.tokenIdentifier.split("|")[1],
                 real_name: args.real_name,
                 student_id: args.student_id,
                 major: args.major,
@@ -59,3 +59,26 @@ export const checkRequired = mutation({
         return check;
     }
 });
+
+export const checkStudentId = mutation({
+    args: {
+        student_id : v.string()
+    },
+    handler: async (ctx, args) => {
+        const isDuplication = await ctx.db.query("user_info")
+        .collect()
+        .then((data) => {
+            const len = data.length;
+            for (let i = 0; i < len; i++) {
+                if (data[i]?.student_id === args.student_id) {
+                    console.log(data[i])
+                    return false;
+                }
+            }
+
+            return true;
+        })
+
+        return isDuplication;
+    }
+})

@@ -7,25 +7,41 @@ import { useRouter } from "next/navigation";
 import st from "./Home.module.scss";
 import { Button } from "@/components/ui/button";
 import { api } from "../../convex/_generated/api";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import Loading from "./loading";
 
 export default function Home() {
-  const { isSignedIn, getToken } = useAuth();
+  const { isSignedIn, isLoaded, userId } = useAuth();
   const checkRequired = useMutation(api.user.checkRequired);
   const router = useRouter();
+  const [checked, setChecked] = useState<boolean>(false);
+  const [checkRes, setCheckRes] = useState<boolean>();
 
   const checkForCurrentUser = async () => {
-    const checkResult = await getToken().then((token) => {
-      return checkRequired({user_id : token});
+    const checkResult = await checkRequired({user_id : userId})
+    .then((res) => {
+      setChecked(true);
+      setCheckRes(res);
+
+      return res;
     })
 
+    
     return checkResult;
   }
 
-  if (isSignedIn) {
-    if (!checkForCurrentUser()) {
-      return router.push('/onboarding');
+  useEffect(() => {
+    if (isSignedIn && !checked) {
+      checkForCurrentUser();
     }
-    else {
+  }, [isSignedIn])
+
+  if (!isLoaded || checkRes === undefined) {
+    return <Loading/>
+  }
+
+    if(isSignedIn && checkRes) {
       return (
         <div className={st.page_container}>
           <Button 
@@ -37,7 +53,11 @@ export default function Home() {
         </div>
       )
     }
-  }
+
+    else if (isSignedIn && !checkRes) {
+      return router.push('/onboarding');
+    }
+
 
   else  {
     return (
