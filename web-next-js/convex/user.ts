@@ -37,6 +37,21 @@ export const createUser = mutation({
     }
 });
 
+export const getUserData = mutation({
+    args: {
+        user_id : v.string()
+    },
+    handler: async (ctx, args) => {
+        const userData = await ctx.db.query("user_info")
+        .filter((q) => {
+            return q.eq(q.field("user_id"), args.user_id)
+        })
+        .collect();
+
+        return userData[0]!;
+    }
+})
+
 export const checkRequired = mutation({
     args: {
         user_id: v.string()
@@ -48,10 +63,10 @@ export const checkRequired = mutation({
         })
         .collect()
         .then((data) => {
-            if (data.length >= 1) { // true이면 유저 데이터가 정상적으로 저장되어 있다는 뜻
+            if (data.length >= 1) {
                 return true;
             }
-            else { // false이면 유저 데이터가 없다는 뜻(신규 가입, 데이터 입력 필요 - 온보딩 과정)
+            else {
                 return false;
             }
         })

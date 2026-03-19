@@ -3,6 +3,7 @@
 import { SignInButton, useAuth } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
+import { useSetRecoilState } from 'recoil';
 
 import st from "./Home.module.scss";
 import { Button } from "@/components/ui/button";
@@ -10,13 +11,18 @@ import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import Loading from "./loading";
+import { userDataState } from "@/stores/userDataState";
 
 export default function Home() {
   const { isSignedIn, isLoaded, userId } = useAuth();
   const checkRequired = useMutation(api.user.checkRequired);
+  const getUserData = useMutation(api.user.getUserData);
+
   const router = useRouter();
+  
   const [checked, setChecked] = useState<boolean>(false);
   const [checkRes, setCheckRes] = useState<boolean>();
+  const setUserData = useSetRecoilState(userDataState);
 
   const checkForCurrentUser = async () => {
     const checkResult = await checkRequired({user_id : userId})
@@ -33,15 +39,32 @@ export default function Home() {
 
   useEffect(() => {
     if (isSignedIn && !checked) {
-      checkForCurrentUser();
-    }
-  }, [isSignedIn])
+      const userPromise = checkForCurrentUser();
 
-  if (!isLoaded || checkRes === undefined) {
+      toast.promise(userPromise, {
+        success: "유저 확인 완료!",
+        loading: "유저 정보 확인중입니다.",
+        error: "앗, 유저 확인 중 문제 발생!"
+      })
+    }
+  }, [isSignedIn, checked])
+
+  if (!isLoaded) {
     return <Loading/>
   }
 
-    if(isSignedIn && checkRes) {
+  if(isSignedIn) {
+    if (checkRes && checked) {
+      getUserData({user_id : userId})
+      .then((data) => setUserData({
+        name: data?.real_name,
+        login_id: data?.username,
+        user_id: userId,
+        student_id: data?.student_id,
+        major: data?.major,
+        grade : data?.grade
+      }))
+
       return (
         <div className={st.page_container}>
           <Button 
@@ -54,9 +77,14 @@ export default function Home() {
       )
     }
 
-    else if (isSignedIn && !checkRes) {
+    else if (!checkRes && checked) {
       return router.push('/onboarding');
     }
+
+    else {
+      return <Loading/>
+    }
+  }
 
 
   else  {

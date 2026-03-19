@@ -8,14 +8,17 @@ import { Slider } from '@/components/ui/slider';
 
 import { Download, Link } from 'lucide-react';
 import { handleDownload } from '@/utils/handleDownload';
+import { useRecoilValue } from 'recoil';
+import { userDataState } from '@/stores/userDataState';
 
 function Barcode() {
   const [url, setUrl] = useState<string>();
   const [size, setSize] = useState<number>(200);
+  const userData = useRecoilValue(userDataState);
 
   const getBarcode = () => {
     if (!url){
-      setUrl("http://bwipjs-api.metafloor.com/?bcid=code128&text=MU60211579&scale=3&includetext&backgroundcolor=ffffff&padding=10");
+      setUrl(`http://bwipjs-api.metafloor.com/?bcid=code128&text=MU${userData.student_id}&scale=3&includetext&backgroundcolor=ffffff&padding=10`);
     }
     else {
       setUrl(undefined);

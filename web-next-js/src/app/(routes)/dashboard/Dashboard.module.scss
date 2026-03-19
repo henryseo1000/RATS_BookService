@@ -63,6 +63,14 @@
 
         .recommand_content {
             @include justi-align-center;
+
+            .swiper {
+                display: flex;
+
+                .swiper_pagination {
+                    transform: translate(0px , 5px);
+                }
+            }
         }
     }
 
