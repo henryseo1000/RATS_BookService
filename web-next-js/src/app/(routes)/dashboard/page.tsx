@@ -42,6 +42,8 @@ import { ColProps } from "@/types/common/ColProps";
 import { Id } from "../../../../convex/_generated/dataModel";
 import Loading from "@/app/loading";
 import utcToKorea from "@/utils/utcToKorea";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "@/stores/userDataState";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
@@ -57,10 +59,12 @@ function Dashboard() {
   const [fileList, setFileList] = useState<any[]>([]);
   const [date, setDate] = useState<Date>(new Date());
   const [updated, setUpdated] = useState<boolean>(false);
+  const [swiper, setSwiper] = useState<SwiperCore>();
+  const userData = useRecoilValue(userDataState);
 
   const { user } = useUser();
   const router = useRouter();
-  const [swiper, setSwiper] = useState<SwiperCore>();
+  
 
   const bookData: BookData[] = [
     {
@@ -128,7 +132,7 @@ function Dashboard() {
   ];
 
   const handleExtend = (id : string) => {
-    const extendPromise = extendDeadline({book_id: id as Id<"book_info">, student_id:"60211579"})
+    const extendPromise = extendDeadline({book_id: id as Id<"book_info">, student_id: userData.student_id})
     .then(() => {
       setUpdated(true);
     })
@@ -142,26 +146,28 @@ function Dashboard() {
 
   const handleDashboard = () => {
     const totalPromise = getUserBorrowed({
-      student_id: "60211579",
+      student_id: userData.student_id,
     })
     .then((data) => setBorrowedData(data))
 
     .then(() =>
       getUserReserved({
-        student_id: "60211579",
+        student_id: userData.student_id,
       }).then((data) => {
         setReservedData(data);
       })
     )
 
     .then(() =>
-      getUserHistory().then((data) => {
+      getUserHistory({
+        student_id: userData.student_id
+      }).then((data) => {
         const len = data.historyList.length;
         if (len >= 5) {
           setHistoryData(data.historyList.splice(0, 5));
         }
         else {
-          setFileList(data.historyList.splice(0, len));
+          setHistoryData(data.historyList.splice(0, len));
         }
       })
     )
@@ -202,7 +208,7 @@ function Dashboard() {
       <div className={st.status}>
         <ChartCard
           title={"대출된 책 권수"}
-          description={`${user?.username}님의 대출 현황입니다`}
+          description={`${userData.login_id}님의 대출 현황입니다`}
           maxVal={5}
           countVal={borrowedData.totalBorrowed}
           chartInsideText="대출됨"
@@ -217,7 +223,7 @@ function Dashboard() {
         />
         <ChartCard
           title={"예약된 책 권수"}
-          description={`${user?.username}님의 예약 현황입니다`}
+          description={`${userData.login_id}님의 예약 현황입니다`}
           maxVal={5}
           countVal={reservedData.totalReserved}
           chartInsideText="예약됨"
@@ -231,9 +237,9 @@ function Dashboard() {
       <div>
         <Card className={st.history}>
           <CardHeader>
-            <CardTitle>{user?.username}님의 히스토리입니다.</CardTitle>
+            <CardTitle>{userData.login_id}님의 히스토리입니다.</CardTitle>
             <CardDescription>
-              대출, 반납 기록을 확인할 수 있습니다.
+              대출/반납/예약/연장 기록을 확인할 수 있습니다.
             </CardDescription>
           </CardHeader>
 

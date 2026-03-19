@@ -1,7 +1,7 @@
 "use client";
 
 import React, { ReactElement, useEffect, useRef } from 'react';
-import { SetterOrUpdater } from 'recoil';
+import { SetterOrUpdater, useRecoilValue } from 'recoil';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChartArea, User, Paperclip, Bookmark, PartyPopper, ScanBarcode } from 'lucide-react';
@@ -9,6 +9,7 @@ import { ChartArea, User, Paperclip, Bookmark, PartyPopper, ScanBarcode } from '
 import Logo from '@/components/main/Logo';
 
 import st from "./NavBar.module.scss";
+import { userDataState } from '@/stores/userDataState';
 
 export interface PathProps {
     path: string,
@@ -29,6 +30,7 @@ function NavBar({
     const location = usePathname();
     const { user } = useUser();
     const navCon = useRef(null);
+    const userData = useRecoilValue(userDataState);
 
     const pathList : PathProps[] = [
         {
@@ -89,8 +91,8 @@ function NavBar({
                             router.push('/profile');
                         }}
                     />
-                    <span>안녕하세요, {user?.username}님!</span>
-                    <span>컴퓨터공학과 1학년</span>
+                    <span>안녕하세요, {userData.login_id}님!</span>
+                    <span>{`${userData.major} ${userData.grade}학년`}</span>
                     <SignOutButton>
                         <span className={st.sign_out}>
                             SIGN OUT

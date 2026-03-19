@@ -21,6 +21,8 @@ import { api } from '../../../../convex/_generated/api';
 import { useUser } from '@clerk/clerk-react';
 import { toast } from 'sonner';
 import Loading from '@/app/loading';
+import { userDataState } from '@/stores/userDataState';
+import { useRecoilValue } from 'recoil';
 
 function Bookmark() {
   const getUserBookmark = useMutation(api.books.getUserBookmark);
@@ -30,12 +32,14 @@ function Bookmark() {
   const [searched, setSearched] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("전체");
 
+  const userData = useRecoilValue(userDataState);
+
 
   const { user, isLoaded } = useUser();
 
   const handleBookmarkList =() => {
     const bookmarkPromise = getUserBookmark({
-      student_id: "60211579"
+      student_id: userData.student_id
     })
     .then((data) => {
       setBookmarkList(data.bookmarkList);
@@ -101,7 +105,7 @@ function Bookmark() {
       <Card className={st.files}>
         <CardHeader>
           <CardTitle>북마크 목록</CardTitle>
-          <CardDescription>{user.username}님의 북마크 목록입니다.</CardDescription>
+          <CardDescription>{userData.login_id}님의 북마크 목록입니다.</CardDescription>
         </CardHeader>
 
         <CardContent className={st.file_content}>

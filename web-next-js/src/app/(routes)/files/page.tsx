@@ -34,6 +34,8 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import Loading from '@/app/loading';
 import { useRouter, useSearchParams } from 'next/navigation';
 import utcToKorea from '@/utils/utcToKorea';
+import { useRecoilValue } from 'recoil';
+import { userDataState } from '@/stores/userDataState';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -53,6 +55,7 @@ function Files() {
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const userData = useRecoilValue(userDataState);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -69,7 +72,7 @@ function Files() {
     .then((data) => {
       const { storageId } = data;
       const uploadPromise = uploadFile({
-        author: "60211579",
+        author: userData.student_id,
         file_name: file.name,
         file_size: file.size,
         description: description,
@@ -272,7 +275,7 @@ function Files() {
                     </TableCell>
                     <TableCell>{item?.author}</TableCell>
                     <TableCell>
-                      {item?.author === "60211579" ? <Button className={st.button}>삭제/수정</Button> : ""}
+                      {item?.author === userData.student_id ? <Button className={st.button}>삭제/수정</Button> : ""}
                     </TableCell>
                   </TableRow>
                 )})}

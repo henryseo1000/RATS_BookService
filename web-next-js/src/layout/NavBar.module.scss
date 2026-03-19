@@ -66,6 +66,8 @@
             img {
                 width: 100px;
                 border-radius: 50px;
+                cursor: pointer;
+                user-select: none;
             }
     
             span:nth-child(2) {
@@ -251,6 +253,7 @@
                 width: 50px;
                 border-radius: 25px;
                 cursor: pointer;
+                user-select: none;
             }
 
             span {
@@ -369,6 +372,7 @@
                     width: 35px;
                     border-radius: 25px;
                     cursor: pointer;
+                    user-select: none;
                 }
     
                 span {

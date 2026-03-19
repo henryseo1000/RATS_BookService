@@ -31,6 +31,8 @@ import {
 
 import st from './BookList.module.scss';
 import Loading from '@/app/loading';
+import { useRecoilValue } from 'recoil';
+import { userDataState } from '@/stores/userDataState';
 
 function BookList() {
     const getBooks = useMutation(api.books.getBooks);
@@ -51,13 +53,13 @@ function BookList() {
     const [searchType, setSearchType] = useState<string>("전체");
     const [input, setInput] = useState<string>("");
     const [bookList, setBookList] = useState<any[]>([]);
-    const [bookmarkData, setBookmarkData] = useState<any[]>([]);
     const [borrowedFilter, setBorrowedFilter] = useState<string>("전체");
     const [reservedFilter, setReservedFilter] = useState<string>("전체");
     const [pageCount, setPageCount] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [searched, setSearched] = useState<boolean>(false);
     const searchButtonRef = useRef<HTMLButtonElement>(null);
+    const userData = useRecoilValue(userDataState);
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -88,7 +90,7 @@ function BookList() {
                 borrowedFilter: urlParamBorrowed ? urlParamBorrowed : "전체",
                 reservedFilter: urlParamReserved ? urlParamReserved : "전체",
                 pageNum: currentPage,
-                studentId: "60211579"
+                studentId: userData.student_id
             });
 
             setPageCount(filteredList.totalPages);
@@ -111,7 +113,7 @@ function BookList() {
 
     const handleBorrow = (bookId : string) => {
         getUserBorrowed({
-            student_id : "60211579"
+            student_id : userData.student_id
         })
         .then((data) => {
             if (data.totalBorrowed >= 5) {
@@ -120,7 +122,7 @@ function BookList() {
             else {
                 const borrowPromise = borrowBook({
                     book_id: bookId as Id<"book_info">,
-                    student_id: "60211579"
+                    student_id: userData.student_id
                 })
         
                 toast.promise(borrowPromise, {
@@ -135,7 +137,7 @@ function BookList() {
 
     const handleReserve = (bookId : string) => {
         getUserReserved({
-            student_id : "60211579"
+            student_id : userData.student_id
         })
         .then((data) => {
             if (data.totalReserved >= 5) {
@@ -144,7 +146,7 @@ function BookList() {
             else {
                 const reservePromise = reserveBook({
                     book_id: bookId as Id<"book_info">,
-                    student_id: "60211579"
+                    student_id: userData.student_id
                 })
         
                 toast.promise(reservePromise, {
@@ -160,7 +162,7 @@ function BookList() {
     const handleReturn = (bookId : string) => {
         const returnPromise = returnBook({
             book_id : bookId as Id<"book_info">, 
-            student_id: "60211579"
+            student_id: userData.student_id
         })
         .then(() => handleSearch())
 
@@ -174,7 +176,7 @@ function BookList() {
     const handleCancelRes = (bookId : string) => {
         const cancelPromise = cancelReservation({
             book_id : bookId as Id<"book_info">,
-            student_id: "60211579"
+            student_id: userData.student_id
         })
         .then(() => handleSearch())
 
@@ -187,23 +189,23 @@ function BookList() {
 
     const handleBookmark = (bookId : string) => {
         getUserBookmark({
-            student_id: "60211579"
+            student_id: userData.student_id
         })
         .then((data) => {
             const filteredRes = data.bookmarkList.filter((item) => {
-                return item?._id === bookId && item?.student_id === "60211579";
+                return item?._id === bookId && item?.student_id === userData.student_id;
             });
 
             if(filteredRes.length >= 1) {
                 cancelBookmark({
                     book_id: bookId as Id<"book_info">,
-                    student_id: "60211579"
+                    student_id: userData.student_id
                 })
             }
             else {
                 const bookmarkPromise = addBookmark({
                     book_id: bookId as Id<"book_info">,
-                    student_id: "60211579"
+                    student_id: userData.student_id
                 })
         
                 toast.promise(bookmarkPromise, {
@@ -444,7 +446,7 @@ function BookList() {
                                         <TableCell width={"10%"} align='center'>
                                             { item?.borrowed ? 
 
-                                            item.borrowed === "60211579" ? 
+                                            item.borrowed === userData.student_id ? 
                                             <Button 
                                             className={st.activated_button} 
                                             onClick={() => handleReturn(item?._id)}>
@@ -464,11 +466,11 @@ function BookList() {
                                         <TableCell width={"10%"} align='center'>
                                             { item?.reservation && item?.reservation !== "" ? 
 
-                                            item.reservation === "60211579" ? <Button className={st.activated_button} onClick={() => handleCancelRes(item?._id)}>예약 취소</Button> : `예약중 : ${item.reservation}` 
+                                            item.reservation === userData.student_id ? <Button className={st.activated_button} onClick={() => handleCancelRes(item?._id)}>예약 취소</Button> : `예약중 : ${item.reservation}` 
 
                                             : 
                                             
-                                            (item.borrowed !== "" && item.borrowed && item.borrowed !== "60211579")  &&
+                                            (item.borrowed !== "" && item.borrowed && item.borrowed !== userData.student_id)  &&
 
                                             <Button
                                                 className={st.default_button}
