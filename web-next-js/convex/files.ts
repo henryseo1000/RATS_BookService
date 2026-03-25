@@ -31,7 +31,10 @@ export const uploadFile = mutation({
 
 export const getFileList = mutation({
     handler: async (ctx) => {
-        const fileList = await ctx.db.query("file_list").collect();
+        const fileList = await ctx.db.query("file_list")
+        .withIndex("by_creation_time")
+        .order('desc')
+        .collect();
 
         return fileList;
     }
@@ -117,20 +120,34 @@ export const generateDownloadURL = mutation({
     }
 })
 
-export const getFileListByPage = mutation({
-    args: {
-        page: v.int64(),
-        borrowed: v.string(),
-        reserved: v.string(),
-        type: v.string()
-    },
-    handler: async (ctx) => {
-        const fileList = await ctx.db.query("file_list")
-        .collect()
-        .then((data) => {
-                
-            }
-        )
-        
-    }
-})
+export const deleteFilesById = mutation({
+  args: {
+    file_id: v.id("file_list"),
+  },
+  handler: async (ctx, args) => {
+    const res = await ctx.db.get(args.file_id)
+    .then((file_data) => {
+        ctx.storage.delete(file_data.storageId);
+        ctx.db.delete(args.file_id);
+        return file_data.storageId;
+    })
+
+    return res;
+  },
+});
+
+export const editFileDataById = mutation({
+  args: {
+    file_id: v.id("file_list"),
+    description: v.string()
+  },
+  handler: async (ctx, args) => {
+    const res = await ctx.db.get(args.file_id)
+    .then((file_data) => {
+        ctx.db.patch(args.file_id, { description: args.description })
+        return file_data.storageId;
+    })
+
+    return res;
+  },
+});

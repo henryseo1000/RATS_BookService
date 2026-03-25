@@ -46,5 +46,18 @@
                 }
             }
         }
+
+        .footer_area {
+
+            .sign_out {
+                @include justi-align-center;
+                padding: 5px 20px;
+                border-radius: 10px;
+                color : #ffffff;
+                font-weight: 700;
+                background-color: #ff4040;
+                cursor: pointer;
+            }
+        }
     }
 }

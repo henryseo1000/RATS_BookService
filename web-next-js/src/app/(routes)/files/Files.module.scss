@@ -28,23 +28,36 @@
 
         .file_content {
 
-            .file_name {
-                @include align-center;
-                gap: 5px;
-                text-decoration: underline;
-                cursor: pointer;
+            .file_table {
+                min-width: 800px;
 
-                .icon {
-                    width: 15px;
+                .file_name {
+                    @include align-center;
+                    gap: 5px;
+                    text-decoration: underline;
+                    cursor: pointer;
+
+                    .icon {
+                        width: 15px;
+                    }
+
+                    &:hover {
+                        font-weight: 700;
+                    }
                 }
 
-                &:hover {
-                    font-weight: 700;
-                }
-            }
+                .table_buttons {
+                    display: flex;
+                    gap: 10px;
 
-            .button {
-                background-color: #ff4040;
+                    .button_edit {
+                        background-color: #307cff;
+                    }
+
+                    .button_delete {
+                        background-color: #ff4040;
+                    }
+                }
             }
         }
 

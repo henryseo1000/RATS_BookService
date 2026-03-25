@@ -112,6 +112,60 @@ export const recommandList = mutation({
   }
 })
 
+export const getBookHistoryByFilter = mutation({
+  args: {
+    student_id: v.string(),
+    pageNum: v.number()
+  },
+  handler: async (ctx, args) => {
+    let totalLength = 0;
+    let totalPages = 0;
+    const filteredList = await ctx.db.query("book_history").order("desc").collect()
+        .then((data) => {
+          return data.filter((item) => {return item?.student_id === args.student_id});
+        })
+        .then(async (booklist) => {
+          const len = booklist.length;
+          const arr = [];
+          for (let i = 0; i < len; i++) {
+            const bookInfo = await ctx.db.get(booklist[i]?.book_id);
+            arr.push({
+              ...booklist[i],
+              book_title : bookInfo?.title,
+              book_isbn : bookInfo?.isbn,
+              time : utcToKorea(booklist[i]?._creationTime, "onlyTime"),
+              date : utcToKorea(booklist[i]?._creationTime, "onlyDate"),
+            })
+          }
+          totalLength = booklist.length;
+          totalPages = (totalLength % 10 == 0) && totalLength != 0 ? Math.floor(totalLength) / 10 : Math.floor(totalLength / 10) + 1;
+
+          return arr;
+        })
+        .then((result) => {
+            if(result.length == 0) {
+              return [];
+            }
+
+            if (args.pageNum < totalPages) {
+              return result.splice((args.pageNum - 1) * 10, 10);
+            }
+            else if (args.pageNum == totalPages) {
+              return result.splice((args.pageNum - 1) * 10, totalLength % 10);
+            }
+            else {
+              throw new Error("Page number is bigger than total pages. Please try again.");
+            }
+        })
+
+        return {
+          filteredList: filteredList,
+          totalLength: totalLength,
+          totalPages : totalPages
+        };
+    }
+})
+
 export const getBookHistory = mutation({
   handler: async (ctx) => {
     const totalData = await ctx.db.query("book_history")

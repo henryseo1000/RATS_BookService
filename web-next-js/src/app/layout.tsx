@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Dosis } from "next/font/google";
 import { Toaster } from 'sonner'
 import { ConvexProvider } from "@/components/providers/ConvexProvider";
 
 import "./globals.css";
 import RecoilRootProvider from "@/components/providers/RecoilRootProvider";
+import { Dosis } from 'next/font/google';
 
 const dosis = Dosis({
-  style: "normal",
-  weight: "400",
-  subsets: ["latin"]
+  weight: ['400'],
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {

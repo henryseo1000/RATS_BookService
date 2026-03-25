@@ -362,6 +362,7 @@
         .nav_main {
             @include justi-align-center;
             flex-direction: row;
+            gap: 20px;
             padding: 0px;
             margin: 0px;
 
@@ -389,7 +390,7 @@
 
             .link_section {
                 flex-direction: row;
-                gap: 25px;
+                gap: 15px;
 
                 span {
                     display: none;
