@@ -267,10 +267,6 @@ function BookList() {
 
     const handleReset = () => {
         router.replace('/booklist');
-        setInput("");
-        setSearchType("전체");
-        setReservedFilter("전체");
-        setBorrowedFilter("전체");
         setCurrentPage(1);
         setSearched(!searched);
     }
@@ -285,22 +281,34 @@ function BookList() {
     }
 
     useEffect(() => {
-        window.addEventListener("resize", handlePaginationResize)
-
-        if(searchParams.get('searchInput')) {
+        window.addEventListener("resize", handlePaginationResize);
+        
+        if (searchParams.get('searchInput')) {
             setInput(searchParams.get('searchInput'));
         }
+        else {
+            setInput("");
+        }
 
-        if(searchParams.get('borrowed')) {
+        if (searchParams.get('borrowed')) {
             setBorrowedFilter(searchParams.get('borrowed'));
         }
-
-        if(searchParams.get('reserved')) {
-            setReservedFilter(searchParams.get('reserved'));
+        else {
+            setBorrowedFilter("전체");
         }
 
-        if(searchParams.get('type')) {
+        if (searchParams.get('reserved')) {
+            setReservedFilter(searchParams.get('reserved'));
+        }
+        else {
+            setReservedFilter("전체");
+        }
+
+        if (searchParams.get('type')) {
             setSearchType(searchParams.get('type'));
+        }
+        else {
+            setSearchType("전체");
         }
 
         handleSearch();
@@ -407,6 +415,7 @@ function BookList() {
                     className={st.button}
                     onClick={() => {
                         setCurrentPage(1);
+                        setSearched(false);
                         router.replace(`/booklist?searchInput=${input=="" ? "" :input}&borrowed=${borrowedFilter}&reserved=${reservedFilter}&type=${searchType}`);
                     }}
                 >

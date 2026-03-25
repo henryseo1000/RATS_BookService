@@ -341,6 +341,75 @@ export const getUserBookmark = mutation({
   }
 })
 
+export const getBookmarkByFilter = mutation({
+  args: {
+    input: v.string(),
+    statusFilter: v.string(),
+    student_id: v.string(),
+    pageNum: v.number()
+  },
+  handler: async (ctx, args) => {
+    let totalLength = 0;
+    let totalPages = 0;
+    const filteredList = await ctx.db.query("bookmark_list").order("desc").collect()
+        .then((data) => {
+          return data.filter((item) => {return item?.student_id === args.student_id})
+        })
+        .then(async (booklist) => {
+          const len = booklist.length;
+          const arr = [];
+          for (let i = 0; i < len; i++) {
+            const bookInfo = await ctx.db.get(booklist[i]?.book_id)
+
+            if (bookInfo.title.trim().toLowerCase().includes(args.input.trim().toLowerCase())) {
+              if (args.statusFilter === "전체") {
+                arr.push({
+                  date: utcToKorea(booklist[i]?._creationTime),
+                  student_id : booklist[i]?.student_id,
+                  ...bookInfo
+                })
+              }
+              else {
+                if (bookInfo.status === args.statusFilter) {
+                  arr.push({
+                    date: utcToKorea(booklist[i]?._creationTime),
+                    student_id : booklist[i]?.student_id,
+                    ...bookInfo
+                  })
+                }
+              }
+            }
+          }
+          
+          totalLength = arr.length;
+          totalPages = (totalLength % 10 == 0) && totalLength != 0 ? Math.floor(totalLength) / 10 : Math.floor(totalLength / 10) + 1;
+
+          return arr;
+        })
+        .then((result) => {
+            if(result.length == 0) {
+              return [];
+            }
+
+            if (args.pageNum < totalPages) {
+              return result.splice((args.pageNum - 1) * 10, 10);
+            }
+            else if (args.pageNum == totalPages) {
+              return result.splice((args.pageNum - 1) * 10, totalLength % 10);
+            }
+            else {
+              throw new Error("Page number is bigger than total pages. Please try again.");
+            }
+        })
+
+        return {
+          filteredList: filteredList,
+          totalLength: totalLength,
+          totalPages : totalPages
+        };
+    }
+})
+
 export const borrowBook = mutation({
   args: {
     book_id: v.id("book_info"), 
