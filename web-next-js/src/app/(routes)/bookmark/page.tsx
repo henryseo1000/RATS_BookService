@@ -207,7 +207,7 @@ function Bookmark() {
         </CardHeader>
 
         <CardContent className={st.file_content}>
-            <Table>
+            <Table className={st.bookmark_table}>
               <TableHeader className={st.table_header}>
                 <TableRow>
                   <TableCell>상태</TableCell>
