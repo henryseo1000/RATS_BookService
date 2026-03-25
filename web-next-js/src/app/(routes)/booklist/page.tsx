@@ -281,6 +281,7 @@ function BookList() {
     }
 
     useEffect(() => {
+        handlePaginationResize();
         window.addEventListener("resize", handlePaginationResize);
         
         if (searchParams.get('searchInput')) {
@@ -315,10 +316,6 @@ function BookList() {
 
         return () => window.removeEventListener("resize", handlePaginationResize)
     }, [searched])
-
-    if (!searched) {
-        return <Loading/>
-    }
 
     return (
         <div className={st.page_container}>

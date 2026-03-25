@@ -8,26 +8,35 @@
     }
 }
 
-.input_area {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
+.modal_content {
 
-    .file_description {
-        height: 150px;
-    }
+    .input_area {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
 
-    .upload_button {
-        background-color: #307cff;
+        .file_description {
+            height: 150px;
+        }
 
-        .uploading {
-            @include justi-align-center;
-            gap: 5px;
+        .upload_button {
+            background-color: #307cff;
 
-            .spinner {
-                animation: rotateIcon 1s infinite;
+            .uploading {
+                @include justi-align-center;
+                gap: 5px;
+
+                .spinner {
+                    animation: rotateIcon 1s infinite;
+                }
             }
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .modal_content {
+        max-width: 90%;
     }
 }
