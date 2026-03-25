@@ -62,7 +62,7 @@ function FileEditModal({data} : {data : FileModalProps}) {
               <DialogTrigger ref={buttonRef}>
                 <Button className={st.modal_button}>수정</Button>
               </DialogTrigger>
-              <DialogContent ref={dialogRef}>
+              <DialogContent ref={dialogRef} className={st.modal_content}>
                 <DialogHeader>
                   <DialogTitle className={st.dialog_title}>
                     <span>파일 수정</span>

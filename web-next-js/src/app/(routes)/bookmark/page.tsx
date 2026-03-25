@@ -128,6 +128,7 @@ function Bookmark() {
     }
 
   useEffect(() => {
+    handlePaginationResize();
     window.addEventListener("resize", handlePaginationResize);
 
     if(searchParams.get('searchInput')) {
@@ -148,10 +149,6 @@ function Bookmark() {
 
     return () => window.removeEventListener("resize", handlePaginationResize);
   }, [searched])
-
-  if (!searched) {
-    return <Loading/>
-  }
 
   return (
     <div className={st.page_container}>

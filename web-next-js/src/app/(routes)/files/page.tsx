@@ -200,6 +200,7 @@ function Files() {
     }
 
   useEffect(() => {
+    handlePaginationResize();
     window.addEventListener("resize", handlePaginationResize);
 
     if(searchParams.get('searchInput')) {
@@ -220,10 +221,6 @@ function Files() {
 
     return () => window.removeEventListener("resize", handlePaginationResize)
   }, [searched]);
-
-  if (!searched) {
-    return <Loading/>
-  }
 
   return (
     <div className={st.page_container}>
