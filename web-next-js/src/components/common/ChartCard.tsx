@@ -165,7 +165,7 @@ export function ChartCard({
                   );
                 })
               ) : (
-                <text className="no_data">발견된 데이터가 없습니다.</text>
+                <td className="no_data">발견된 데이터가 없습니다.</td>
               )}
             </TableBody>
           </Table>

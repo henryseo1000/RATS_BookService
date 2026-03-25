@@ -58,6 +58,8 @@ function BookList() {
     const [pageCount, setPageCount] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [searched, setSearched] = useState<boolean>(false);
+    const [sentReq, setSentReq] = useState<boolean>(false);
+    const [paginationNum, setPaginationNum] = useState<number>(10);
     const searchButtonRef = useRef<HTMLButtonElement>(null);
     const userData = useRecoilValue(userDataState);
 
@@ -101,6 +103,7 @@ function BookList() {
             setBookList(data);
         })
         .finally(() => {
+            setSentReq(false);
             setSearched(true);
         })
 
@@ -228,17 +231,17 @@ function BookList() {
         let startIdx = 1;
         let endIdx = 1;
 
-        if (currentPage + 9 <= pageCount) {
+        if (currentPage + (paginationNum - 1) <= pageCount) {
             startIdx = currentPage;
-            endIdx = currentPage + 9;
+            endIdx = currentPage + (paginationNum - 1);
         }
         else {
-            if (pageCount < 10) {
+            if (pageCount < paginationNum) {
                 startIdx = 1;
                 endIdx = pageCount;
             }
             else {
-                startIdx = pageCount - 9;
+                startIdx = pageCount - (paginationNum - 1);
                 endIdx = pageCount;
             }
         }
@@ -272,7 +275,18 @@ function BookList() {
         setSearched(!searched);
     }
 
+    const handlePaginationResize = () => {
+        if(window.innerWidth <= 768) {
+            setPaginationNum(5);
+        }
+        else {
+            setPaginationNum(10);
+        }
+    }
+
     useEffect(() => {
+        window.addEventListener("resize", handlePaginationResize)
+
         if(searchParams.get('searchInput')) {
             setInput(searchParams.get('searchInput'));
         }
@@ -290,6 +304,8 @@ function BookList() {
         }
 
         handleSearch();
+
+        return () => window.removeEventListener("resize", handlePaginationResize)
     }, [searched])
 
     if (!searched) {
@@ -392,7 +408,6 @@ function BookList() {
                     onClick={() => {
                         setCurrentPage(1);
                         router.replace(`/booklist?searchInput=${input=="" ? "" :input}&borrowed=${borrowedFilter}&reserved=${reservedFilter}&type=${searchType}`);
-                        setSearched(false);
                     }}
                 >
                     검색
@@ -401,7 +416,9 @@ function BookList() {
 
                 <Button
                     className={st.button}
-                    onClick={handleReset}
+                    onClick={() => {
+                        handleReset();
+                    }}
                 >
                     초기화
                     <RotateCcw size={15}/>
@@ -409,7 +426,7 @@ function BookList() {
             </Card>
 
             <Card className={st.table_container}>
-                    <Table>
+                    <Table className={st.book_table}>
                         <TableHeader>
                             <TableRow>
                                 <TableCell>상태</TableCell>
@@ -430,26 +447,63 @@ function BookList() {
                                         className={st.table_row}
                                         key={item?._id}
                                     >
-                                        <TableCell width={"10%"}>{item?.status ? item?.status : "비치중"}</TableCell>
-                                        <TableCell width={"10%"}>{item?.type ? item?.type : ""}</TableCell>
+                                        <TableCell 
+                                            //width={"10%"}
+                                            onClick={() => {
+                                                router.push(`/booklist/${item?._id}`);
+                                            }}
+                                        >
+                                            {item?.status ? item?.status : "비치중"}
+                                        </TableCell>
+                                        <TableCell 
+                                            //width={"10%"}
+                                            onClick={() => {
+                                                router.push(`/booklist/${item?._id}`);
+                                            }}
+                                        >
+                                            {item?.type ? item?.type : ""}
+                                        </TableCell>
                                         <TableCell 
                                             className={st.book_title}
-                                            width={"30%"}
+                                            //width={"30%"}
                                             onClick={() => {
                                                 router.push(`/booklist/${item?._id}`);
                                             }}
                                         >
                                             {item?.title}
                                         </TableCell>
-                                        <TableCell className={st.author} width={"10%"}>{item?.author}</TableCell>
-                                        <TableCell width={"10%"}>{item?.isbn}</TableCell>
-                                        <TableCell width={"10%"} align='center'>
+                                        <TableCell 
+                                            className={st.author} 
+                                            //width={"10%"}
+                                            onClick={() => {
+                                                router.push(`/booklist/${item?._id}`);
+                                            }}
+                                        >
+                                            {item?.author}
+                                        </TableCell>
+                                        <TableCell 
+                                            //width={"10%"}
+                                            onClick={() => {
+                                                router.push(`/booklist/${item?._id}`);
+                                            }}
+                                        >
+                                            {item?.isbn}
+                                        </TableCell>
+                                        <TableCell 
+                                        //width={"10%"} 
+                                        align='center'>
                                             { item?.borrowed ? 
 
                                             item.borrowed === userData.student_id ? 
                                             <Button 
-                                            className={st.activated_button} 
-                                            onClick={() => handleReturn(item?._id)}>
+                                                className={st.activated_button} 
+                                                disabled={sentReq}
+                                                onClick={() => {
+                                                    setSentReq(true);
+                                                    handleReturn(item?._id);
+                                                    setSearched(false);
+                                                }}
+                                            >
                                                 반납하기
                                             </Button> : `대출중 : ${item.borrowed}` 
 
@@ -457,13 +511,21 @@ function BookList() {
 
                                             <Button
                                                 className={st.default_button}
-                                                onClick={() => handleBorrow(item?._id)}
+                                                disabled={sentReq}
+                                                onClick={() => {
+                                                    setSentReq(true);
+                                                    handleBorrow(item?._id);
+                                                    setSearched(false);
+                                                }}
                                             >
                                                 대출하기
                                             </Button>
                                             }
                                         </TableCell>
-                                        <TableCell width={"10%"} align='center'>
+                                        <TableCell 
+                                            //width={"10%"} 
+                                            align='center'
+                                        >
                                             { item?.reservation && item?.reservation !== "" ? 
 
                                             item.reservation === userData.student_id ? <Button className={st.activated_button} onClick={() => handleCancelRes(item?._id)}>예약 취소</Button> : `예약중 : ${item.reservation}` 
@@ -474,8 +536,11 @@ function BookList() {
 
                                             <Button
                                                 className={st.default_button}
+                                                disabled={sentReq}
                                                 onClick={() => {
+                                                    setSentReq(true);
                                                     handleReserve(item?._id);
+                                                    setSearched(false);
                                                 }}
                                             >
                                                 예약
@@ -483,10 +548,18 @@ function BookList() {
                                             }
                                         </TableCell>
 
-                                        <TableCell width={"10%"} align='center'>
+                                        <TableCell 
+                                            //width={"10%"} 
+                                            align='center'
+                                        >
                                             <Button 
                                                 className={item?.isUserBookmark ? st.bookmarked_button : st.default_button}
-                                                onClick={() => handleBookmark(item?._id)}
+                                                disabled={sentReq}
+                                                onClick={() => {
+                                                    setSentReq(true);
+                                                    handleBookmark(item?._id);
+                                                    setSearched(false);
+                                                }}
                                             >
                                                 <Bookmark size={20}/>
                                                 {item?.bookmarkCount ? item?.bookmarkCount : 0}

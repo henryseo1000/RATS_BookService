@@ -30,7 +30,7 @@ export default function BookInformation(props : any) {
 
         toast.promise(apiPromise, {
             loading: "정보를 가져오는 중...",
-            success: bookData == undefined ? "책 정보가 없습니다!" : "책에 대한 정보를 가져왔습니다!",
+            success: "로딩 완료!",
             error: "앗, 무언가 잘못된 것 같군요..."
         })
     }
@@ -46,16 +46,18 @@ export default function BookInformation(props : any) {
 
     return (
         <div className={st.page_container}>
-            <span className={st.title}>
-                <Book/>
-                {bookData?.title}
-                에 대한 정보
-            </span>
+            {bookData !== undefined &&
+                <span className={st.title}>
+                    <Book/>
+                    {bookData?.title}
+                    에 대한 정보
+                </span>
+            }
             
             <div className={st.header}>
-                {bookData == undefined ? 
+                {bookData === undefined ? 
                 <div>
-                    정보 없음
+                    책 정보가 없습니다.
                 </div>
                 :
                 <>

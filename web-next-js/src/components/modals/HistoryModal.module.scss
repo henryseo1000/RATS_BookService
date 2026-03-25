@@ -1,0 +1,28 @@
+.modal_button {
+    background-color: #307cff;
+
+    &:hover {
+        background-color: #307cff;
+    }
+}
+
+.modal_content {
+    max-width: fit-content;
+
+    .history_table {
+        width: 800px;
+        color: #000000;
+
+        .table_row {
+            cursor: pointer;
+
+            &:hover {
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+.pagination {
+    color: #000000;
+}

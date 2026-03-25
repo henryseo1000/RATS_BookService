@@ -34,9 +34,6 @@ function BookCard({ data } : Props) {
                     className={st.arrow}
                     size={40}
                     color='#b0b0b0'
-                    onClick={() => {
-                        
-                    }}
                 />
             </div>
         </Card>

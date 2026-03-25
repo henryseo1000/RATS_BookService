@@ -1,11 +1,12 @@
 "use client"
-import { useUser } from '@clerk/clerk-react';
+import { SignOutButton, useUser } from '@clerk/clerk-react';
 import React, { useEffect, useState } from 'react';
 import st from "./Profile.module.scss";
 import Loading from '@/app/loading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRecoilValue } from 'recoil';
 import { userDataState } from '@/stores/userDataState';
+import { Button } from '@/components/ui/button';
 
 function Profile() {
   const { user, isLoaded } = useUser();
@@ -44,6 +45,14 @@ function Profile() {
             <input className={st.input} type="text" value={userData.grade}/>
           </div>
         </CardContent>
+
+        <CardFooter className={st.footer_area}>
+          <SignOutButton>
+              <span className={st.sign_out}>
+                SIGN OUT
+              </span>
+          </SignOutButton>
+        </CardFooter>
       </Card>
       
       

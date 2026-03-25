@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 import ChartCard from "@/components/common/ChartCard";
-import { BookData } from "@/types/common/BookData";
 import BookCard from "@/components/common/BookCard";
 
 import st from "./Dashboard.module.scss";
@@ -44,6 +43,7 @@ import Loading from "@/app/loading";
 import utcToKorea from "@/utils/utcToKorea";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "@/stores/userDataState";
+import HistoryModal from "@/components/modals/historyModal";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
@@ -233,7 +233,7 @@ function Dashboard() {
           </CardHeader>
 
           <CardContent className={st.history_content}>
-            <Table>
+            <Table className={st.history_table}>
               <TableHeader>
                 <TableRow>
                   <TableCell>유형</TableCell>
@@ -265,7 +265,7 @@ function Dashboard() {
           </CardContent>
 
           <CardFooter>
-            <Button className={st.button}>더보기</Button>
+            <HistoryModal/>
           </CardFooter>
         </Card>
       </div>
@@ -329,7 +329,7 @@ function Dashboard() {
         </CardHeader>
 
         <CardContent className={st.file_content}>
-          <Table>
+          <Table className={st.file_table}>
             <TableHeader>
               <TableRow>
                 <TableCell>유형</TableCell>

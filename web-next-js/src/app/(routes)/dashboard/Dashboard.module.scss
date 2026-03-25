@@ -54,7 +54,7 @@
     }
 
     .recommand {
-        width: 100%;
+        @include flex-column;
         max-width: 50%;
 
         .recommand_header {
@@ -63,9 +63,11 @@
 
         .recommand_content {
             @include justi-align-center;
+            height: 100%;
 
             .swiper {
                 display: flex;
+                height: 100%;
 
                 .swiper_pagination {
                     transform: translate(0px , 5px);
@@ -105,18 +107,47 @@
 }
 
 @media (max-width: 768px) {
-    .status {
-        flex-direction: column;
-        width: 100%;
-    }
+    .page_container {
 
-    .recommand {
-        max-width: none;
-        min-width: 100%;
+        .status {
+            flex-direction: column;
+            width: 100%;
+        }
 
-        .recommand_content {
-            .swiper {
-                margin-bottom: 30px;
+        .history {
+
+            .history_content {
+
+                .history_table {
+                    min-width: 750px;
+                }
+
+                .table_row {
+
+                    &:hover {
+                        cursor: pointer;
+                        font-weight: 700;
+                    }
+                }
+            }
+        }
+
+        .recommand {
+            max-width: 100%;
+
+            .recommand_content {
+
+                .swiper {
+                    max-height: 150px;
+                    margin-bottom: 30px;
+                }
+            }
+        }
+
+        .file_content {
+
+            .file_table {
+                min-width: 750px;
             }
         }
     }

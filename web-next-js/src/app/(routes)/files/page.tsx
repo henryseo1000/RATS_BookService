@@ -33,15 +33,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Loading from '@/app/loading';
 import { useRouter, useSearchParams } from 'next/navigation';
-import utcToKorea from '@/utils/utcToKorea';
 import { useRecoilValue } from 'recoil';
 import { userDataState } from '@/stores/userDataState';
+import { Id } from '../../../../convex/_generated/dataModel';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const uploadFile = useMutation(api.files.uploadFile);
   const getFileListByFilter = useMutation(api.files.getFileListByFilter);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
+  const deleteFilesById = useMutation(api.files.deleteFilesById);
+  const editFileDataById = useMutation(api.files.editFileDataById);
 
   const [file, setFile] = useState<File>();
   const [input, setInput] = useState<string>("");
@@ -52,6 +54,8 @@ function Files() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>(1);
   const [searched, setSearched] = useState<boolean>(false);
+  const [isUploaded, setUploaded] = useState<boolean>(true);
+  const [sentReq, setSentReq] = useState<boolean>(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -90,6 +94,7 @@ function Files() {
       setFile(undefined);
       setOpen(!open);
       setDescription("");
+      setUploaded(true);
     })
   }
 
@@ -111,6 +116,22 @@ function Files() {
       loading: "파일 리스트 가져오는 중...",
       success: "파일 리스트를 가져왔습니다!",
       error: "앗, 무언가 잘못된 것 같군요..."
+    })
+  }
+
+  const handleDelete = (id : string) => {
+    const deletePromise = deleteFilesById({
+      file_id : id as Id<"file_list">
+    })
+    .then(() => {
+      handleFileSearch();
+      setSentReq(false);
+    })
+
+    toast.promise(deletePromise, {
+      success: "파일이 성공적으로 삭제되었습니다.",
+      loading: "파일 삭제중...",
+      error : "삭제 도중 문제가 발생했습니다!"
     })
   }
 
@@ -243,7 +264,7 @@ function Files() {
         </CardHeader>
 
         <CardContent className={st.file_content}>
-            <Table>
+            <Table className={st.file_table}>
               <TableHeader className={st.table_header}>
                 <TableRow>
                   <TableCell>유형</TableCell>
@@ -255,7 +276,7 @@ function Files() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {fileList.map((item, index) => {
+                {fileList?.map((item, index) => {
                   return (
                   <TableRow key={index}>
                     <TableCell>{item?.format?.split("/")[0]}</TableCell>
@@ -275,55 +296,28 @@ function Files() {
                     </TableCell>
                     <TableCell>{item?.author}</TableCell>
                     <TableCell>
-                      {item?.author === userData.student_id ? <Button className={st.button}>삭제/수정</Button> : ""}
+                      {item?.author === userData.student_id ? 
+                        <div className={st.table_buttons}>
+                          <Button 
+                            className={st.button_delete} 
+                            disabled={sentReq}
+                            onClick={() => {
+                              setSentReq(true);
+                              handleDelete(item?._id);
+                            }}
+                          >
+                            삭제
+                          </Button>
+                          <Button className={st.button_edit} disabled={sentReq}>수정</Button> 
+                        </div>
+                        : 
+                        ""
+                      }
                     </TableCell>
                   </TableRow>
                 )})}
               </TableBody>
             </Table>
-
-            <Pagination>
-                    <PaginationContent
-                        onChange={(e) => {e.currentTarget.ariaValueText}}
-                    >
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={(e) => {
-                                    setCurrentPage((currentPage) => {
-                                        if(currentPage > 1) {
-                                            return currentPage - 1;
-                                        }
-                                        else {
-                                            return currentPage;
-                                        }
-                                    })
-                                    setSearched(false);
-                                }   
-                              }
-                            />
-                        </PaginationItem>
-                        {
-                            pagination().map((page, index) => (page))
-                        }
-                        <PaginationItem>
-                            <PaginationNext
-                            onClick={(e) => {
-                                setCurrentPage((currentPage) => {
-                                if(currentPage < pageCount) {
-                                    return currentPage + 1;
-                                }
-                                else {
-                                    return currentPage;
-                                }
-                            })
-                            setSearched(false);
-                            }}/>
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-          </CardContent>
-
-          <CardFooter>
             <Dialog>
               <DialogTrigger ref={buttonRef}>
                 <Button className={st.modal_button}>파일 등록</Button>
@@ -356,9 +350,11 @@ function Files() {
                     />
 
                       <Button
-                        disabled={file === undefined}
+                        disabled={file === undefined || !isUploaded}
                         className={st.upload_button}
                         onClick={() => {
+                          setUploaded(false);
+
                           handleUpload(file)
                           .then(() => {handleReset()})
                           .then(() => buttonRef.current.click())
@@ -370,6 +366,51 @@ function Files() {
                   </div>
               </DialogContent>
             </Dialog>
+            
+          </CardContent>
+
+          <CardFooter>
+            <Pagination>
+                    <PaginationContent
+                        onChange={(e) => {e.currentTarget.ariaValueText}}
+                    >
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={(e) => {
+                                    setCurrentPage((currentPage) => {
+                                        if(currentPage > 1) {
+                                            return currentPage - 1;
+                                        }
+                                        else {
+                                            return currentPage;
+                                        }
+                                    })
+                                    setSearched(false);
+                                }   
+                              }
+                            />
+                        </PaginationItem>
+                        {
+                            pagination().map((page, index) => (page))
+                        }
+                        <PaginationItem>
+                            <PaginationNext
+                              onClick={(e) => {
+                                  setCurrentPage((currentPage) => {
+                                    if(currentPage < pageCount) {
+                                        return currentPage + 1;
+                                    }
+                                    else {
+                                        return currentPage;
+                                    }
+                                })
+                                setSearched(false);
+                              }}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            
           </CardFooter>
       </Card>
     </div>

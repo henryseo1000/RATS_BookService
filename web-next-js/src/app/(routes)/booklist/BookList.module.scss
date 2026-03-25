@@ -12,25 +12,26 @@
     .table_container {
         padding: 20px;
 
-        .table_header {
-            background: #000;
-        }
+        .book_table {
+            min-width: 1000px;
 
-        .table_row {
-
-            .book_title {
-                cursor: pointer;
-                
-                &:hover{
-                    font-weight: 700;
-                }
+            .table_header {
+                background: #000;
             }
 
-            .author {
-                max-width: 150px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+            .table_row {
+                cursor: pointer;
+
+                .author {
+                    max-width: 150px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                &:hover {
+                    font-weight: 700;
+                }
             }
         }
     }
@@ -80,6 +81,7 @@
 
 @media (max-width: 768px) {
     .page_container {
+
         .filter {
             flex-direction: column;
 
