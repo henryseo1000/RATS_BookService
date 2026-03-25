@@ -43,7 +43,7 @@ import Loading from "@/app/loading";
 import utcToKorea from "@/utils/utcToKorea";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "@/stores/userDataState";
-import HistoryModal from "@/components/modals/historyModal";
+import HistoryModal from "@/components/modals/HistoryModal";
 
 function Dashboard() {
   const getUserBorrowed = useMutation(api.books.getUserBorrowed);
