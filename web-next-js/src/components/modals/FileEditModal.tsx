@@ -98,7 +98,7 @@ function FileEditModal({data} : {data : FileModalProps}) {
                           handleEdit();
                         }}
                       >
-                        {sentReq ? (<div className={st.uploading}>수정중 <LoaderCircleIcon className={st.spinner}/></div>) : "수정"}
+                        {sentReq ? (<div className={st.uploading}>수정중<LoaderCircleIcon className={st.spinner}/></div>) : "수정"}
                       </Button>
 
                   </div>
