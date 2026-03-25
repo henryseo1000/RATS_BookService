@@ -1,5 +1,16 @@
 @import "/src/styles/mixins.scss";
 
+@keyframes rotateIcon{
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
 .page_container {
     @include flex-column;
     gap: 20px;
@@ -58,6 +69,8 @@
                         background-color: #ff4040;
                     }
                 }
+
+                
             }
         }
 
@@ -95,11 +108,21 @@
 
     .upload_button {
         background-color: #307cff;
+
+        .uploading {
+            @include justi-align-center;
+            gap: 5px;
+
+            .spinner {
+                animation: rotateIcon 1s infinite;
+            }
+        }
     }
 }
 
 @media (max-width : 768px) {
     .page_container {
+
         .filter {
             flex-direction: column;
 
@@ -115,5 +138,9 @@
                 width: 100%;
             }
         }
+    }
+
+    .upload_modal_content {
+        max-width: 90%;
     }
 }

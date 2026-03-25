@@ -23,7 +23,7 @@ import {
 
 
 import st from "./Files.module.scss";
-import { RotateCcw, Search, Download } from 'lucide-react';
+import { RotateCcw, Search, Download, LoaderCircleIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
@@ -36,6 +36,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useRecoilValue } from 'recoil';
 import { userDataState } from '@/stores/userDataState';
 import { Id } from '../../../../convex/_generated/dataModel';
+import FileEditModal from '@/components/modals/FileEditModal';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -43,7 +44,6 @@ function Files() {
   const getFileListByFilter = useMutation(api.files.getFileListByFilter);
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
   const deleteFilesById = useMutation(api.files.deleteFilesById);
-  const editFileDataById = useMutation(api.files.editFileDataById);
 
   const [file, setFile] = useState<File>();
   const [input, setInput] = useState<string>("");
@@ -56,6 +56,7 @@ function Files() {
   const [searched, setSearched] = useState<boolean>(false);
   const [isUploaded, setUploaded] = useState<boolean>(true);
   const [sentReq, setSentReq] = useState<boolean>(false);
+  const [paginationNum, setPaginationNum] = useState<number>(10);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -95,6 +96,7 @@ function Files() {
       setOpen(!open);
       setDescription("");
       setUploaded(true);
+      setSentReq(false);
     })
   }
 
@@ -137,8 +139,6 @@ function Files() {
 
   const handleReset = () => {
     router.replace(`/files`);
-    setTypeFiler("all");
-    setInput("");
     setCurrentPage(1);
     setSearched(false);
   }
@@ -156,17 +156,17 @@ function Files() {
           let startIdx = 1;
           let endIdx = 1;
   
-          if (currentPage + 9 <= pageCount) {
+          if (currentPage + (paginationNum - 1) <= pageCount) {
               startIdx = currentPage;
-              endIdx = currentPage + 9;
+              endIdx = currentPage + (paginationNum - 1);
           }
           else {
-              if (pageCount < 10) {
+              if (pageCount < paginationNum) {
                   startIdx = 1;
                   endIdx = pageCount;
               }
               else {
-                  startIdx = pageCount - 9;
+                  startIdx = pageCount - (paginationNum - 1);
                   endIdx = pageCount;
               }
           }
@@ -174,7 +174,7 @@ function Files() {
           for (let i = startIdx; i <= endIdx; i++) {
               arr.push(
                   <PaginationItem key={i}>
-                      <PaginationLink
+                      <PaginationLink 
                           onClick={() => {
                               setCurrentPage(i);
                               setSearched(false);
@@ -190,16 +190,35 @@ function Files() {
           return arr;
       }
 
+  const handlePaginationResize = () => {
+        if(window.innerWidth <= 768) {
+            setPaginationNum(5);
+        }
+        else {
+            setPaginationNum(10);
+        }
+    }
+
   useEffect(() => {
+    window.addEventListener("resize", handlePaginationResize);
+
     if(searchParams.get('searchInput')) {
       setInput(searchParams.get('searchInput'));
+    }
+    else {
+      setInput("");
     }
 
     if(searchParams.get('type')) {
       setTypeFiler(searchParams.get('type'));
     }
+    else {
+      setTypeFiler("all");
+    }
 
     handleFileSearch();
+
+    return () => window.removeEventListener("resize", handlePaginationResize)
   }, [searched]);
 
   if (!searched) {
@@ -302,13 +321,16 @@ function Files() {
                             className={st.button_delete} 
                             disabled={sentReq}
                             onClick={() => {
-                              setSentReq(true);
-                              handleDelete(item?._id);
+                              const checked = confirm("해당 파일을 삭제하시겠습니까?");
+                              if (checked) {
+                                setSentReq(true);
+                                handleDelete(item?._id);
+                              }
                             }}
                           >
                             삭제
                           </Button>
-                          <Button className={st.button_edit} disabled={sentReq}>수정</Button> 
+                          <FileEditModal data={item}/>
                         </div>
                         : 
                         ""
@@ -322,7 +344,7 @@ function Files() {
               <DialogTrigger ref={buttonRef}>
                 <Button className={st.modal_button}>파일 등록</Button>
               </DialogTrigger>
-              <DialogContent ref={dialogRef}>
+              <DialogContent ref={dialogRef} className={st.upload_modal_content}>
                 <DialogHeader>
                   <DialogTitle className={st.dialog_title}>
                     <span>업로드할 파일을 선택해주세요</span>
@@ -339,6 +361,7 @@ function Files() {
                       onChange={(e) => {
                         setFile(e.target.files![0]);
                       }}
+                      disabled={sentReq}
                     />
 
                     <Textarea 
@@ -347,6 +370,7 @@ function Files() {
                       onChange={(e) => {
                         setDescription(e.target.value)
                       }}
+                      disabled={sentReq}
                     />
 
                       <Button
@@ -354,13 +378,14 @@ function Files() {
                         className={st.upload_button}
                         onClick={() => {
                           setUploaded(false);
+                          setSentReq(true);
 
                           handleUpload(file)
                           .then(() => {handleReset()})
                           .then(() => buttonRef.current.click())
                         }}
                       >
-                        업로드
+                        {sentReq ? (<div className={st.uploading}>업로드중 <LoaderCircleIcon className={st.spinner}/></div>) : "업로드"}
                       </Button>
 
                   </div>

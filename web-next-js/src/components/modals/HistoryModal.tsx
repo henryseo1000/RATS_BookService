@@ -30,7 +30,6 @@ import {
 } from "../ui/pagination";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "@/stores/userDataState";
-import Loading from "@/app/loading";
 import { toast } from "sonner";
 
 function HistoryModal() {
@@ -40,6 +39,7 @@ function HistoryModal() {
   const [isSearched, setSearched] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>(1);
+  const [paginationNum, setPaginationNum] = useState<number>(10);
   const userData = useRecoilValue(userDataState);
 
   const { user } = useUser();
@@ -71,17 +71,17 @@ function HistoryModal() {
           let startIdx = 1;
           let endIdx = 1;
   
-          if (currentPage + 9 <= pageCount) {
+          if (currentPage + (paginationNum - 1) <= pageCount) {
               startIdx = currentPage;
-              endIdx = currentPage + 9;
+              endIdx = currentPage + (paginationNum - 1);
           }
           else {
-              if (pageCount < 10) {
+              if (pageCount < paginationNum) {
                   startIdx = 1;
                   endIdx = pageCount;
               }
               else {
-                  startIdx = pageCount - 9;
+                  startIdx = pageCount - (paginationNum - 1);
                   endIdx = pageCount;
               }
           }
@@ -105,10 +105,23 @@ function HistoryModal() {
           return arr;
       }
 
+  const handlePaginationResize = () => {
+        if(window.innerWidth <= 768) {
+            setPaginationNum(5);
+        }
+        else {
+            setPaginationNum(10);
+        }
+    }
+
   useEffect(() => {
+    window.addEventListener("resize", handlePaginationResize);
+
     if (!isSearched) {
       handleHistoryData();
     }
+
+    return () => window.removeEventListener("resize", handlePaginationResize)
   }, [isSearched]);
 
   return (

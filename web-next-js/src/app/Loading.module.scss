@@ -14,7 +14,7 @@
     @include justi-align-center;
     width: 100%;
     height: 100vh;
-    background-color: #182D52;
+    background-color: var(--background-start-rgb);
 
     .loading_section {
         display: flex;

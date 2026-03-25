@@ -1,0 +1,33 @@
+@import "/src/styles/mixins.scss";
+
+.modal_button {
+    background-color: #307cff;
+
+    &:hover {
+        background-color: #307cff;;
+    }
+}
+
+.input_area {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+
+    .file_description {
+        height: 150px;
+    }
+
+    .upload_button {
+        background-color: #307cff;
+
+        .uploading {
+            @include justi-align-center;
+            gap: 5px;
+
+            .spinner {
+                animation: rotateIcon 1s infinite;
+            }
+        }
+    }
+}

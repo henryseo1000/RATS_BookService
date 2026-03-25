@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useRecoilValue } from 'recoil';
 import { userDataState } from '@/stores/userDataState';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 function Profile() {
   const { user, isLoaded } = useUser();
@@ -30,19 +31,19 @@ function Profile() {
         <CardContent className={st.user_information}>
           <div className={st.inform_area}>
             <div className={st.subtitle}>이름</div>
-            <input className={st.input} type="text" value={userData.name}/>
+            <Input className={st.input} type="text" value={userData.name}/>
           </div>
           <div className={st.inform_area}>
             <div className={st.subtitle}>학번</div>
-            <input className={st.input} type="text" value={userData.student_id}/>
+            <Input className={st.input} type="text" value={userData.student_id}/>
           </div>
           <div className={st.inform_area}>
             <div className={st.subtitle}>학과 정보</div>
-            <input className={st.input} type="text" value={userData.major}/>
+            <Input className={st.input} type="text" value={userData.major}/>
           </div>
           <div className={st.inform_area}>
             <div className={st.subtitle}>학년 정보</div>
-            <input className={st.input} type="text" value={userData.grade}/>
+            <Input className={st.input} type="text" value={userData.grade}/>
           </div>
         </CardContent>
 

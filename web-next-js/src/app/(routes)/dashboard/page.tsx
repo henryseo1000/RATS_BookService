@@ -62,6 +62,7 @@ function Dashboard() {
   const [date, setDate] = useState<Date>(new Date());
   const [updated, setUpdated] = useState<boolean>(false);
   const [swiper, setSwiper] = useState<SwiperCore>();
+  const [paginationNum, setPaginationNum] = useState<number>(10);
   const userData = useRecoilValue(userDataState);
   const [recommandData, setRecommandData] = useState<any[]>([]);
 
@@ -182,6 +183,7 @@ function Dashboard() {
 
   useEffect(() => {
     handleDashboard();
+    
   }, [updated]);
 
   if (!updated) {
