@@ -1,0 +1,47 @@
+@import "/src/styles/mixins.scss";
+
+.modal_content {
+    outline: none;
+
+    .input_area {
+        @include flex-column;
+        max-width: 100%;
+        gap: 10px;
+
+        .download_button {
+            width: 100%;
+            max-width: 100%;
+            background-color: #307cff;
+            outline: none;
+
+            span {
+                max-width: 400px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            &:hover {
+                background-color: #307cff;
+            }
+        }
+
+        .description {
+            display: flex;
+            height: 250px;
+            padding: 10px;
+            color: #4c4c4c;
+            font-size: 15px;
+            border: 0.5px solid #d3d3d3;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            overflow: scroll;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .modal_content {
+        max-width: 90%;
+    }
+}

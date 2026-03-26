@@ -31,12 +31,13 @@ import { toast } from 'sonner';
 import { handleDownload } from '@/utils/handleDownload';
 import { Textarea } from '@/components/ui/textarea';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import Loading from '@/app/loading';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { userDataState } from '@/stores/userDataState';
 import { Id } from '../../../../convex/_generated/dataModel';
 import FileEditModal from '@/components/modals/FileEditModal';
+import FileInfoModal from '@/components/modals/FileInfoModal';
+import { fileState } from '@/stores/useFileState';
 
 function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -57,10 +58,12 @@ function Files() {
   const [isUploaded, setUploaded] = useState<boolean>(true);
   const [sentReq, setSentReq] = useState<boolean>(false);
   const [paginationNum, setPaginationNum] = useState<number>(10);
+  const [fileModalOpen, setFileModalOpen] = useState<boolean>(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const userData = useRecoilValue(userDataState);
+  const [fileData, setFileData] = useRecoilState(fileState);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -300,12 +303,11 @@ function Files() {
                     <TableCell>{item?.date}</TableCell>
                     <TableCell
                       className={st.file_name}
-                      onClick={async () => {
-                        await generateDownloadURL({ key: item?.storageId })
-                        .then((url) => {
-                          handleDownload(url, item?.file_name);
-                        })
-                      }}
+                      onClick={() =>
+                        {
+                          setFileData({...item});
+                          setFileModalOpen(true);
+                        }}
                     >
                       {item?.file_name}
                       <Download className={st.icon} />
@@ -388,7 +390,7 @@ function Files() {
                   </div>
               </DialogContent>
             </Dialog>
-            
+            <FileInfoModal isOpen={fileModalOpen} setOpen={setFileModalOpen}/>
           </CardContent>
 
           <CardFooter>
