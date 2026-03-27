@@ -9,8 +9,10 @@
         gap: 10px;
 
         .download_button {
+            display: flex;
             width: 100%;
             max-width: 100%;
+            gap: 10px;
             background-color: #307cff;
             outline: none;
 
@@ -19,6 +21,10 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+            }
+
+            .icon {
+                width: 15px;
             }
 
             &:hover {

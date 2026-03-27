@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from '../ui/textarea';
-import { LoaderCircleIcon } from 'lucide-react';
+import { Download, LoaderCircleIcon } from 'lucide-react';
 import { handleDownload } from '@/utils/handleDownload';
 
 import st from "./FileInfoModal.module.scss";
@@ -67,6 +67,7 @@ function FileInfoModal({isOpen, setOpen} : {isOpen : boolean, setOpen?: Dispatch
                     disabled={sentReq}
                 >
                     <span>{fileData?.file_name}</span>
+                    <Download className={st.icon} />
                 </Button>
 
                 <Textarea

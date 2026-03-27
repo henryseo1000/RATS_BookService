@@ -217,7 +217,13 @@ function Bookmark() {
               <TableBody>
                 {bookmarkList?.map((item, index) => {
                   return (
-                  <TableRow key={index}>
+                  <TableRow 
+                    key={index} 
+                    onClick={() => {
+                      router.push(`/booklist/${item?._id}`)
+                    }}
+                    className={st.table_row}
+                  >
                     <TableCell>{item?.status}</TableCell>
                     <TableCell>{item?.date}</TableCell>
                     <TableCell>{item.title}</TableCell>
@@ -225,7 +231,7 @@ function Bookmark() {
                       {item?.author}
                     </TableCell>
                     <TableCell
-                      className={st.file_name}
+                      className={st.book_isbn}
                     >
                       {item?.isbn}
                     </TableCell>

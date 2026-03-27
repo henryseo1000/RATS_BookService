@@ -37,14 +37,31 @@
         }
 
         .footer_area {
+            display: flex;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+            gap: 10px;
 
             .sign_out {
                 @include justi-align-center;
+                width: 100%;
                 padding: 5px 20px;
-                border-radius: 10px;
+                border-radius: 5px;
                 color : #ffffff;
                 font-weight: 700;
                 background-color: #ff4040;
+                cursor: pointer;
+            }
+
+            .edit {
+                @include justi-align-center;
+                width: 100%;
+                padding: 5px 20px;
+                border-radius: 5px;
+                color : #ffffff;
+                font-weight: 700;
+                background-color: #000000;
                 cursor: pointer;
             }
         }
