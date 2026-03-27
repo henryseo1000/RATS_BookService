@@ -32,6 +32,14 @@
 
             .bookmark_table {
                 min-width: 1000px;
+
+                .table_row {
+                    cursor: pointer;
+
+                    &:hover {
+                        font-weight: 700;
+                    }
+                }
             }
 
             .file_name {

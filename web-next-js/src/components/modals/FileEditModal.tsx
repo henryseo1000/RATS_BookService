@@ -31,7 +31,7 @@ interface FileModalProps {
   date?: string;
 }
 
-function FileEditModal({data} : {data : FileModalProps}) {
+function FileEditModal({data, onOpenChange} : {data : FileModalProps, onOpenChange: () => void}) {
   const editFileDataById = useMutation(api.files.editFileDataById);
 
   const [sentReq, setSentReq] = useState<boolean>(false);
@@ -58,7 +58,7 @@ function FileEditModal({data} : {data : FileModalProps}) {
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={onOpenChange}>
               <DialogTrigger ref={buttonRef}>
                 <Button className={st.modal_button}>수정</Button>
               </DialogTrigger>

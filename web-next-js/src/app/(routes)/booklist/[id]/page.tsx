@@ -62,18 +62,19 @@ export default function BookInformation(props : any) {
                 :
                 <>
                 <div className={st.book_image_container}>
-                    
-                    <div
-                        className={st.search_cover}
-                    >
-                        <Search/>
-                    </div>
 
                     <img
                         src={bookData?.image} 
                         alt="book_image" 
                         onClick={() => window.open(bookData.link ? bookData.link : "")}
                     />
+
+                    <div
+                        className={st.search_cover}
+                    >
+                        <Search/>
+                    </div>
+                    
                 </div>
 
                 <div

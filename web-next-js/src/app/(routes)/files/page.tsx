@@ -329,7 +329,7 @@ function Files() {
                           >
                             삭제
                           </Button>
-                          <FileEditModal data={item}/>
+                          <FileEditModal data={item} onOpenChange={() => {setSearched(false)}}/>
                         </div>
                         : 
                         ""

@@ -13,7 +13,6 @@
         padding: 20px;
 
         .book_table {
-            min-width: 1200px;
 
             .table_header {
                 background: #000;
@@ -76,6 +75,18 @@
         min-width: 80px;
         gap: 10px;
         background-color: #2a23ad;
+    }
+}
+
+@media (max-width: 1200px) {
+    .page_container {
+
+        .table_container {
+
+            .book_table {
+                min-width: 1200px;
+            }
+        }
     }
 }
 

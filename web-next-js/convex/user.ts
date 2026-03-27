@@ -86,7 +86,6 @@ export const checkStudentId = mutation({
             const len = data.length;
             for (let i = 0; i < len; i++) {
                 if (data[i]?.student_id === args.student_id) {
-                    console.log(data[i])
                     return false;
                 }
             }
@@ -95,5 +94,29 @@ export const checkStudentId = mutation({
         })
 
         return isDuplication;
+    }
+})
+
+export const editUserData = mutation({
+    args: {
+        user_id: v.string(),
+        name: v.string(),
+        student_id: v.string(),
+        major: v.string(),
+        grade: v.string()
+    },
+    handler: async (ctx, args) => {
+        const dbId = await ctx.db.query("user_info")
+        .filter((q) => q.eq(q.field("user_id"), args.user_id))
+        .collect()
+
+        await ctx.db.patch(dbId[0]?._id, {
+            real_name: args.name,
+            student_id: args.student_id,
+            major: args.major,
+            grade: args.grade
+        })
+
+        return await ctx.db.get(dbId[0]?._id);
     }
 })
