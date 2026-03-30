@@ -24,7 +24,6 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-  margin-bottom: 70px;
 }
 
 .main_maximized {
@@ -39,6 +38,11 @@ body {
 }
 
 @media (max-width: 1100px) {
+
+  body {
+    margin-bottom: 90px;
+  }
+
   .main_maximized, .main_minimized {
     margin-left: 0px;
     padding: 100px 20px 20px 20px;

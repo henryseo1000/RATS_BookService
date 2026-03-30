@@ -9,67 +9,170 @@
         width: 100%;
         height: 50px;
         gap: 10px;
-        padding-left: 20px;
+        padding: 0px 15px;
         border-radius: 10px;
         background-color: #ffffff;
-        color: #182D52;
-        font-size: 20px;
-        font-weight: bold;
+        
+        .icon {
+            width: 15px;
+            min-width: 15px;
+            color: #182D52;
+        }
+
+        span {
+            color: #182D52;
+            font-size: 18px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 
     .header {
-        @include flex-column;
+        display: flex;
+        flex-direction: column;
         width: 100%;
         gap: 20px;
-        padding: 20px;
+        padding: 50px 30px;
         box-sizing: border-box;
         border-radius: 10px;
         background-color: #ffffff;
 
-        .book_image_container {
-            @include align-center;
-            max-width: 400px;
-            border-radius: 10px;
-            overflow: hidden;
+        .undefined {
+            display: block;
+            width: 100%;
+            padding: 50px 0px;
+            color: #989898;
+            text-align: center;
+        }
 
-            .search_cover {
-                display: none;
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                z-index: 1;
-            }
+        .header_main {
+            display: flex;
+            gap: 25px;
 
-            img {
-                width: 100%;
-                max-width: 400px;
-                cursor: pointer;
-                transition-duration: 1s;
-    
-                &:hover {
-                    scale: 1.05;
-                }
+            .book_image_container {
+                @include justi-align-center;
+                min-width: 30%;
 
-                &:hover ~ .search_cover {
-                    display: absolute;
+                .book_image_area {
+                    @include align-center;
+                    position: relative;
                     width: 100%;
-                    height: 100%;
-                    background-color: #000000;
-                    opacity: 0.8;
+                    border: 1px solid #182D52;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    cursor: pointer;
+
+                    .search_cover {
+                        display: none;
+                    }
+
+                    img {
+                        width: 100%;
+                        transition-duration: 1s;
+                    }
+
+                    &:hover > img{
+                        scale: 1.05;
+                    }
+
+                    &:hover > .search_cover {
+                        @include justi-align-center;
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background-color: #000000;
+                        opacity: 0.5;
+                    }
                 }
             }
         }
 
-        .book_info {
-            @include flex-column;
-            width: 100%;
-            gap: 10px;
-            color: white;
+        .button_area {
+            display: flex;
+            gap: 20px;
+
+            .default_button {
+                min-width: 80px;
+                gap: 10px;
+                background-color: #307cff;
+            }
+
+            .activated_button {
+                min-width: 80px;
+                gap: 10px;
+                background-color: #ff4040;
+            }
         }
     }
 
-    .button_group {
-        display: flex;
+    .book_info {
+        @include flex-column;
+        width: 100%;
         gap: 20px;
+        color: #182D52;
+
+        .book_section {
+            @include flex-column;
+            gap: 5px;
+
+            span:nth-child(1) {
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            span:nth-child(2) {
+                display: -webkit-box;
+                color: #6f6f6f;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 5;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+
+    .card_group {
+        display: grid;
+        grid-template-rows: calc(50% - 10px) calc(50% - 10px);
+        grid-template-columns: calc(50% - 10px) calc(50% - 10px);
+        width: 100%;
+
+        row-gap: 20px;
+        column-gap: 20px;
+
+        .status_card {
+            width: 100%;
+
+            .status_content {
+                width: 100%;
+                color: #182D52;
+                font-size: 25px;
+                font-weight: bolder;
+                text-align: center;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .page_container {
+        
+        .header {
+            flex-direction: column;
+
+            .header_main {
+                flex-direction: column;
+
+                .book_image_container {
+                    width: 100%;
+                }
+            }
+        }
+
+        .card_group {
+            flex-direction: column;
+        }
     }
 }

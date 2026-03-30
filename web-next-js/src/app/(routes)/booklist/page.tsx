@@ -30,7 +30,6 @@ import {
 } from "@/components/ui/select";
 
 import st from './BookList.module.scss';
-import Loading from '@/app/loading';
 import { useRecoilValue } from 'recoil';
 import { userDataState } from '@/stores/userDataState';
 
@@ -281,8 +280,7 @@ function BookList() {
     }
 
     useEffect(() => {
-        handlePaginationResize();
-        window.addEventListener("resize", handlePaginationResize);
+        
         
         if (searchParams.get('searchInput')) {
             setInput(searchParams.get('searchInput'));
@@ -313,9 +311,14 @@ function BookList() {
         }
 
         handleSearch();
+    }, [searchParams, searched])
+
+    useEffect(() => {
+        handlePaginationResize();
+        window.addEventListener("resize", handlePaginationResize);
 
         return () => window.removeEventListener("resize", handlePaginationResize)
-    }, [searched])
+    }, [])
 
     return (
         <div className={st.page_container}>
@@ -411,9 +414,9 @@ function BookList() {
                     ref={searchButtonRef}
                     className={st.button}
                     onClick={() => {
+                        router.replace(`/booklist?searchInput=${input === "" ? "" : input}&borrowed=${borrowedFilter}&reserved=${reservedFilter}&type=${searchType}`);
                         setCurrentPage(1);
                         setSearched(false);
-                        router.replace(`/booklist?searchInput=${input=="" ? "" :input}&borrowed=${borrowedFilter}&reserved=${reservedFilter}&type=${searchType}`);
                     }}
                 >
                     검색
@@ -534,7 +537,7 @@ function BookList() {
                                         >
                                             { item?.reservation && item?.reservation !== "" ? 
 
-                                            item.reservation === userData.student_id ? <Button className={st.activated_button} onClick={() => handleCancelRes(item?._id)}>예약 취소</Button> : `예약중 : ${item.reservation}` 
+                                            item.reservation === userData.student_id ? <Button className={st.activated_button} disabled={sentReq} onClick={() => handleCancelRes(item?._id)}>예약 취소</Button> : `예약중 : ${item.reservation}` 
 
                                             : 
                                             

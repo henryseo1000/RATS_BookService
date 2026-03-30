@@ -383,15 +383,12 @@
             }
 
             .divider {
-                display: flex;
-                width: 0.5px;
-                height: 50%;
-                background-color: #ffffff;
+                display: none;
             }
 
             .link_section {
                 flex-direction: row;
-                gap: 15px;
+                gap: 10px;
 
                 span {
                     display: none;

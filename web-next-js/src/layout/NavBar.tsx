@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactElement, useEffect, useRef } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { SetterOrUpdater, useRecoilValue } from 'recoil';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -99,7 +99,7 @@ function NavBar({
                         </span>
                     </SignOutButton>
                 </div>
-
+                
                 <div className={st.divider}/>
 
                 <div className={st.link_section}>

@@ -28,7 +28,6 @@ import { Input } from '@/components/ui/input';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { toast } from 'sonner';
-import { handleDownload } from '@/utils/handleDownload';
 import { Textarea } from '@/components/ui/textarea';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -43,7 +42,6 @@ function Files() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const uploadFile = useMutation(api.files.uploadFile);
   const getFileListByFilter = useMutation(api.files.getFileListByFilter);
-  const generateDownloadURL = useMutation(api.files.generateDownloadURL);
   const deleteFilesById = useMutation(api.files.deleteFilesById);
 
   const [file, setFile] = useState<File>();
@@ -223,7 +221,7 @@ function Files() {
     handleFileSearch();
 
     return () => window.removeEventListener("resize", handlePaginationResize)
-  }, [searched]);
+  }, [searchParams, searched]);
 
   return (
     <div className={st.page_container}>

@@ -549,6 +549,13 @@ export const addBookmark = mutation({
       book_id : args.book_id,
       student_id : args.student_id
     })
+    .then (async () => {
+      const bookmarkCount = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === args.book_id}).length;
+      return bookmarkCount;
+    })
+    .then((count) => {
+      ctx.db.patch(args.book_id, {bookmark_count : count});
+    })
   }
 })
 
@@ -562,9 +569,16 @@ export const cancelBookmark = mutation({
     .collect())
     .filter((item) => {
       return (item?.book_id === args.book_id) && (item?.student_id === args.student_id)
-    });
+    })
 
-    await ctx.db.delete(resArr[0]._id);
+    await ctx.db.delete(resArr[0]._id)
+    .then (async () => {
+      const bookmarkCount = (await ctx.db.query("bookmark_list").collect()).filter((q) => {return q?.book_id === args.book_id}).length;
+      return bookmarkCount;
+    })
+    .then((count) => {
+      ctx.db.patch(args.book_id, {bookmark_count : count});
+    })
   }
 })
 
