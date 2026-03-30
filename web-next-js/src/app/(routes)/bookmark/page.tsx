@@ -148,7 +148,7 @@ function Bookmark() {
     handleBookmarkList();
 
     return () => window.removeEventListener("resize", handlePaginationResize);
-  }, [searched])
+  }, [searchParams, searched])
 
   return (
     <div className={st.page_container}>

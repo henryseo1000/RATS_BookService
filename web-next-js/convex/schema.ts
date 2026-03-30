@@ -49,7 +49,8 @@ export default defineSchema({
     title: v.string(),
     due: v.number(),
     description: v.string(),
-    thumbnail: v.string()
+    student_id: v.string(),
+    type: v.string()
   }),
   event_history: defineTable({
     event_id: v.string(),

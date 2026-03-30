@@ -115,7 +115,7 @@ function Profile() {
               type="text" 
               value={studentId} 
               onChange={(e) => {setStudentId(e.currentTarget.value)}}
-              disabled={sentReq}
+              disabled
             />
           </div>
           <div className={st.inform_area}>
