@@ -36,12 +36,6 @@ function Profile() {
   }, [userData])
 
   const handleEdit = async () => {
-    let validation = false;
-    if (studentId !== userData.student_id) {
-      validation = await checkStudentId({student_id : studentId});
-    }
-
-      if (validation) {
         const editPromise = editUserData({
           user_id: userData?.user_id,
           name: name,
@@ -51,13 +45,16 @@ function Profile() {
         })
         .then(() => {
             setUserData({
-            name: name,
-            login_id: userData.login_id,
-            user_id: userData.user_id,
-            student_id: studentId,
-            major: major,
-            grade : grade
-          })
+              name: name,
+              login_id: userData.login_id,
+              user_id: userData.user_id,
+              student_id: studentId,
+              major: major,
+              grade : grade
+            })
+        })
+        .then(() => {
+          setSentReq(false);
         })
 
         toast.promise(editPromise, {
@@ -65,13 +62,8 @@ function Profile() {
           loading: "유저 정보를 변경하고 있습니다...",
           error: "에러가 발생했습니다!"
         })
-      }
-      else {
-        alert("입력값을 다시 확인해주세요!");
-        throw(new Error("입력값 오류"));
-      }
 
-      setSentReq(false);
+        setSentReq(false);
     }
 
   const isChanged = () => {
