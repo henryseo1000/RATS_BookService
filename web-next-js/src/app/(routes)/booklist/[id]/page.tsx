@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useRecoilValue } from "recoil";
 import { userDataState } from "@/stores/userDataState";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import Comments from "@/components/common/Comments";
 
 const book_info_data = [
     {
@@ -326,6 +327,8 @@ export default function BookInformation(props : any) {
                 </Card>
             </div>
             
+
+            <Comments theme="github-light"/>
         </div>
     )
 }
