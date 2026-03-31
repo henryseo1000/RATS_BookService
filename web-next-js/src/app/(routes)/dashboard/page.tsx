@@ -53,6 +53,7 @@ function Dashboard() {
   const generateDownloadURL = useMutation(api.files.generateDownloadURL);
   const extendDeadline = useMutation(api.books.extendDeadline);
   const cancelReservation = useMutation(api.books.cancelReservation);
+  const getUserEventByDate = useMutation(api.event.getUserEventByDate);
   const bookRecommendationApi = useAction(api.books.bookRecommendationApi);
 
   const [borrowedData, setBorrowedData] = useState<any>({});
@@ -62,9 +63,9 @@ function Dashboard() {
   const [date, setDate] = useState<Date>(new Date());
   const [updated, setUpdated] = useState<boolean>(false);
   const [swiper, setSwiper] = useState<SwiperCore>();
-  const [paginationNum, setPaginationNum] = useState<number>(10);
   const userData = useRecoilValue(userDataState);
   const [recommandData, setRecommandData] = useState<any[]>([]);
+  const [eventData, setEventData] = useState<any[]>();
 
   const router = useRouter();
 
@@ -163,6 +164,15 @@ function Dashboard() {
         }
       })
     )
+    .then(() => {
+      getUserEventByDate({
+        student_id: userData.student_id,
+        date: Math.floor(new Date().getTime())
+      })
+      .then((data) => {
+        setEventData(data?.filteredList);
+      })
+    })
 
     .then(() => {
       bookRecommendationApi().then((data) => {
@@ -182,8 +192,17 @@ function Dashboard() {
   }
 
   useEffect(() => {
+    getUserEventByDate({
+      student_id: userData.student_id,
+      date: Math.floor(date?.getTime())
+    })
+    .then((data) => {
+      setEventData(data?.filteredList);
+    })
+  }, [date])
+
+  useEffect(() => {
     handleDashboard();
-    
   }, [updated]);
 
   if (!updated) {
@@ -285,9 +304,31 @@ function Dashboard() {
               className={st.calendar_main}
               mode="single"
               selected={date}
-              onSelect={setDate}
+              onSelect={(e) => {
+                setDate(e);
+              }}
+              captionLayout="dropdown"
             />
-            <div className={st.no_results}>조회된 일정 없음</div>
+            <div className={st.event_list}>
+              {eventData?.length === 0
+
+              ?
+                <div className={st.no_results}>
+                  <p>조회된 일정 없음</p>
+                </div>
+              :
+              eventData?.map((item, index) => {
+                return(
+                <div className={st.event_item} key={index}>
+                  <div className={st.event_title}>
+                    <div className={item.type === "book_borrow" ? st.dot_blue : st.dot_red}></div>
+                    <span>{item?.title}</span>
+                  </div>
+                  <p className={st.description}>{item?.description}</p>
+                </div>
+                )
+              })}
+            </div>
           </CardContent>
           <CardFooter />
         </Card>

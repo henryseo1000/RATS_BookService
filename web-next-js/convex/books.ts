@@ -100,18 +100,6 @@ export const getBookListByFliter = mutation({
     }
 })
 
-export const recommandList = mutation({
-  handler: async (ctx) => {
-    const totalData = await ctx.db.query("recommand_books").order("desc").collect();
-    const totalLength = totalData.length;
-
-    return {
-      totalCount: totalLength,
-      bookList: totalData
-    }
-  }
-})
-
 export const getBookHistoryByFilter = mutation({
   args: {
     student_id: v.string(),
@@ -416,37 +404,75 @@ export const borrowBook = mutation({
     student_id: v.string()
   },
   handler: async (ctx, args) => {
-    const getBorrowedList = await ctx.db.insert("borrowed_list", {
-      book_id: args.book_id,
-      student_id: args.student_id,
-      extended: false
-    })
-    .then(() => {
-      ctx.db.get( args.book_id ).then((item) => {
-        if (item.reservation === args.student_id) {
-          ctx.db.patch( args.book_id, { 
+    const userBookHistory = await ctx.db.query('book_history')
+    .withIndex('by_creation_time')
+    .order('desc')
+    .filter(q => {return q.eq(q.field('book_id'), args.book_id)})
+    .filter(q => {return q.eq(q.field('type'), '반납')})
+    .filter(q => {return q.eq(q.field('student_id'), args.student_id)})
+    .collect()
+    
+    if (userBookHistory[0]?._id) {
+      const recentReturnHistory = await ctx.db.get(userBookHistory[0]._id)
+      if (new Date().getTime() - recentReturnHistory._creationTime < 24 * 3600 * 1000) 
+      {
+        throw new Error("반납하신 책은 24시간 이내에 재대출이 불가능합니다");
+      }
+    }
+    
+    else {
+      ctx.db.insert("borrowed_list", {
+        book_id: args.book_id,
+        student_id: args.student_id,
+        extended: false
+      })
+      .then(async () => {
+        const bookData = await ctx.db.get( args.book_id );
+
+        if (bookData.reservation === args.student_id) {
+          await ctx.db.patch( args.book_id, { 
             borrowed : args.student_id,
             reservation : ""
           })
         }
         else {
-          ctx.db.patch( args.book_id, { borrowed : args.student_id } )
+          await ctx.db.patch( args.book_id, { borrowed : args.student_id } )
         }
-      })
-    })
-    .then(() => 
-      ctx.db.insert("book_history", { 
-        book_id : args.book_id,
-        student_id : args.student_id,
-        type: "대출"
-      })
-    )
-    .then(() => {
-      ctx.db.patch(args.book_id, { status : "대출중" })
-    })
 
-    return getBorrowedList;
-  }
+        await ctx.db.insert("book_history", { 
+          book_id : args.book_id,
+          student_id : args.student_id,
+          type: "대출"
+        })
+        .then(() => {
+          const returnDate = new Date();
+          returnDate.setTime(returnDate.getTime() + 7 * 24 * 3600 * 1000);
+
+          ctx.db.insert("event_list", {
+            type: "book_return",
+            book_info: args.book_id,
+            student_id: args.student_id,
+            title: bookData.title + " 반납 예정일",
+            description: bookData.title + "을 반납하셔야 합니다.",
+            due_date: returnDate.getTime()
+          })
+          .then ((id) => {
+            ctx.db.insert("event_list", {
+              type: "book_borrow",
+              book_info: args.book_id,
+              student_id: args.student_id,
+              title: bookData.title + " 대출일",
+              description: bookData.title + "을 대출하셨습니다.",
+              relative: id
+            })
+          })
+
+        })
+        .then(() => {
+          ctx.db.patch(args.book_id, { status : "대출중" })
+        })
+      })
+  }}
 })
 
 export const reserveBook = mutation({
@@ -505,6 +531,17 @@ export const returnBook = mutation({
     })
     .then(() => {
       ctx.db.patch( args.book_id, { status : "비치중" })
+    })
+    .then(async () => {
+      const eventData = await ctx.db.query("event_list")
+      .filter(q => q.eq(q.field("type"), "book_return"))
+      .filter(q => q.eq(q.field("book_info"), args.book_id))
+      .filter(q => q.eq(q.field("student_id"), args.student_id))
+      .collect();
+
+      if (eventData.length >= 1) {
+        ctx.db.delete(eventData[0]._id);
+      }
     })
 
     return returnReq;
@@ -654,6 +691,19 @@ export const extendDeadline = mutation({
         student_id: args.student_id,
         book_id: args.book_id
       })
+    })
+    .then(async () => {
+      const eventData = await ctx.db.query("event_list")
+      .filter(q => q.eq(q.field("type"), "book_return"))
+      .filter(q => q.eq(q.field("book_info"), args.book_id))
+      .filter(q => q.eq(q.field("student_id"), args.student_id))
+      .collect()
+
+      if (eventData.length >= 1) {
+        ctx.db.patch(eventData[0]._id, {
+          due_date: eventData[0].due_date + 7 * 24 * 3600 * 1000
+        })
+      }
     })
   }
 })

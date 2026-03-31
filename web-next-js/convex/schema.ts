@@ -2,7 +2,6 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  admin_account: defineTable({ user_id: v.string() }),
   book_info: defineTable({
     author: v.string(),
     isbn: v.string(),
@@ -47,22 +46,12 @@ export default defineSchema({
   }),
   event_list: defineTable({
     title: v.string(),
-    due: v.number(),
     description: v.string(),
     student_id: v.string(),
-    type: v.string()
-  }),
-  event_history: defineTable({
-    event_id: v.string(),
-    isbn: v.string(),
-    descrption: v.optional(v.string())
-  }),
-  recommand_books: defineTable({
-    title: v.string(),
-    descrption: v.string(),
-    imageUrl: v.string(),
-    webUrl: v.optional(v.string()),
-    isbn: v.string()
+    type: v.string(),
+    due_date: v.optional(v.float64()),
+    relative: v.optional(v.id("event_list")),
+    book_info: v.optional(v.id("book_info"))
   }),
   bookmark_list: defineTable({
     book_id: v.id("book_info"),

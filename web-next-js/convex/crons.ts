@@ -5,7 +5,7 @@ const crons = cronJobs();
 
 crons.monthly(
     "Clear Book History",
-    { day : 1, hourUTC : 16, minuteUTC: 0 },
+    { day : 1, hourUTC : 9, minuteUTC: 0 },
     api.books.getBookHistory
 )
 
