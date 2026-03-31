@@ -126,6 +126,9 @@ function BookList() {
                     book_id: bookId as Id<"book_info">,
                     student_id: userData.student_id
                 })
+                .catch((e) => {
+                    alert (e.message);
+                })
         
                 toast.promise(borrowPromise, {
                     loading: "서버에 요청중...",
@@ -280,7 +283,6 @@ function BookList() {
     }
 
     useEffect(() => {
-        
         
         if (searchParams.get('searchInput')) {
             setInput(searchParams.get('searchInput'));
@@ -520,7 +522,7 @@ function BookList() {
 
                                             <Button
                                                 className={st.default_button}
-                                                disabled={sentReq}
+                                                disabled={sentReq || ((item?.reservation !== "" && item?.reservation) && (item?.reservation !== userData.student_id))}
                                                 onClick={() => {
                                                     setSentReq(true);
                                                     handleBorrow(item?._id);

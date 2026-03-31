@@ -23,7 +23,6 @@ function SearchBar() {
     }
 
     useEffect(() => {
-        console.log(pathname)
         setInput("");
     }, [pathname])
 
