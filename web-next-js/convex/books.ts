@@ -471,6 +471,15 @@ export const borrowBook = mutation({
         .then(() => {
           ctx.db.patch(args.book_id, { status : "대출중" })
         })
+        .then(async () => {
+          const bookInfo = await ctx.db.get(args.book_id)
+          if (args.student_id === bookInfo.reservation) {
+            cancelReservation(ctx, {
+              student_id: args.student_id,
+              book_id: args.book_id
+            })
+          }
+        })
       })
   }}
 })

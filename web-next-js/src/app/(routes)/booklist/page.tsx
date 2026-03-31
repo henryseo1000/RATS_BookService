@@ -127,7 +127,7 @@ function BookList() {
                     student_id: userData.student_id
                 })
                 .catch((e) => {
-                    alert (e.message);
+                    alert("24시간 이내에 반납한 책은 대출이 불가능합니다!");
                 })
         
                 toast.promise(borrowPromise, {
