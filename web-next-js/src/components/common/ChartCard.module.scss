@@ -22,6 +22,14 @@
                 font-weight: 700;
             }
 
+            .table_title {
+                
+                &:hover {
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+            }
+
             .button {
                 background-color: #307cff;
             }

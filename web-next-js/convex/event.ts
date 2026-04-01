@@ -49,3 +49,21 @@ export const getUserEventByDate = mutation({
         }
     }
 })
+
+export const getOfficialEvents = mutation({
+    handler: async (ctx) => {
+        const officialEventList = await ctx.db.query('event_list')
+        .filter((q) => {
+            return q.eq(q.field("type"), "official")
+        })
+        .order('desc')
+        .collect();
+
+        const len = officialEventList.length;
+
+        return {
+            officialList: officialEventList,
+            totalLength: len
+        }
+    }
+})

@@ -542,14 +542,24 @@ export const returnBook = mutation({
       ctx.db.patch( args.book_id, { status : "비치중" })
     })
     .then(async () => {
-      const eventData = await ctx.db.query("event_list")
+      const eventData1 = await ctx.db.query("event_list")
       .filter(q => q.eq(q.field("type"), "book_return"))
       .filter(q => q.eq(q.field("book_info"), args.book_id))
       .filter(q => q.eq(q.field("student_id"), args.student_id))
       .collect();
 
-      if (eventData.length >= 1) {
-        ctx.db.delete(eventData[0]._id);
+      const eventData2 = await ctx.db.query("event_list")
+      .filter(q => q.eq(q.field("type"), "book_borrow"))
+      .filter(q => q.eq(q.field("book_info"), args.book_id))
+      .filter(q => q.eq(q.field("student_id"), args.student_id))
+      .collect();
+
+      if (eventData1.length >= 1) {
+        ctx.db.delete(eventData1[0]._id);
+      }
+
+      if (eventData2.length >= 1) {
+        ctx.db.delete(eventData2[0]._id);
       }
     })
 

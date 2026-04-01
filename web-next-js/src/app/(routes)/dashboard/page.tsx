@@ -60,7 +60,7 @@ function Dashboard() {
   const [reservedData, setReservedData] = useState<any>({});
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [fileList, setFileList] = useState<any[]>([]);
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>();
   const [updated, setUpdated] = useState<boolean>(false);
   const [swiper, setSwiper] = useState<SwiperCore>();
   const userData = useRecoilValue(userDataState);
@@ -225,7 +225,8 @@ function Dashboard() {
           onButtonClick={(id) => {
             setUpdated(false);
             handleExtend(id);
-          }} 
+          }}
+          onClickTitle={(id) => router.push(`/booklist/${id}`)}
         />
         <ChartCard
           title={"예약된 책 권수"}
@@ -241,6 +242,7 @@ function Dashboard() {
             setUpdated(false);
             handelCancelReservation(id);
           }}
+          onClickTitle={(id) => router.push(`/booklist/${id}`)}
         />
       </div>
 
@@ -296,7 +298,7 @@ function Dashboard() {
           <CardHeader className={st.calendar_header}>
             <CardTitle>오늘의 일정은?</CardTitle>
             <CardDescription>
-              책 반납 예정일, 이벤트 날짜 등을 알려드려요!
+              책 반납 예정일, 연장일, 대출일 등을 알려드려요!
             </CardDescription>
           </CardHeader>
           <CardContent className={st.calendar_content}>
@@ -311,7 +313,6 @@ function Dashboard() {
             />
             <div className={st.event_list}>
               {eventData?.length === 0
-
               ?
                 <div className={st.no_results}>
                   <p>조회된 일정 없음</p>
