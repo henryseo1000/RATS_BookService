@@ -60,4 +60,4 @@ function ProfileDropdown() {
     )
 }
 
-export default ProfileDropdown;
+export default ProfileDropdown
