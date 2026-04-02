@@ -194,6 +194,10 @@
             flex-direction: column;
             justify-content: center;
             gap: 30px;
+
+            .list {
+                align-items: center;
+            }
         }
 
         .section_3 {

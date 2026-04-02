@@ -36,6 +36,13 @@ function Profile() {
   }, [userData])
 
   const handleEdit = async () => {
+      if (isNaN(Number(grade))) {
+        alert('1 ~ 4 사이의 숫자만 입력해주세요!');
+      }
+      else if (Number(grade) > 4 || 1 > Number(grade)) {
+        alert('1 ~ 4 사이의 숫자만 입력해주세요!');
+      }
+      else {
         const editPromise = editUserData({
           user_id: userData?.user_id,
           name: name,
@@ -62,8 +69,9 @@ function Profile() {
           loading: "유저 정보를 변경하고 있습니다...",
           error: "에러가 발생했습니다!"
         })
+      }
 
-        setSentReq(false);
+      setSentReq(false);
     }
 
   const isChanged = () => {
@@ -138,6 +146,8 @@ function Profile() {
               value={grade} 
               onChange={(e) => {setGrade(e.currentTarget.value)}}
               disabled={sentReq}
+              min={1}
+              max={4}
             />
           </div>
         </CardContent>
