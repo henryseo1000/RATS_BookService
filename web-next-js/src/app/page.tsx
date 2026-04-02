@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import Loading from "./loading";
 import { userDataState } from "@/stores/userDataState";
+import MainNav from "@/layout/MainNav";
 
 export default function Home() {
   const { isSignedIn, isLoaded, userId } = useAuth();
@@ -64,17 +65,6 @@ export default function Home() {
         major: data?.major,
         grade : data?.grade
       }))
-
-      return (
-        <div className={st.page_container}>
-          <Button 
-            className={st.login_button}
-            onClick={() => router.push('/dashboard')}
-          >
-            Go To DashBoard
-          </Button>
-        </div>
-      )
     }
 
     else if (!checkRes && checked) {
@@ -86,16 +76,11 @@ export default function Home() {
     }
   }
 
-
-  else  {
-    return (
-      <div className={st.page_container}>
-        <SignInButton>
-          <Button className={st.login_button}>
-            Log In
-          </Button>
-        </SignInButton>
-      </div>
-    );
-  }
+  return (
+    <div className={st.page_container}>
+      <MainNav isSignedIn={isSignedIn}/>
+      <div className={st.section_1}></div>
+    </div>
+  );
+  
 }

@@ -412,7 +412,7 @@ export const borrowBook = mutation({
     .filter(q => {return q.eq(q.field('student_id'), args.student_id)})
     .collect()
     
-    if (userBookHistory[0]?._id) {
+    if (userBookHistory.length >= 1) {
       const recentReturnHistory = await ctx.db.get(userBookHistory[0]._id)
       if (new Date().getTime() - recentReturnHistory._creationTime < 24 * 3600 * 1000) 
       {
@@ -420,7 +420,7 @@ export const borrowBook = mutation({
       }
     }
     
-    else {
+
       ctx.db.insert("borrowed_list", {
         book_id: args.book_id,
         student_id: args.student_id,
@@ -471,8 +471,17 @@ export const borrowBook = mutation({
         .then(() => {
           ctx.db.patch(args.book_id, { status : "대출중" })
         })
+        .then(async () => {
+          const bookInfo = await ctx.db.get(args.book_id)
+          if (args.student_id === bookInfo.reservation) {
+            cancelReservation(ctx, {
+              student_id: args.student_id,
+              book_id: args.book_id
+            })
+          }
+        })
       })
-  }}
+  }
 })
 
 export const reserveBook = mutation({
@@ -512,39 +521,50 @@ export const returnBook = mutation({
     book_id: v.id("book_info"),
     student_id: v.string()
   },
-  handler: async (ctx, args) => {
-    const returnReq = await ctx.db.query("borrowed_list").filter((q) => {
+  handler: (ctx, args) => {
+    ctx.db.query("borrowed_list").filter((q) => {
       return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id)
     })
     .collect()
     .then((arr) => {
-      const id = arr[0]._id
-      ctx.db.delete(id).then(() =>
-        ctx.db.patch(args.book_id, { borrowed : ""})
-      ).then(() => 
-        ctx.db.insert("book_history", { 
-          book_id : args.book_id,
-          student_id : args.student_id,
-          type: "반납"
-        })
-      )
+      if (arr[0]?._id) {
+        ctx.db.delete(arr[0]?._id)
+      }
+    })
+    .then(() => {
+      ctx.db.patch(args.book_id, { borrowed : "" })
+    })
+    .then(() => {
+      ctx.db.insert("book_history", { 
+        book_id : args.book_id,
+        student_id : args.student_id,
+        type: "반납"
+      })
     })
     .then(() => {
       ctx.db.patch( args.book_id, { status : "비치중" })
     })
     .then(async () => {
-      const eventData = await ctx.db.query("event_list")
+      const eventData1 = await ctx.db.query("event_list")
       .filter(q => q.eq(q.field("type"), "book_return"))
       .filter(q => q.eq(q.field("book_info"), args.book_id))
       .filter(q => q.eq(q.field("student_id"), args.student_id))
       .collect();
 
-      if (eventData.length >= 1) {
-        ctx.db.delete(eventData[0]._id);
+      const eventData2 = await ctx.db.query("event_list")
+      .filter(q => q.eq(q.field("type"), "book_borrow"))
+      .filter(q => q.eq(q.field("book_info"), args.book_id))
+      .filter(q => q.eq(q.field("student_id"), args.student_id))
+      .collect();
+
+      if (eventData1.length >= 1) {
+        ctx.db.delete(eventData1[0]._id);
+      }
+
+      if (eventData2.length >= 1) {
+        ctx.db.delete(eventData2[0]._id);
       }
     })
-
-    return returnReq;
   }
 })
 
@@ -553,26 +573,27 @@ export const cancelReservation = mutation({
     book_id: v.id("book_info"),
     student_id: v.string()
   },
-  handler: async (ctx, args) => {
-    const cancelReq = await ctx.db.query("reserved_list")
+  handler: (ctx, args) => {
+    ctx.db.query("reserved_list")
     .filter((q) => {
       return q.eq(q.field("student_id"), args.student_id) && q.eq(q.field("book_id"), args.book_id);
     })
     .collect()
     .then((arr) => {
-      ctx.db.delete(arr[0]._id)
-      .then(() => 
-        ctx.db.patch(args.book_id, { reservation : "" })
-      ).then(() => 
-        ctx.db.insert("book_history", { 
-          book_id : args.book_id,
-          student_id : args.student_id,
-          type: "예약취소"
-        })
-      )
+        if (arr[0]?._id) {
+          ctx.db.delete(arr[0]._id)
+        }
     })
-
-    return cancelReq;
+    .then(() => {
+      ctx.db.patch(args.book_id, { reservation : "" })
+    })
+    .then(() => {
+      ctx.db.insert("book_history", { 
+        book_id : args.book_id,
+        student_id : args.student_id,
+        type: "예약취소"
+      })
+    })
   }
 })
 

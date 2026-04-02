@@ -1,0 +1,24 @@
+.nav_container {
+    display: flex;
+    position: fixed;
+    justify-content: space-between;
+    top: 0px;
+    width: 100%;
+    padding: 20px 40px;
+    box-sizing: border-box;
+
+    .login_button {
+        display: flex;
+        gap: 10px;
+        background-color: #307cff;
+
+        img {
+            width: 20px;
+            border-radius: 15px;
+        }
+
+        &:hover {
+            background-color: #307cff;
+        }
+    }
+}

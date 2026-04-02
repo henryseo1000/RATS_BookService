@@ -43,8 +43,9 @@ interface ChartProps {
   tableData?: any[];
   columnData?: ColProps[];
   onButtonClick?: (props: any) => void;
-  buttonText?: string
-  isButtonDisabled?: boolean
+  buttonText?: string;
+  onClickTitle?: (props: any) => void;
+  isButtonDisabled?: boolean;
 }
 
 export function ChartCard({
@@ -60,6 +61,7 @@ export function ChartCard({
   columnData,
   onButtonClick,
   buttonText,
+  onClickTitle,
   isButtonDisabled
 }: ChartProps) {
   const chartData = [
@@ -149,7 +151,12 @@ export function ChartCard({
                 tableData.map((item, index) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell>{item?.title}</TableCell>
+                      <TableCell
+                        className={st.table_title}
+                        onClick={() => onClickTitle(item?._id)}
+                      >
+                        {item?.title}
+                      </TableCell>
                       <TableCell>{item?.date}</TableCell>
                       <TableCell>{item?.author}</TableCell>
                       <TableCell>

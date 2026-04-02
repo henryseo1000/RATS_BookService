@@ -67,6 +67,9 @@ export default function BookInformation(props : any) {
                     book_id: bookId as Id<"book_info">,
                     student_id: userData.student_id
                 })
+                .catch((e) => {
+                    alert("24시간 이내에 반납한 책은 대출이 불가능합니다!");
+                })
                     
                 toast.promise(borrowPromise, {
                     loading: "서버에 요청중...",
