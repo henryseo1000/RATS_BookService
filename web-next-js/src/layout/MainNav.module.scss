@@ -1,24 +1,64 @@
-.nav_container {
+@import '/src/styles/mixins.scss';
+
+.nav_container, .changed_container {
     display: flex;
     position: fixed;
     justify-content: space-between;
     top: 0px;
     width: 100%;
-    padding: 20px 40px;
+    padding: 15px 35px;
     box-sizing: border-box;
+    z-index: 10;
+    transition-duration: 0.5s;
 
-    .login_button {
-        display: flex;
-        gap: 10px;
-        background-color: #307cff;
+    .siginedIn {
+        @include align-center;
+        gap: 15px;
 
         img {
-            width: 20px;
-            border-radius: 15px;
+            height: 40px;
+            aspect-ratio: 1/1;
+            border: 1px solid #d7d7d7;
+            border-radius: 20px;
+            user-select: none;
+            -webkit-user-drag: none;
         }
+    }
 
-        &:hover {
+    .login_button {
+            display: flex;
+            gap: 10px;
             background-color: #307cff;
+
+            .icon {
+                width: 15px;
+                color: white;
+            }
+
+            &:hover {
+                background-color: #307cff;
+            }
+        }
+}
+
+.nav_container {
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0);
+}
+
+.changed_container {
+    background-color: #ffffff;
+    border-bottom: 0.5px solid #d7d7d7;
+}
+
+@media (max-width: 768px) {
+    .nav_container, .changed_container {
+        padding: 15px 20px;
+
+        .siginedIn {
+            
+            .login_button {
+                display: none;
+            }
         }
     }
 }

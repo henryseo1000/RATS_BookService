@@ -5,7 +5,7 @@ import st from './Logo.module.scss';
 
 interface LogoProps {
     mode?: "light" | "dark";
-    useClick? : boolean
+    useClick? : boolean;
 }
 
 function Logo({ mode = 'light', useClick = true } : LogoProps) {
@@ -18,9 +18,9 @@ function Logo({ mode = 'light', useClick = true } : LogoProps) {
         router?.push('/');
       } :
       () => {}
-    }
+      }
     >
-        <img src="/image/mr_story_logo_dark.png" alt="logo" />
+        <img src={mode === 'light' ? "/image/mr_story_logo_dark.png" : "/image/mr_story_logo.png"} alt="logo" />
     </div>
   )
 }
