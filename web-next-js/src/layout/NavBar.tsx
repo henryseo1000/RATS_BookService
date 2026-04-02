@@ -61,11 +61,13 @@ function NavBar({
     ];
 
     const handleScroll = () => {
-        if(window.innerWidth <= 1100 && (window.scrollY > 200 || window.pageYOffset > 200)) {
+        if(navCon.current) {
+            if(window.innerWidth <= 1100 && (window.scrollY > 200 || window.pageYOffset > 200)) {
             navCon.current.style.transform = 'translate(0px, -250px)';
         }
         else {
             navCon.current.style.transform = 'none';
+        }
         }
     }
 
