@@ -11,6 +11,7 @@ import { useAuth, useUser } from '@clerk/clerk-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Loading from '@/app/loading';
+import { toast } from 'sonner';
 
 function OnBoarding() {
   const createUser = useMutation(api.user.createUser);
@@ -27,8 +28,12 @@ function OnBoarding() {
   const [duplication, setDuplication] = useState<boolean>(false);
   const [idConfirmed, setIdConfirmed] = useState<boolean>(false);
 
-
   const handleClick = async () => {
+    if(realName.length < 2 ||realName.trim() === "") {
+      alert("이름은 공백 제외 두 글자 이상이어야 합니다!");
+      return;
+    }
+
     if (studentId.trim() === "") {
       alert("학번을 입력해주세요!");
       return;
@@ -41,6 +46,11 @@ function OnBoarding() {
 
     if (duplication) {
       alert("학번이 중복됩니다!");
+      return;
+    }
+
+    if (grade > 4 || 1 > grade) {
+      alert("학년은 1 ~ 4학년까지만 입력이 가능합니다.");
       return;
     }
 
@@ -58,11 +68,16 @@ function OnBoarding() {
 
   const handleId = async () => {
     if (studentId.trim() === "") {
-      alert("학번을 입력해주세요!");
+      alert("학번을 공백 없이 입력해주세요!");
       return;
     }
 
-    checkStudentId({student_id : studentId})
+    if (studentId.length != 8 || isNaN(Number(studentId))) {
+      alert("학번은 숫자여야 하며, 8자리여야 합니다.");
+      return;
+    }
+
+    const checkPromise = checkStudentId({student_id : studentId})
     .then((res) => {
       if (res) {
         alert("사용가능한 학번입니다.");
@@ -72,6 +87,12 @@ function OnBoarding() {
       else {
         alert("학번이 중복됩니다!");
       }
+    })
+
+    toast.promise(checkPromise, {
+      success: "학번 확인 완료!",
+      loading: "학번을 확인중입니다!",
+      error: "앗, 문제가 발생한 것 같아요!"
     })
   }
 

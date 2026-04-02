@@ -15,6 +15,7 @@ import Loading from "./loading";
 import { userDataState } from "@/stores/userDataState";
 import MainNav from "@/layout/MainNav";
 import { ArrowDown } from "lucide-react";
+import OnBoarding from "./(onboarding)/onboarding/page";
 
 export default function Home() {
   const { isSignedIn, isLoaded, userId } = useAuth();
